@@ -1,2 +1,2 @@
-# procesamiento-imagenes
-Untref - Procesamiento de imagenes
+# Procesador de imagenes
+Untref - Procesamiento de imagenes 2016
