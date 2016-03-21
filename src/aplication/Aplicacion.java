@@ -9,7 +9,13 @@ import procesador.domain.ProcesadorDeImagenes;
 public class Aplicacion extends javax.swing.JFrame {
 
 	ProcesadorDeImagenes ObjProcesamiento=new ProcesadorDeImagenes();
-
+	
+	private javax.swing.JButton jButton1;
+	private javax.swing.JButton jButton2;
+	private javax.swing.JButton jButton3;
+	private javax.swing.JLabel jLabel1;
+	private javax.swing.JScrollPane jScrollPane1;
+	
 	public Aplicacion() {
 		initComponents();
 	}
@@ -92,14 +98,12 @@ public class Aplicacion extends javax.swing.JFrame {
 
 	//Codigo para cargar imagen
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-		//Transformamos el BifferedImagen a ImageIcon para poder mostrarlo en el jLabel1
+		//Transformamos el BufferedImage a ImageIcon para poder mostrarlo en el jLabel1
 		jLabel1.setIcon(new ImageIcon(ObjProcesamiento.abrirImagen()));
-
-		 
 	}
 	//Codigo para pasar a escala de grises
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
-		ObjProcesamiento.guardarImagen("daaale.ppm");
+		ObjProcesamiento.guardarImagen("daaale.bmp");
 
 	}
 	//Codigo para cerrar la aplicación
@@ -134,17 +138,10 @@ public class Aplicacion extends javax.swing.JFrame {
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
-			@Override
 			public void run() {
 				new Aplicacion().setVisible(true);
 			}
 		});
 	}
-
-	private javax.swing.JButton jButton1;
-	private javax.swing.JButton jButton2;
-	private javax.swing.JButton jButton3;
-	private javax.swing.JLabel jLabel1;
-	private javax.swing.JScrollPane jScrollPane1;
 
 }
