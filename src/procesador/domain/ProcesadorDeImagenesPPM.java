@@ -1,4 +1,4 @@
-package procesador;
+package procesador.domain;
 
 import java.awt.Color;
 import java.awt.Image;
