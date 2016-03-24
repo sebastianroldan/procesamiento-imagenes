@@ -25,20 +25,48 @@ public class ProcesadorDeImagenesPPM {
 	private static Integer[][] Rband;
 	private static Integer[][] Gband;
 	private static Integer[][] Bband;
+	private static int cant = 0;
+	private static int pos = 0;
 	
 	
 	public static void main(String args[]) throws IOException {
 		cargarImagen();
 		BufferedImage buff = mostrarImagen();
 		BufferedImage circulo = crearImagenBinariaCirculo(70);
-		
+	
 		mostrarEscalaDeGris();
 		BufferedImage cuadrado = crearImagenBinariaCuadrado(85);
+		dezplegarDegradeGrises();
+		dezplegarDegradeColor();
 		guardarImagen(buff, "imagen.jpg");
 		guardarImagen(circulo,"circulo.jpg");
 		guardarImagen(cuadrado,"cuadrado.jpg");
 	}
 	
+	private static void dezplegarDegradeGrises() {
+		BufferedImage buff = new BufferedImage(256, 256, 1);
+		Color color;
+		for (int i=0; i < 256; i++){
+			for (int j=0; j < 256; j++){
+				color = new Color(j,j,j);
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}
+		ventana(buff, 256, 256);		
+	}
+	
+	private static void dezplegarDegradeColor() {
+		BufferedImage buff = new BufferedImage(256, 256, 1);
+		Color color;
+		for (int i=0; i < 256; i++){
+			for (int j=0; j < 256; j++){
+				color = new Color(255-j,i,j);
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}
+		ventana(buff, 256, 256);
+	}
+
 	public static void cargarImagen() throws IOException{
 		BufferedReader br = openFile();
 		id = br.readLine();
@@ -74,7 +102,9 @@ public class ProcesadorDeImagenesPPM {
 				}
 				c=c+3;
 				pixeles[i][j] = (int)(Rband[i][j]+Gband[i][j]+Bband[i][j])/3;
+//				System.out.print(Rband[i][j]+" "+Gband[i][j]+" "+Bband[i][j]+" ");
 			}
+//			System.out.println(" ");
 		}
 		System.out.println("cantidad de pixeles: "+c);		
 	}
@@ -184,10 +214,15 @@ public class ProcesadorDeImagenesPPM {
 	private static JFrame ven;
 	
 	private static void ventana(Image buff, int ancho, int alto){
-        ven = new JFrame("Imagen");
+        
+        if (cant >= 4){
+        	cant =0;
+        	pos = 300;
+        }
+		ven = new JFrame("Imagen");
         ven.setLayout(null);
         ven.setVisible(true);
-        ven.setBounds(0,0,ancho+40,alto+60);
+        ven.setBounds(cant*300,pos,ancho+40,alto+60);
         ven.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel l = new JLabel();
         l.setIcon(new ImageIcon(buff));
@@ -196,5 +231,9 @@ public class ProcesadorDeImagenesPPM {
         l.repaint();
         ven.add(l);
         ven.repaint();
+        cant++;
+        if (cant > 4){
+        	cant =0;
+        }
 	}
 }
