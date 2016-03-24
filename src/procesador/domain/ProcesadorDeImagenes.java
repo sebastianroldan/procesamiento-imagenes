@@ -1,20 +1,12 @@
 package procesador.domain;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Scanner;
-import java.util.StringTokenizer;
-
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -23,8 +15,6 @@ public class ProcesadorDeImagenes {
 	
     //Imagen actual que se ha cargado
 	private BufferedImage imageActual;
-	private Imagen imagen;	
-	
 	//Método que devuelve una imagen abierta desde archivo
 	//Retorna un objeto BufferedImagen
 	public BufferedImage abrirImagen(){
@@ -76,7 +66,7 @@ public class ProcesadorDeImagenes {
 	private void crearImagen(BufferedImage bufferImage, String extension ) {
 		Integer ancho = bufferImage.getWidth();
 		Integer alto = bufferImage.getHeight();
-		imagen = new Imagen(extension, ancho, alto);
+		new Imagen(extension, ancho, alto);
 	}
 
 	public void guardarImagen(String direccion) throws IOException{
