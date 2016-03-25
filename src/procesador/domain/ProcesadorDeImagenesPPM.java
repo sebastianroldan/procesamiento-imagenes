@@ -15,6 +15,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import aplication.Aplicacion;
+
 public class ProcesadorDeImagenesPPM {
 
 	private static String id;
@@ -29,7 +31,12 @@ public class ProcesadorDeImagenesPPM {
 	private static int pos = 0;
 	
 	
+	
 	public static void main(String args[]) throws IOException {
+		
+		Aplicacion app = new Aplicacion();
+		app.setVisible(true);
+		
 		cargarImagen();
 		BufferedImage buff = mostrarImagen();
 		BufferedImage circulo = crearImagenBinariaCirculo(70);
@@ -41,6 +48,8 @@ public class ProcesadorDeImagenesPPM {
 		guardarImagen(buff, "imagen.jpg");
 		guardarImagen(circulo,"circulo.jpg");
 		guardarImagen(cuadrado,"cuadrado.jpg");
+		
+		
 	}
 	
 	private static void dezplegarDegradeGrises() {

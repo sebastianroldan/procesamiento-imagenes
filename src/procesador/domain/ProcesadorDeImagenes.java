@@ -2,19 +2,10 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -52,7 +43,7 @@ public class ProcesadorDeImagenes {
 					BImg = ImageIO.read(file);
 				} else if (tipoImagen.equalsIgnoreCase("RAW")){
 					// hardcodeo imagen raw de columnasXfilas
-					BImg = convertirRAWenBufferedImage(convertirRAWaMatriz(300,200,file));
+					BImg = convertirRAWenBufferedImage(convertirRAWaMatrizRGB(200,100,file));
 				} 		
 				else {
 					System.out.println("ES UN " + tipoImagen);
@@ -88,24 +79,25 @@ public class ProcesadorDeImagenes {
 	
 	public BufferedImage convertirRAWenBufferedImage(int[][] rawRGB){
 		
-		int h = rawRGB.length;         	System.out.println("filas: "+h);
-	    int w = rawRGB[0].length;		System.out.println("columnas: "+w);
-	    BufferedImage i = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-	    for (int y=0; y<h; y++) {
-	        for (int x=0; x<w; x++) {
-	            int argb = rawRGB[y][x];
-	            System.out.print(argb+";");
-	            i.setRGB(x, y, argb);
+		int filas = rawRGB.length;         	System.out.println("filas: "+filas);
+	    int columnas = rawRGB[0].length;		System.out.println("columnas: "+columnas);
+	    BufferedImage image = new BufferedImage(columnas, filas, BufferedImage.TYPE_INT_RGB);
+	    
+	   for (int y=0; y<filas; y++) {
+	        for (int x=0; x<columnas; x++) {
+	            int argb = Math.abs(rawRGB[y][x]);
+	            //System.out.print(argb+";");
+	            image.setRGB(x, y, argb);
 	        }
-	        System.out.println(" ");
+	        //System.out.println(" ");
 	    }
-	    return i;
+	    return image;
 	}
 	
-	private int[][] convertirRAWaMatriz(int columnas,int filas,File archivoRAW) throws IOException{
+	private int[][] convertirRAWaMatrizRGB(int columnas,int filas,File archivoRAW) throws IOException{
 				
 		int cantidadBytesArchivo = (int) archivoRAW.length();        
-        byte[] bFile = new byte[cantidadBytesArchivo];
+		byte[] bFile = new byte[cantidadBytesArchivo];
         int[][] rawRGB = new int[filas][columnas];
         
         //convert file into array of bytes
@@ -123,41 +115,51 @@ public class ProcesadorDeImagenes {
 	    // inicializo la matriz completa en color blanco
 	    for (int i=0;i<columnas;i++){
 	    	for (int j=0;j<filas;j++) {
-	    		rawRGB[j][i]=255;
+	    		rawRGB[j][i]=16777215;
 	    	}
 	    }
 	    
 	    
 	    System.out.println("Cantidad elementos en bFile: "+bFile.length);
 	    System.out.println("Cantidad bytes en archivo: "+cantidadBytesArchivo);
-	    System.out.println("Cantidad columas*filas: "+columnas*filas);
+	    System.out.println("Cantidad columas*filas*3: "+columnas*filas*3);
 	    
 	    
         int x = 0;
         int y = 0;
         int limite = cantidadBytesArchivo;
         
-        if (cantidadBytesArchivo>(columnas*filas)){
-        	limite= columnas*filas;
+        if (cantidadBytesArchivo>(columnas*filas*3)){
+        	limite= columnas*filas*3;
         }
         
         System.out.println("Cantidad limite: "+limite);
         
-        for (int k=0;k<limite;k++) {
+        // Verifico los valoresdel bFile de  bytes - corrijo desvios
+        for (int k=0;k<cantidadBytesArchivo;k++) {
         	
-        	if ((bFile[k]>=0)&&(bFile[k]<255)) {
-        		rawRGB[y][x]= (int) bFile[k];
-        	}else if (bFile[k]<0) {
-        		rawRGB[y][x]= 0;
-        	}else {
-        		rawRGB[y][x]= 255;
+        	if (bFile[k]<0) {
+        		bFile[k] = 0;
         	}
+        	
+        	if (bFile[k]>255) {
+        		bFile[k] = (byte)255;
+        	}
+		}
+        
+        // Ahora armo la matriz de RGB        
+        
+        for (int k=0;k<(limite-2);k+=3) {
+        	
+        	Color colorRGB = new Color((byte)bFile[k],(byte)bFile[k+1],(byte)bFile[k+2]);
+        	
+        	rawRGB[y][x]= colorRGB.getRGB();
         	
         	//System.out.println(k+", x: "+x+", y: "+y+", valor: "+rawRGB[y][x]);
         	    	
         	x++;
         	
-        	if ((k+1)%columnas==0) {
+        	if ((k+3)%(columnas*3)==0) {
         		x=0;
         		y++;
         	}

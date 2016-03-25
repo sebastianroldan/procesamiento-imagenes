@@ -118,6 +118,7 @@ public class Aplicacion extends javax.swing.JFrame {
 	/**
 	 * @param args the command line arguments
 	 */
+	/*
 	public static void main(String args[]) {
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -136,12 +137,12 @@ public class Aplicacion extends javax.swing.JFrame {
 			java.util.logging.Logger.getLogger(Aplicacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 
-		/* Create and display the form */
+		 Create and display the form 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				new Aplicacion().setVisible(true);
 			}
 		});
 	}
-
+	*/
 }
