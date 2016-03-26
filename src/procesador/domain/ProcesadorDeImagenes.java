@@ -14,7 +14,8 @@ public class ProcesadorDeImagenes {
 	
     //Imagen actual que se ha cargado
 	private BufferedImage imageActual;
-	private Imagen imagen;	
+	private Imagen imagen;
+	private String nombreArchivoImagen="";
 	
 	//Método que devuelve una imagen abierta desde archivo
 	//Retorna un objeto BufferedImagen
@@ -27,7 +28,7 @@ public class ProcesadorDeImagenes {
 		//Le damos un título
 		selector.setDialogTitle("Seleccione una imagen");
 		//Filtramos los tipos de archivos
-		FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & RAW", "ppm", "pgm", "bmp", "raw");
+		FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & RAW", "ppm", "pgm", "bmp", "jpg", "raw");
 		selector.setFileFilter(filtroImagen);
 		//Abrimos el cuadro de diálogo
 		int flag=selector.showOpenDialog(null);
@@ -37,16 +38,30 @@ public class ProcesadorDeImagenes {
 				//Devuelve el fichero seleccionado
 				File file=selector.getSelectedFile();
 				tipoImagen=obtenerTipo(file);
+				this.nombreArchivoImagen=file.getName();
 				//Asignamos a la variable BImg la imagen leida
 				
-				if (tipoImagen.equalsIgnoreCase("BMP")){
+				if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
 					BImg = ImageIO.read(file);
+				} else if ((tipoImagen.equalsIgnoreCase("PPM"))){
+					ProcesadorDeImagenesPPM procPPM = new ProcesadorDeImagenesPPM();
+					BImg = procPPM.mostrarImagenPPM(file);				
+				}else if ((tipoImagen.equalsIgnoreCase("PGM"))){
+					ProcesadorDeImagenesPGM procPGM = new ProcesadorDeImagenesPGM();
+					BImg = procPGM.mostrarImagenPGM(file);
 				} else if (tipoImagen.equalsIgnoreCase("RAW")){
 					// hardcodeo imagen raw de columnasXfilas
 					BImg = convertirRAWenBufferedImage(convertirRAWaMatrizRGB(200,100,file));
+					/*
+					javaxt.io.Image image = new javaxt.io.Image("C:/procesamiento-imagenes/LENA.RAW");
+					int width = image.getWidth();
+					int height = image.getHeight();
+					image.setCorners(20, 70,width-70, 0,width+20, height-50,50, height);
+					BImg=image.getBufferedImage();
+					*/
 				} 		
 				else {
-					System.out.println("ES UN " + tipoImagen);
+					System.out.println("Es un archivo " + tipoImagen + " y no puede ser procesado por esta aplicación.");
 				}
 				crearImagen(BImg,tipoImagen);
 			} catch (Exception e) {
@@ -76,7 +91,8 @@ public class ProcesadorDeImagenes {
 		//ImageIO.write(this.imageActual, imagen.getTipo().toLowerCase(), fileOutput);
 		ImageIO.write(this.imageActual, "bmp", fileOutput);
 	}
-	
+		
+	// METODOS PARA TRATAMIENTO DE ARCHIVOS RAW	
 	public BufferedImage convertirRAWenBufferedImage(int[][] rawRGB){
 		
 		int filas = rawRGB.length;         	System.out.println("filas: "+filas);
@@ -167,6 +183,13 @@ public class ProcesadorDeImagenes {
         }
          
 		return rawRGB;
-	}	
+	}
 
+	public String getNombreArchivoImagen() {
+		return nombreArchivoImagen;
+	}
+
+	public void setNombreArchivoImagen(String nombreArchivoImagen) {
+		this.nombreArchivoImagen = nombreArchivoImagen;
+	}	
 }

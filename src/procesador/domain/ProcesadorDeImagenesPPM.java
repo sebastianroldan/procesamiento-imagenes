@@ -32,10 +32,7 @@ public class ProcesadorDeImagenesPPM {
 	
 	
 	
-	public static void main(String args[]) throws IOException {
-		
-		Aplicacion app = new Aplicacion();
-		app.setVisible(true);
+	public static void mostrarEjemploImagenPPM () throws IOException {
 		
 		cargarImagen();
 		BufferedImage buff = mostrarImagen();
@@ -48,9 +45,43 @@ public class ProcesadorDeImagenesPPM {
 		guardarImagen(buff, "imagen.jpg");
 		guardarImagen(circulo,"circulo.jpg");
 		guardarImagen(cuadrado,"cuadrado.jpg");
-		
-		
 	}
+	
+	public BufferedImage mostrarImagenPPM(File file){
+		
+		BufferedImage buffI=null;
+		
+		try {
+			FileInputStream input = new FileInputStream(file);
+			InputStreamReader ir = new InputStreamReader(input);
+			BufferedReader br = new BufferedReader(ir);
+			
+			id = br.readLine();
+			String secondLine = br.readLine();
+			System.out.println("Numero Magico: "+ id);
+			calcularAnchoAlto(secondLine);
+			maxValue = Integer.valueOf(br.readLine());
+			calcularMatrizDePixeles(br);
+			System.out.println("Ancho: "+ ancho);
+			System.out.println("Alto: "+ alto);
+			System.out.println("MaxValue: "+ maxValue);
+			br.close();
+			
+			buffI = new BufferedImage(ancho, alto, 1);
+			Color color;
+			for (int i=0; i < ancho; i++){
+				for (int j=0; j < alto; j++){
+					color = new Color(Rband[i][j],Gband[i][j],Bband[i][j]);
+					buffI.setRGB(j, i, color.getRGB());
+				}
+			}	
+			
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return buffI;
+	}
+	
 	
 	private static void dezplegarDegradeGrises() {
 		BufferedImage buff = new BufferedImage(256, 256, 1);
@@ -76,7 +107,7 @@ public class ProcesadorDeImagenesPPM {
 		ventana(buff, 256, 256);
 	}
 
-	public static void cargarImagen() throws IOException{
+	private static void cargarImagen() throws IOException{
 		BufferedReader br = openFile();
 		id = br.readLine();
 		String secondLine = br.readLine();
@@ -187,7 +218,6 @@ public class ProcesadorDeImagenesPPM {
 		return buff;
 	}
 	
-
 	private static void mostrarEscalaDeGris() {
 		BufferedImage buff = new BufferedImage(ancho, alto, 1);
 		Color color;

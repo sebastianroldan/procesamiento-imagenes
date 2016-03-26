@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import procesador.domain.ProcesadorDeImagenes;
+import procesador.domain.ProcesadorDeImagenesPGM;
+import procesador.domain.ProcesadorDeImagenesPPM;
 
 @SuppressWarnings("serial")
 public class Aplicacion extends javax.swing.JFrame {
 
-	ProcesadorDeImagenes ObjProcesamiento=new ProcesadorDeImagenes();
-	
+	private ProcesadorDeImagenes ObjProcesamiento=new ProcesadorDeImagenes();
 	private javax.swing.JButton jButton1;
 	private javax.swing.JButton jButton2;
 	private javax.swing.JButton jButton3;
@@ -103,8 +104,9 @@ public class Aplicacion extends javax.swing.JFrame {
 	}
 	//Codigo para pasar a escala de grises
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
-		ObjProcesamiento.guardarImagen("daaale.bmp");
-
+		// guarda el archivo en el directorio del programa con el prenombre Salida_XXXX.XXX.bmp
+		String nombreSalida= "Salida_"+ObjProcesamiento.getNombreArchivoImagen()+".bmp";
+		ObjProcesamiento.guardarImagen(nombreSalida);
 	}
 	//Codigo para cerrar la aplicación
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -118,7 +120,7 @@ public class Aplicacion extends javax.swing.JFrame {
 	/**
 	 * @param args the command line arguments
 	 */
-	/*
+	
 	public static void main(String args[]) {
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -137,12 +139,18 @@ public class Aplicacion extends javax.swing.JFrame {
 			java.util.logging.Logger.getLogger(Aplicacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 
-		 Create and display the form 
+		//Create and display the form 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new Aplicacion().setVisible(true);
+				try {
+					new Aplicacion().setVisible(true);
+					ProcesadorDeImagenesPPM.mostrarEjemploImagenPPM();
+					ProcesadorDeImagenesPGM.mostrarEjemploImagenPGM();
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 			}
 		});
 	}
-	*/
+	
 }
