@@ -2,6 +2,7 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,64 +14,51 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class ProcesadorDeImagenes {
 	
     //Imagen actual que se ha cargado
-	private BufferedImage imageActual;
-	private Imagen imagen;
+	private Imagen imageActual = new Imagen();
+	private File file;
+	private String tipoImagen;
 	private String nombreArchivoImagen="";
+	private BufferedImage buffer;
 	
-	//Método que devuelve una imagen abierta desde archivo
-	//Retorna un objeto BufferedImagen
 	public BufferedImage abrirImagen(){
 		String tipoImagen;		
-		//Creamos la variable que será devuelta (la creamos como null)
 		BufferedImage BImg=null;
-		//Creamos un nuevo cuadro de diálogo para seleccionar imagen
 		JFileChooser selector=new JFileChooser();
-		//Le damos un título
 		selector.setDialogTitle("Seleccione una imagen");
-		//Filtramos los tipos de archivos
 		FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & RAW", "ppm", "pgm", "bmp", "jpg", "raw");
 		selector.setFileFilter(filtroImagen);
-		//Abrimos el cuadro de diálogo
 		int flag=selector.showOpenDialog(null);
-		//Comprobamos que pulse en aceptar
 		if(flag==JFileChooser.APPROVE_OPTION){
 			try {
-				//Devuelve el fichero seleccionado
-				File file=selector.getSelectedFile();
+				file=selector.getSelectedFile();
 				tipoImagen=obtenerTipo(file);
 				this.nombreArchivoImagen=file.getName();
-				//Asignamos a la variable BImg la imagen leida
-				
-				if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
-					BImg = ImageIO.read(file);
-				} else if ((tipoImagen.equalsIgnoreCase("PPM"))){
-					ProcesadorDeImagenesPPM procPPM = new ProcesadorDeImagenesPPM();
-					BImg = procPPM.mostrarImagenPPM(file);				
-				}else if ((tipoImagen.equalsIgnoreCase("PGM"))){
-					ProcesadorDeImagenesPGM procPGM = new ProcesadorDeImagenesPGM();
-					BImg = procPGM.mostrarImagenPGM(file);
-				} else if (tipoImagen.equalsIgnoreCase("RAW")){
-					// hardcodeo imagen raw de columnasXfilas
-					BImg = convertirRAWenBufferedImage(convertirRAWaMatrizRGB(200,100,file));
-					/*
-					javaxt.io.Image image = new javaxt.io.Image("C:/procesamiento-imagenes/LENA.RAW");
-					int width = image.getWidth();
-					int height = image.getHeight();
-					image.setCorners(20, 70,width-70, 0,width+20, height-50,50, height);
-					BImg=image.getBufferedImage();
-					*/
-				} 		
-				else {
-					System.out.println("Es un archivo " + tipoImagen + " y no puede ser procesado por esta aplicación.");
-				}
-				crearImagen(BImg,tipoImagen);
+				BImg = obtenerImagen(tipoImagen, file);
 			} catch (Exception e) {
 			}
 		}
-		//Asignamos la imagen cargada a la propiedad imageActual
-		this.imageActual = BImg;
-		//Retornamos el valor
+		this.buffer = BImg;
 		return BImg;
+	}
+
+	public BufferedImage obtenerImagen(String tipoImagen, File file) throws IOException {
+		BufferedImage image = null;
+		Procesador proc = null;
+		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
+			image = ImageIO.read(file);
+		} else{ 
+			if ((tipoImagen.equalsIgnoreCase("PPM"))){
+				proc = new ProcesadorDeImagenesPPM();
+				image = proc.abrirImagen(file.getName());				
+			}else if ((tipoImagen.equalsIgnoreCase("PGM"))){
+				proc = new ProcesadorDeImagenesPGM();
+				image = proc.abrirImagen(file.getName());
+			} 
+			this.imageActual.setAlto(proc.getAlto());
+			this.imageActual.setAncho(proc.getAncho());
+			this.imageActual.setMatriz(proc.getMatriz(),proc.getAncho(),proc.getAlto());
+		}
+		return image;
 	}
 
 	private String obtenerTipo(File file) {
@@ -83,13 +71,12 @@ public class ProcesadorDeImagenes {
 	private void crearImagen(BufferedImage bufferImage, String extension ) {
 		Integer ancho = bufferImage.getWidth();
 		Integer alto = bufferImage.getHeight();
-		imagen = new Imagen(extension, ancho, alto);
+		new Imagen();
 	}
 
 	public void guardarImagen(String direccion) throws IOException{
 		File fileOutput = new File(direccion);
-		//ImageIO.write(this.imageActual, imagen.getTipo().toLowerCase(), fileOutput);
-		ImageIO.write(this.imageActual, "bmp", fileOutput);
+		ImageIO.write(this.buffer, "bmp", fileOutput);
 	}
 		
 	// METODOS PARA TRATAMIENTO DE ARCHIVOS RAW	

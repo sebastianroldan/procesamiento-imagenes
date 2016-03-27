@@ -14,6 +14,10 @@ public class Imagen {
 		this.pixeles = new Integer[ancho][alto];
 	}
 	
+	public Imagen() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getAlto() {
 		return alto;
 	}
@@ -39,5 +43,10 @@ public class Imagen {
 		if ((ancho<=this.getAncho())&&(alto<=this.getAlto())){
 			this.pixeles[ancho][alto]=valor;
 		}
+	}
+	
+	public void setMatriz(Integer[][] matriz, int x, int y){
+		this.pixeles = new Integer[x][y];
+		this.pixeles = matriz;
 	}
 }

@@ -1,173 +1,79 @@
 package procesador.domain;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
-import aplication.Aplicacion;
+public class ProcesadorDeImagenesPPM extends Procesador{
 
-public class ProcesadorDeImagenesPPM {
-
-	private static String id;
-	private static Integer ancho;
-	private static Integer alto;
-	private static Integer maxValue;
-	private static Integer[][] pixeles;
-	private static Integer[][] Rband;
-	private static Integer[][] Gband;
-	private static Integer[][] Bband;
-	private static int cant = 0;
-	private static int pos = 0;
+	private Integer ancho;
+	private Integer alto;
+	private Integer[][] pixeles;
+	private Integer[][] Rband;
+	private Integer[][] Gband;
+	private Integer[][] Bband;
+	private Integer[][] matrizRGB;
 	
-	
-	
-	public static void mostrarEjemploImagenPPM () throws IOException {
-		
-		cargarImagen();
-		BufferedImage buff = mostrarImagen();
-		BufferedImage circulo = crearImagenBinariaCirculo(70);
-	
-		mostrarEscalaDeGris();
-		BufferedImage cuadrado = crearImagenBinariaCuadrado(85);
-		dezplegarDegradeGrises();
-		dezplegarDegradeColor();
-		guardarImagen(buff, "imagen.jpg");
-		guardarImagen(circulo,"circulo.jpg");
-		guardarImagen(cuadrado,"cuadrado.jpg");
+	@Override
+	public BufferedImage abrirImagen(String name) throws IOException {
+		FileInputStream is =this.openFile(name);
+		return cargarImagen(is);
 	}
 	
-	public BufferedImage mostrarImagenPPM(File file){
-		
-		BufferedImage buffI=null;
-		
-		try {
-			FileInputStream input = new FileInputStream(file);
-			InputStreamReader ir = new InputStreamReader(input);
-			BufferedReader br = new BufferedReader(ir);
-			
-			id = br.readLine();
-			String secondLine = br.readLine();
-			System.out.println("Numero Magico: "+ id);
-			calcularAnchoAlto(secondLine);
-			maxValue = Integer.valueOf(br.readLine());
-			calcularMatrizDePixeles(br);
-			System.out.println("Ancho: "+ ancho);
-			System.out.println("Alto: "+ alto);
-			System.out.println("MaxValue: "+ maxValue);
-			br.close();
-			
-			buffI = new BufferedImage(ancho, alto, 1);
-			Color color;
-			for (int i=0; i < ancho; i++){
-				for (int j=0; j < alto; j++){
-					color = new Color(Rband[i][j],Gband[i][j],Bband[i][j]);
-					buffI.setRGB(j, i, color.getRGB());
-				}
-			}	
-			
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-		return buffI;
+	private FileInputStream openFile(String name) throws FileNotFoundException {
+		File imgFile =  new File(name);
+		FileInputStream input = new FileInputStream(imgFile);
+		return input;
 	}
-	
-	
-	private static void dezplegarDegradeGrises() {
-		BufferedImage buff = new BufferedImage(256, 256, 1);
+
+	private BufferedImage cargarImagen(FileInputStream br) throws IOException{
 		Color color;
-		for (int i=0; i < 256; i++){
-			for (int j=0; j < 256; j++){
-				color = new Color(j,j,j);
-				buff.setRGB(j, i, color.getRGB());
-			}
+		char[] encabezado = new char[15];
+		for (int i=0; i< 15; i++){
+			encabezado[i] =(char)br.read();
 		}
-		ventana(buff, 256, 256);		
-	}
-	
-	private static void dezplegarDegradeColor() {
-		BufferedImage buff = new BufferedImage(256, 256, 1);
-		Color color;
-		for (int i=0; i < 256; i++){
-			for (int j=0; j < 256; j++){
-				color = new Color(255-j,i,j);
-				buff.setRGB(j, i, color.getRGB());
-			}
-		}
-		ventana(buff, 256, 256);
-	}
-
-	private static void cargarImagen() throws IOException{
-		BufferedReader br = openFile();
-		id = br.readLine();
-		String secondLine = br.readLine();
-		System.out.println("Numero Magico: "+ id);
-		
-		calcularAnchoAlto(secondLine);
-		maxValue = Integer.valueOf(br.readLine());
-		calcularMatrizDePixeles(br);
-		System.out.println("Ancho: "+ ancho);
-		System.out.println("Alto: "+ alto);
-		System.out.println("MaxValue: "+ maxValue);
-		
-		br.close();
-	}
-
-	private static void calcularMatrizDePixeles(BufferedReader br) throws IOException {
-		int c = 0;
-		for (int i=0; i < ancho; i++){
-			for (int j=0; j < alto; j++){
-				
-				Rband[i][j] = br.read();
-				if (Rband[i][j] > 255){
-					Rband[i][j] = 125;
-				}
-				Gband[i][j] = br.read();
-				if	(Gband[i][j] > 255){
-					Gband[i][j] = 145;
-				}
-				Bband[i][j] = br.read();
-				if (Bband[i][j] > 255){
-					Bband[i][j] = 145;
-				}
-				c=c+3;
-				pixeles[i][j] = (int)(Rband[i][j]+Gband[i][j]+Bband[i][j])/3;
-//				System.out.print(Rband[i][j]+" "+Gband[i][j]+" "+Bband[i][j]+" ");
-			}
-//			System.out.println(" ");
-		}
-		System.out.println("cantidad de pixeles: "+c);		
-	}
-
-	private static void calcularAnchoAlto(String secondLine) {
-		ancho = Integer.valueOf(secondLine.split("\\ ")[0]);
-		alto = Integer.valueOf(secondLine.split("\\ ")[1]);
-		pixeles = new Integer[ancho][alto]; 
+		String cabecera = String.valueOf(encabezado);
+		String[] array = cabecera.split("\\s");
+		ancho = Integer.valueOf(array[1]);
+		alto = Integer.valueOf(array[2]);
+		BufferedImage buff = new BufferedImage(ancho, alto, 1);
+		pixeles = new Integer[ancho][alto];
+		matrizRGB = new Integer[ancho][alto]; 
 		Rband = new Integer[ancho][alto];
 		Gband = new Integer[ancho][alto];
 		Bband = new Integer[ancho][alto];
-		
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){		
+				Rband[i][j] = br.read();
+				Gband[i][j] = br.read();
+				Bband[i][j] = br.read();
+				pixeles[i][j] = (int)(Rband[i][j]+Gband[i][j]+Bband[i][j])/3;
+				color = new Color(Rband[i][j],Gband[i][j],Bband[i][j]);
+				matrizRGB[i][j] = color.getRGB();
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}
+		br.close();
+		return buff;
 	}
-
-	private static BufferedReader openFile() throws FileNotFoundException {
-		File imgFile =  new File("images.ppm");
-		FileInputStream input = new FileInputStream(imgFile);
-		InputStreamReader ir = new InputStreamReader(input);
-		BufferedReader br = new BufferedReader(ir);
-		return br;
+	
+	private BufferedImage retornarImagenRGB() {
+		BufferedImage buff = new BufferedImage(ancho, alto, 1);
+		Color color;
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				color = new Color(Rband[i][j],Gband[i][j],Bband[i][j]);
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}
+		return buff;
 	}
-
-	private static BufferedImage crearImagenBinariaCirculo(int radio) {
+	
+	private BufferedImage crearImagenBinariaCirculo(int radio) {
 		BufferedImage buff = new BufferedImage(200, 200, 1);
 		Color color;
 		for (int i=0; i < 200; i++){
@@ -192,11 +98,10 @@ public class ProcesadorDeImagenesPPM {
 				buff.setRGB(z+100, x+100, color.getRGB());
 				buff.setRGB(z+101, x+100, color.getRGB());
 		}
-		ventana(buff, 200, 200);		
 		return buff;
 	}
 	
-	private static BufferedImage crearImagenBinariaCuadrado(int lado) {
+	private BufferedImage crearImagenBinariaCuadrado(int lado) {
 		BufferedImage buff = new BufferedImage(200, 200, 1);
 		Color color;
 		for (int i=0; i < 200; i++){
@@ -211,14 +116,11 @@ public class ProcesadorDeImagenesPPM {
 				buff.setRGB(x+100, -(lado/2)+100, color.getRGB());
 				buff.setRGB((lado/2)+100, x+100, color.getRGB());
 				buff.setRGB(-(lado/2)+100, x+100, color.getRGB());
-//				buff.setRGB(x+101, z+100, color.getRGB());
-			
-		}
-		ventana(buff, 200, 200);		
+		}		
 		return buff;
 	}
 	
-	private static void mostrarEscalaDeGris() {
+	private void mostrarEscalaDeGris() {
 		BufferedImage buff = new BufferedImage(ancho, alto, 1);
 		Color color;
 		for (int i=0; i < ancho; i++){
@@ -227,52 +129,45 @@ public class ProcesadorDeImagenesPPM {
 				buff.setRGB(j, i, color.getRGB());
 			}
 		}
-		ventana(buff, ancho, alto);
 	}
 
-	private static void guardarImagen(BufferedImage buff, String nombre) throws IOException {
-		File fileOutput = new File(nombre);
-		//ImageIO.write(this.imageActual, imagen.getTipo().toLowerCase(), fileOutput);
-		ImageIO.write(buff, "jpg", fileOutput);
-		
-	}
-
-	private static BufferedImage mostrarImagen() {
-		BufferedImage buff = new BufferedImage(ancho, alto, 1);
+	private static void dezplegarDegradeGrises() {
+		BufferedImage buff = new BufferedImage(256, 256, 1);
 		Color color;
-		for (int i=0; i < ancho; i++){
-			for (int j=0; j < alto; j++){
-				color = new Color(Rband[i][j],Gband[i][j],Bband[i][j]);
+		for (int i=0; i < 256; i++){
+			for (int j=0; j < 256; j++){
+				color = new Color(j,j,j);
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}		
+	}
+	
+	private static void dezplegarDegradeColor() {
+		BufferedImage buff = new BufferedImage(256, 256, 1);
+		Color color;
+		for (int i=0; i < 256; i++){
+			for (int j=0; j < 256; j++){
+				color = new Color(255-j,i,j);
 				buff.setRGB(j, i, color.getRGB());
 			}
 		}
-		ventana(buff, ancho, alto);
-		return buff;
 	}
 
-	private static JFrame ven;
-	
-	private static void ventana(Image buff, int ancho, int alto){
-        
-        if (cant >= 4){
-        	cant =0;
-        	pos = 300;
-        }
-		ven = new JFrame("Imagen");
-        ven.setLayout(null);
-        ven.setVisible(true);
-        ven.setBounds(cant*300,pos,ancho+40,alto+60);
-        ven.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel l = new JLabel();
-        l.setIcon(new ImageIcon(buff));
-        l.setSize(ancho,alto);
-        l.setBounds(10,10,ancho,alto);
-        l.repaint();
-        ven.add(l);
-        ven.repaint();
-        cant++;
-        if (cant > 4){
-        	cant =0;
-        }
+	@Override
+	public int getAlto() {
+		// TODO Auto-generated method stub
+		return alto;
+	}
+
+	@Override
+	public int getAncho() {
+		// TODO Auto-generated method stub
+		return ancho;
+	}
+
+	@Override
+	public Integer[][] getMatriz() {
+		// TODO Auto-generated method stub
+		return matrizRGB;
 	}
 }
