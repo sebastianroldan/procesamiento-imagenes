@@ -46,10 +46,10 @@ public class ProcesadorDeImagenes {
 		} else{ 
 			if ((tipoImagen.equalsIgnoreCase("PPM"))){
 				proc = new ProcesadorDeImagenesPPM();
-				image = proc.abrirImagen(file.getName());				
+				image = proc.abrirImagen(file.getPath());				
 			}else if ((tipoImagen.equalsIgnoreCase("PGM"))){
 				proc = new ProcesadorDeImagenesPGM();
-				image = proc.abrirImagen(file.getName());
+				image = proc.abrirImagen(file.getPath());
 			} 
 			this.imageActual.setAlto(proc.getAlto());
 			this.imageActual.setAncho(proc.getAncho());
