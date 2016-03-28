@@ -2,7 +2,6 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,10 +12,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ProcesadorDeImagenes {
 	
-    //Imagen actual que se ha cargado
 	private Imagen imageActual = new Imagen();
 	private File file;
-	private String tipoImagen;
 	private String nombreArchivoImagen="";
 	private BufferedImage buffer;
 	
@@ -68,15 +65,16 @@ public class ProcesadorDeImagenes {
 		
 	}
 
-	private void crearImagen(BufferedImage bufferImage, String extension ) {
-		Integer ancho = bufferImage.getWidth();
-		Integer alto = bufferImage.getHeight();
-		new Imagen();
+	public BufferedImage getBuffer() {
+		if (buffer != null)
+			return buffer;
+		return null;
 	}
-
-	public void guardarImagen(String direccion) throws IOException{
-		File fileOutput = new File(direccion);
-		ImageIO.write(this.buffer, "bmp", fileOutput);
+	
+	public Imagen getImage() {
+		if (imageActual != null)
+			return imageActual;
+		return null;
 	}
 		
 	// METODOS PARA TRATAMIENTO DE ARCHIVOS RAW	
@@ -178,5 +176,82 @@ public class ProcesadorDeImagenes {
 
 	public void setNombreArchivoImagen(String nombreArchivoImagen) {
 		this.nombreArchivoImagen = nombreArchivoImagen;
+	}
+
+	public BufferedImage pasarAEscalaDeGrises(BufferedImage buff) {
+		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+		Color color;  
+		int c;
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				c = calcularPromedio(buff.getRGB(i, j));
+				color = new Color(c,c,c);
+				salida.setRGB(i, j, color.getRGB());
+			}
+		}
+		return salida;
+	}
+
+	private int calcularPromedio(int rgb) {
+		int promedio;
+		Color c = new Color(rgb);
+		promedio = (int)((c.getBlue()+c.getGreen()+c.getRed())/3);
+		return promedio;
 	}	
+	
+	public BufferedImage dezplegarDegradeGrises() {
+		BufferedImage buff = new BufferedImage(256, 256, 1);
+		Color color;
+		for (int i=0; i < 256; i++){
+			for (int j=0; j < 256; j++){
+				color = new Color(j,j,j);
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}		
+		return buff;
+	}
+	
+	public BufferedImage dezplegarDegradeColor() {
+		BufferedImage buff = new BufferedImage(256, 256, 1);
+		Color color;
+		for (int i=0; i < 256; i++){
+			for (int j=0; j < 256; j++){
+				color = new Color(255-j,i,j);
+				buff.setRGB(j, i, color.getRGB());
+			}
+		}
+		return buff;
+	}
+	
+	public BufferedImage canal(int canal, BufferedImage buff){
+		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+		Color color;  
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				color = obtenerCanal(canal,buff.getRGB(i, j));
+				salida.setRGB(i, j, color.getRGB());
+			}
+		}
+		return salida;
+	}
+
+	private Color obtenerCanal(int canal, int rgb) {
+		Color color;
+		color = new Color(rgb);
+		int c;
+		if (canal==1){
+			c = color.getRed();
+			color = new Color(c,c,c);
+		}else{
+			if (canal==2){
+				c = color.getGreen();
+				color = new Color(c,c,c);
+			}else{
+				color = new Color(rgb);
+				c = color.getBlue();
+				color = new Color(c,c,c);
+			}
+		}
+		return color;
+	}
 }
