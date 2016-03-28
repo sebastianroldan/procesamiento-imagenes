@@ -241,17 +241,18 @@ public class ProcesadorDeImagenes {
 		int c;
 		if (canal==1){
 			c = color.getRed();
-			color = new Color(c,c,c);
+			color = new Color(c,0,0);
 		}else{
 			if (canal==2){
 				c = color.getGreen();
-				color = new Color(c,c,c);
+				color = new Color(0,c,0);
 			}else{
 				color = new Color(rgb);
 				c = color.getBlue();
-				color = new Color(c,c,c);
+				color = new Color(0,0,c);
 			}
 		}
 		return color;
 	}
+
 }

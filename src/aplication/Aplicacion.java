@@ -1,15 +1,20 @@
 package aplication;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 
 import procesador.domain.ProcesadorDeImagenes;
 
@@ -34,7 +39,10 @@ public class Aplicacion extends javax.swing.JFrame {
 	private JMenu menuDegrade = new JMenu("Degrades");
 	private JMenuItem itemGris = new JMenuItem("Degrade grises");
 	private JMenuItem itemColor = new JMenuItem("Degrade colores");
-	
+	private JMenu menuPixel = new JMenu("Pixeles");
+	private JMenuItem itemGet = new JMenuItem("Obtener valor");
+	private JMenuItem itemSet = new JMenuItem("Modificar valor");
+	private JLabel mensaje = new JLabel("ACA estoy");
 	
 	public Aplicacion() {
 		initComponents();
@@ -60,6 +68,7 @@ public class Aplicacion extends javax.swing.JFrame {
 						.addContainerGap()
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
 								.addGroup(layout.createSequentialGroup()
+										.addComponent(mensaje)
 										.addComponent(botonCargar)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 										.addComponent(botonGuardar)
@@ -71,6 +80,7 @@ public class Aplicacion extends javax.swing.JFrame {
 		layout.setVerticalGroup(
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+						.addComponent(mensaje)
 						.addContainerGap()
 						.addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE )
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -97,6 +107,9 @@ public class Aplicacion extends javax.swing.JFrame {
 		menuFiltros.add(itemB);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDegrade);
+		menuPixel.add(itemGet);
+		menuPixel.add(itemSet);
+		menuBar.add(menuPixel);
 		return menuBar;
 	}
 
@@ -122,8 +135,83 @@ public class Aplicacion extends javax.swing.JFrame {
 		agregarMenuR();
 		agregarMenuG();
 		agregarMenuB();
+		agregarMenuGet();
+		agregarMenuSet();
 	}
 
+	private void agregarMenuGet() {
+		itemGet.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				pixelActionPerformed(evt,1);
+			}
+		});
+	}
+	
+	private void pixelActionPerformed(ActionEvent evt, final int accion) {
+		JFrame ventana = new JFrame();
+		ventana.setBounds(100, 100, 230, 195);
+		JButton botonAceptar = new JButton("Aceptar");
+		JButton botonCancelar = new JButton("Cancelar");
+		ventana.setLayout(null);
+		final JLabel labelY = new JLabel("CoordenadaY:");
+		final JTextField ejeY = new JTextField();
+		ejeY.setBounds(90, 10, 100, 23);
+		labelY.setBounds(10, 10, 90, 25);
+		final JLabel labelX = new JLabel("CoordenadaX:");
+		final JTextField ejeX = new JTextField();
+		ejeX.setBounds(90, 50, 100, 23);
+		labelX.setBounds(10, 50, 90, 25);
+		JLabel labelValor = new JLabel("Valor RGB:");
+		final JTextField valor = new JTextField();
+		valor.setBounds(90, 90, 100, 23);
+		labelValor.setBounds(10, 90, 90, 25);
+		labelValor.setVisible(accion==2);
+		valor.setText("000000000");
+		valor.setVisible(accion==2);
+		ventana.add(botonAceptar);
+		ventana.add(botonCancelar);
+		ventana.add(ejeY);
+		ventana.add(labelY);
+		ventana.add(ejeX);
+		ventana.add(labelX);
+		ventana.add(labelValor);
+		ventana.add(valor);
+		botonAceptar.setBounds(15,130,100,30);
+		botonCancelar.setBounds(115,130,100,30);
+		ventana.setVisible(true);
+		ventana.setResizable(false);
+		botonAceptar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aceptarlActionPerformed(evt,ejeX.getText(),ejeY.getText(),accion, valor.getText());
+			}
+
+			private void aceptarlActionPerformed(ActionEvent evt, String x, String y,int accion, String valor) {
+				int i, j, c1,c2,c3;
+				i=Integer.valueOf(x); 
+				j= Integer.valueOf(y);
+				c1 = Integer.valueOf(valor.substring(0, 3));
+				c2 = Integer.valueOf(valor.substring(3, 6));
+				c3 = Integer.valueOf(valor.substring(6));
+				System.out.println("i: "+x+"  j: "+y+" c: "+valor);
+				if (accion == 1){
+					Color color = new Color(buffer.getRGB(i, j));
+					mensaje.setText("El valor del pixel es: R "+ color.getRed()+" G "+color.getGreen()+" B "+color.getBlue());
+				}else{
+					buffer.setRGB(i,j, new Color(c1,c2,c3).getRGB());
+					contenedorDeImagen.setIcon(new ImageIcon(buffer));
+				}
+			}
+		});
+	}
+	
+	private void agregarMenuSet() {
+		itemSet.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				pixelActionPerformed(evt,2);
+			}
+		});
+	}
+	
 	private void agregarMenuR() {
 		itemR.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
