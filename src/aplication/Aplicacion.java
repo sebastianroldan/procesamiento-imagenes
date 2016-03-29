@@ -3,6 +3,9 @@ package aplication;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +17,15 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import com.sun.javafx.scene.paint.GradientUtils.Point;
 
 import procesador.domain.ProcesadorDeImagenes;
 
 @SuppressWarnings("serial")
-public class Aplicacion extends javax.swing.JFrame {
+public class Aplicacion extends javax.swing.JFrame implements MouseListener {
 
 	private ProcesadorDeImagenes ObjProcesamiento = new ProcesadorDeImagenes();
 	private javax.swing.JButton botonGuardar;
@@ -42,19 +48,24 @@ public class Aplicacion extends javax.swing.JFrame {
 	private JMenu menuPixel = new JMenu("Pixeles");
 	private JMenuItem itemGet = new JMenuItem("Obtener valor");
 	private JMenuItem itemSet = new JMenuItem("Modificar valor");
+	private JMenu menuPromedio = new JMenu("Promedio");
+	private JMenuItem itemPromedioGris = new JMenuItem("Promedio Grises");
+	private JMenuItem itemPromedioColor = new JMenuItem("Promedio Colores");
 	private JLabel mensaje = new JLabel("");
-		
+	private java.awt.Point puntoInicial=null;
+	private java.awt.Point puntoFinal=null;
+    private int puntosSeleccionados=0;
 	public Aplicacion() {
 		initComponents();
 	}
 
 	private void initComponents() {
-
 		botonCerrar = new javax.swing.JButton();
 		botonCargar = new javax.swing.JButton();
 		botonGuardar = new javax.swing.JButton();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		contenedorDeImagen = new javax.swing.JLabel();
+		contenedorDeImagen.addMouseListener(this);
 		this.setJMenuBar(crearMenu());
 		definirFuncionCerrar();		
 		agregarBotones();		
@@ -110,6 +121,9 @@ public class Aplicacion extends javax.swing.JFrame {
 		menuPixel.add(itemGet);
 		menuPixel.add(itemSet);
 		menuBar.add(menuPixel);
+		menuPromedio.add(itemPromedioGris);
+		menuPromedio.add(itemPromedioColor);
+		menuBar.add(menuPromedio);
 		return menuBar;
 	}
 
@@ -137,6 +151,8 @@ public class Aplicacion extends javax.swing.JFrame {
 		agregarMenuB();
 		agregarMenuGet();
 		agregarMenuSet();
+		agregarMenuPromedioGris();
+		agregarMenuPromedioColor();
 	}
 
 	private void agregarMenuGet() {
@@ -316,11 +332,36 @@ public class Aplicacion extends javax.swing.JFrame {
 	private void agregarMenuCuadrado() {
 		itemCuadrado.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cuadradoActionPerformed(evt);
+				cuadradoActionPerformed(evt);			
 			}
 		});
 	}
-
+     
+	private void agregarMenuPromedioGris() {
+		itemPromedioGris.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if(puntoInicial!=null && puntoFinal!=null){
+					 ObjProcesamiento.promedioGrises(puntoInicial, puntoFinal);	 
+				}
+				puntoInicial=null;
+				puntoFinal=null;
+				puntosSeleccionados=0;	
+			}
+		});
+	}
+	private void agregarMenuPromedioColor() {
+		itemPromedioColor.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if(puntoInicial!=null && puntoFinal!=null){
+					 ObjProcesamiento.promedioColores(puntoInicial, puntoFinal);	 
+				}
+				puntoInicial=null;
+				puntoFinal=null;
+				puntosSeleccionados=0;	
+			}
+		});
+	}
+	
 	private void cuadradoActionPerformed(ActionEvent evt) {
 		contenedorDeImagen.setIcon(new ImageIcon(crearImagenBinariaCuadrado(100)));
 		redimensionar(200,200);
@@ -482,6 +523,34 @@ public class Aplicacion extends javax.swing.JFrame {
 				}
 			}
 		});
+	}
+
+
+
+
+	public void mouseClicked(MouseEvent ev) {
+		 if(puntosSeleccionados==0){
+				puntoInicial=ev.getPoint();	
+				puntosSeleccionados++;
+		 }else{	
+				puntoFinal=ev.getPoint();	
+		 }	
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub	
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub	
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
 	}
 	
 }

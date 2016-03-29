@@ -1,12 +1,14 @@
 package procesador.domain;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
@@ -43,6 +45,8 @@ public class ProcesadorDeImagenes {
 		Procesador proc = null;
 		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
 			image = ImageIO.read(file);
+			proc = new ProcesadorDeImagenesjPGyBMP(image);
+			
 		} else{ 
 			if ((tipoImagen.equalsIgnoreCase("PPM"))){
 				proc = new ProcesadorDeImagenesPPM();
@@ -51,10 +55,10 @@ public class ProcesadorDeImagenes {
 				proc = new ProcesadorDeImagenesPGM();
 				image = proc.abrirImagen(file.getPath());
 			} 
-			this.imageActual.setAlto(proc.getAlto());
-			this.imageActual.setAncho(proc.getAncho());
-			this.imageActual.setMatriz(proc.getMatriz(),proc.getAncho(),proc.getAlto());
 		}
+		this.imageActual.setAlto(proc.getAlto());
+		this.imageActual.setAncho(proc.getAncho());
+		this.imageActual.setMatriz(proc.getMatriz(),proc.getAncho(),proc.getAlto());
 		return image;
 	}
 
@@ -165,4 +169,52 @@ public class ProcesadorDeImagenes {
 		return color;
 	}
 
+	public void promedioGrises(Point puntoInicial, Point puntoFinal) {
+		int inicialX=(int) puntoInicial.getX();
+		int finalX=(int) puntoFinal.getX();
+		int inicialY=(int) puntoInicial.getY();
+		int finalY=(int) puntoFinal.getY();
+		float promedio=0;
+		Integer suma=0;	
+		if(finalX < this.imageActual.getAncho() && finalY < this.imageActual.getAlto()){
+		for(int i=inicialX; i < finalX; i++){
+			for(int j=inicialY; j < finalY; j++){
+			suma= suma + this.imageActual.getValorPixel(i, j);
+			}
+		}
+		promedio = suma/(Math.abs(inicialX - finalX)*Math.abs(inicialY - finalY));	
+		JOptionPane.showMessageDialog(null,"Promedio De Grises: " + promedio);
+	   }
+	}
+
+	public void promedioColores(Point puntoInicial, Point puntoFinal) {
+		int inicialX=(int) puntoInicial.getX();
+		int finalX=(int) puntoFinal.getX();
+		int inicialY=(int) puntoInicial.getY();
+		int finalY=(int) puntoFinal.getY();
+		float promedioG=0;
+		float promedioR=0;
+		float promedioB=0;
+		int canValores= Math.abs(inicialX - finalX)*Math.abs(inicialY - finalY);
+		int sumaG=0;	
+		int sumaR=0;
+		int sumaB=0;
+		if(finalX < this.imageActual.getAncho() && finalY < this.imageActual.getAlto()){
+		for(int i=inicialX; i < finalX; i++){
+			for(int j=inicialY; j < finalY; j++){
+				Color c = new Color(this.imageActual.getValorPixel(i, j));
+				sumaG= sumaG + c.getGreen();
+				sumaR= sumaR + c.getRed();
+				sumaB= sumaB + c.getBlue();
+			}
+		}
+		promedioG = sumaG/canValores;	
+		promedioR = sumaR/canValores;	
+		promedioB = sumaB/canValores;	
+		JOptionPane.showMessageDialog(null,"Promedio Green: " + promedioG + "\n" +
+										   "Promedio Red: " + promedioR + "\n" +
+										   "Promedio Blue: " + promedioB);
+	   }
+	}
+		
 }
