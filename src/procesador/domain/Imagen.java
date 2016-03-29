@@ -36,11 +36,18 @@ public class Imagen {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
+	
 	public Integer getValorPixel(int ancho,int alto){
-		return this.pixeles[ancho][alto];
+		
+		Integer valorSalida = null;
+		if ((ancho<this.getAncho())&&(alto<this.getAlto())){
+			valorSalida = this.pixeles[ancho][alto];
+		} 
+		return valorSalida;
 	}
+	
 	public void setValorPixel(int ancho,int alto,Integer valor){
-		if ((ancho<=this.getAncho())&&(alto<=this.getAlto())){
+		if ((ancho<this.getAncho())&&(alto<this.getAlto())){
 			this.pixeles[ancho][alto]=valor;
 		}
 	}

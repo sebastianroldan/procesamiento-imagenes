@@ -42,8 +42,8 @@ public class Aplicacion extends javax.swing.JFrame {
 	private JMenu menuPixel = new JMenu("Pixeles");
 	private JMenuItem itemGet = new JMenuItem("Obtener valor");
 	private JMenuItem itemSet = new JMenuItem("Modificar valor");
-	private JLabel mensaje = new JLabel("ACA estoy");
-	
+	private JLabel mensaje = new JLabel("");
+		
 	public Aplicacion() {
 		initComponents();
 	}
@@ -148,7 +148,7 @@ public class Aplicacion extends javax.swing.JFrame {
 	}
 	
 	private void pixelActionPerformed(ActionEvent evt, final int accion) {
-		JFrame ventana = new JFrame();
+		final JFrame ventana = new JFrame();
 		ventana.setBounds(100, 100, 230, 195);
 		JButton botonAceptar = new JButton("Aceptar");
 		JButton botonCancelar = new JButton("Cancelar");
@@ -161,7 +161,7 @@ public class Aplicacion extends javax.swing.JFrame {
 		final JTextField ejeX = new JTextField();
 		ejeX.setBounds(90, 50, 100, 23);
 		labelX.setBounds(10, 50, 90, 25);
-		JLabel labelValor = new JLabel("Valor RGB:");
+		JLabel labelValor = new JLabel("Valor RGB: ");
 		final JTextField valor = new JTextField();
 		valor.setBounds(90, 90, 100, 23);
 		labelValor.setBounds(10, 90, 90, 25);
@@ -192,16 +192,46 @@ public class Aplicacion extends javax.swing.JFrame {
 				c1 = Integer.valueOf(valor.substring(0, 3));
 				c2 = Integer.valueOf(valor.substring(3, 6));
 				c3 = Integer.valueOf(valor.substring(6));
-				System.out.println("i: "+x+"  j: "+y+" c: "+valor);
-				if (accion == 1){
-					Color color = new Color(buffer.getRGB(i, j));
-					mensaje.setText("El valor del pixel es: R "+ color.getRed()+" G "+color.getGreen()+" B "+color.getBlue());
-				}else{
-					buffer.setRGB(i,j, new Color(c1,c2,c3).getRGB());
-					contenedorDeImagen.setIcon(new ImageIcon(buffer));
+				
+				if ((validarAlto(j))&&(validarAncho(i))
+					&&(validarValorByte(c1))&&(validarValorByte(c2))
+					&&(validarValorByte(c3))) {
+				
+					System.out.println("i: "+x+"  j: "+y+" c: "+valor);
+					if (accion == 1){
+						Color color = new Color(buffer.getRGB(i, j));
+						mensaje.setText("El valor del pixel es: R "+ color.getRed()+" G "+color.getGreen()+" B "+color.getBlue());
+					}else{
+						buffer.setRGB(i,j, new Color(c1,c2,c3).getRGB());
+						contenedorDeImagen.setIcon(new ImageIcon(buffer));
+					}
+				} else {
+					System.out.println("VALORES ERRONEOS i: "+x+"  j: "+y+" c: "+valor);
 				}
 			}
 		});
+		botonCancelar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) { 
+				ventana.dispose();
+			}
+		});
+	}
+	
+	private boolean validarAncho(int ancho){
+		//System.out.println("Ancho imagen: "+this.ObjProcesamiento.getImage().getAncho());
+		return ((ancho>=0)&&(ancho<this.ObjProcesamiento.getImage().getAncho()));
+	}
+	
+	private boolean validarAlto(int alto){
+		
+		//System.out.println("Alto imagen: "+this.ObjProcesamiento.getImage().getAlto());
+		return ((alto>=0)&&(alto<this.ObjProcesamiento.getImage().getAlto()));
+	}
+	
+	private boolean validarValorByte(int valor){
+		
+		//System.out.println("Byte valor: "+valor);
+		return ((valor>=0)&&(valor<=255));
 	}
 	
 	private void agregarMenuSet() {
@@ -378,6 +408,8 @@ public class Aplicacion extends javax.swing.JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 					try {
 						cargarActionPerformed(evt);
+						mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
+								ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");
 					} catch (IOException e) {
 						System.out.println("error al guardar");
 					}
