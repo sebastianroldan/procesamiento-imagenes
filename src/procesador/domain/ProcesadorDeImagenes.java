@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -175,15 +174,21 @@ public class ProcesadorDeImagenes {
 		int inicialY=(int) puntoInicial.getY();
 		int finalY=(int) puntoFinal.getY();
 		float promedio=0;
-		Integer suma=0;	
-		if(finalX < this.imageActual.getAncho() && finalY < this.imageActual.getAlto()){
-		for(int i=inicialX; i < finalX; i++){
-			for(int j=inicialY; j < finalY; j++){
-			suma= suma + this.imageActual.getValorPixel(i, j);
+		long suma=0;
+		long contador=0;
+		if ((finalX < this.imageActual.getAncho()) && (finalY < this.imageActual.getAlto())){
+			for(int i=inicialX; i <= finalX; i++){
+				for(int j=inicialY; j <= finalY; j++){
+					
+					suma= suma + calcularPromedio(this.buffer.getRGB(i, j));// this.imageActual.getValorPixel(i,j);
+					contador++;
+				}
 			}
-		}
-		promedio = suma/(Math.abs(inicialX - finalX)*Math.abs(inicialY - finalY));	
-		JOptionPane.showMessageDialog(null,"Promedio De Grises: " + promedio);
+			promedio = suma /contador;
+			System.out.println("Promedio: "+promedio);
+			System.out.println("Suma: "+suma);
+			System.out.println("ContadorGris: "+contador);
+			JOptionPane.showMessageDialog(null,"Total Pixeles: "+contador+"\n"+"Promedio De Grises: " + promedio);
 	   }
 	}
 
@@ -195,23 +200,25 @@ public class ProcesadorDeImagenes {
 		float promedioG=0;
 		float promedioR=0;
 		float promedioB=0;
-		int canValores= Math.abs(inicialX - finalX)*Math.abs(inicialY - finalY);
+		int canValores= 0;
 		int sumaG=0;	
 		int sumaR=0;
 		int sumaB=0;
-		if(finalX < this.imageActual.getAncho() && finalY < this.imageActual.getAlto()){
-		for(int i=inicialX; i < finalX; i++){
-			for(int j=inicialY; j < finalY; j++){
+		if ((finalX < this.imageActual.getAncho())&& (finalY < this.imageActual.getAlto())){
+		for(int i=inicialX; i <= finalX; i++){
+			for(int j=inicialY; j <= finalY; j++){
 				Color c = new Color(this.imageActual.getValorPixel(i, j));
 				sumaG= sumaG + c.getGreen();
 				sumaR= sumaR + c.getRed();
 				sumaB= sumaB + c.getBlue();
+				canValores++;
 			}
 		}
 		promedioG = sumaG/canValores;	
 		promedioR = sumaR/canValores;	
 		promedioB = sumaB/canValores;	
-		JOptionPane.showMessageDialog(null,"Promedio Green: " + promedioG + "\n" +
+		JOptionPane.showMessageDialog(null,"Total Pixeles: "+ canValores + "\n" + 
+										   "Promedio Green: " + promedioG + "\n" +
 										   "Promedio Red: " + promedioR + "\n" +
 										   "Promedio Blue: " + promedioB);
 	   }

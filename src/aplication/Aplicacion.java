@@ -1,11 +1,9 @@
 package aplication;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -523,17 +521,42 @@ public class Aplicacion extends javax.swing.JFrame implements MouseListener {
 		});
 	}
 
-
-
-
 	public void mouseClicked(MouseEvent ev) {
-		 if(puntosSeleccionados==0){
+		try {
+		
+		if(puntosSeleccionados==0){
 				puntoInicial=ev.getPoint();	
 				puntosSeleccionados++;
+				JOptionPane.showMessageDialog(null,"click 1 " );
 		 }else{	
-				puntoFinal=ev.getPoint();	
-		 }	
-	}
+			 contenedorDeImagen.repaint();
+				puntoFinal=ev.getPoint();
+				JOptionPane.showMessageDialog(null,"click 2 " );
+		 }
+		 
+		 if ((puntoInicial.getX()>puntoFinal.getX())
+				 ||(puntoInicial.getY()>puntoFinal.getY())){
+			 	
+			 puntoInicial=null;	
+			 puntoFinal=null;
+			 puntosSeleccionados=0;
+			 JOptionPane.showMessageDialog(null,"Situe punto1 en el límite superior izquierdo y punto2 en límite inferior derecho." );
+		 }
+		 
+		 if ((puntoInicial.getX()>=ObjProcesamiento.getImage().getAncho())||
+				 (puntoInicial.getY()>=ObjProcesamiento.getImage().getAlto())||
+				 (puntoFinal.getX()>=ObjProcesamiento.getImage().getAncho())||
+				 (puntoFinal.getY()>=ObjProcesamiento.getImage().getAlto())){
+			 
+			 puntoInicial=null;	
+			 puntoFinal=null;
+			 puntosSeleccionados=0;
+			 JOptionPane.showMessageDialog(null,"Los puntos deben pertenecer a la imagen");
+		 }}catch(Exception e){
+			 
+		 }
+	}	
+	
 
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub

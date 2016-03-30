@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -141,12 +139,9 @@ public class ProcesadorDeImagenesRAW {
 		return input;
 	}
 
-
 	private static void guardarImagen(BufferedImage buff, String nombre) throws IOException {
 		File fileOutput = new File(nombre);
-		//ImageIO.write(this.imageActual, imagen.getTipo().toLowerCase(), fileOutput);
 		ImageIO.write(buff, "bmp", fileOutput);
-		
 	}
 
 	public static BufferedImage mostrarImagen() {
