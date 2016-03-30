@@ -45,7 +45,7 @@ public class ProcesadorDeImagenes {
 		Procesador proc = null;
 		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
 			image = ImageIO.read(file);
-			proc = new ProcesadorDeImagenesjPGyBMP(image);
+			proc = new ProcesadorDeImagenesJPGyBMP(image);
 			
 		} else{ 
 			if ((tipoImagen.equalsIgnoreCase("PPM"))){

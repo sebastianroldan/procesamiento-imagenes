@@ -2,13 +2,13 @@ package procesador.domain;
 
 import java.awt.image.BufferedImage;
 
-public class ProcesadorDeImagenesjPGyBMP extends Procesador{
+public class ProcesadorDeImagenesJPGyBMP extends Procesador{
 	private BufferedImage image = null;
 	private Integer ancho;
 	private Integer alto;
 	private Integer[][] pixeles;
 	
-	ProcesadorDeImagenesjPGyBMP(BufferedImage image){
+	ProcesadorDeImagenesJPGyBMP(BufferedImage image){
 		this.image = image;
 		this.alto= image.getHeight();
 		this.ancho= image.getWidth();
@@ -19,7 +19,7 @@ public class ProcesadorDeImagenesjPGyBMP extends Procesador{
 		pixeles = new Integer[ancho][alto]; 
 		for (int i=0; i < ancho; i++){
 			for (int j=0; j < alto; j++){		
-				pixeles[i][j] = image.getRGB(i, i);
+				pixeles[i][j] = image.getRGB(i,j);
 			}
 		}
 	}

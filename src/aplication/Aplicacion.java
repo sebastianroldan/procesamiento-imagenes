@@ -20,8 +20,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import com.sun.javafx.scene.paint.GradientUtils.Point;
-
 import procesador.domain.ProcesadorDeImagenes;
 
 @SuppressWarnings("serial")
