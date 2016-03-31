@@ -311,5 +311,19 @@ public class ProcesadorDeImagenes {
 		
 		return procesadorRAW;
 	}
+	
+	public BufferedImage pasarANegativo(BufferedImage buff) {
+		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+		Color color;  
+		int c;
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				c = 255 - calcularPromedio(buff.getRGB(i, j));
+				color = new Color(c,c,c);
+				salida.setRGB(i, j, color.getRGB());
+			}
+		}
+		return salida;
+	}
 		
 }
