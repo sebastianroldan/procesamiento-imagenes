@@ -63,19 +63,16 @@ public class ProcesadorDeImagenesPPM extends Procesador{
 
 	@Override
 	public int getAlto() {
-		// TODO Auto-generated method stub
 		return alto;
 	}
 
 	@Override
 	public int getAncho() {
-		// TODO Auto-generated method stub
 		return ancho;
 	}
 
 	@Override
 	public Integer[][] getMatriz() {
-		// TODO Auto-generated method stub
 		return matrizRGB;
 	}
 }

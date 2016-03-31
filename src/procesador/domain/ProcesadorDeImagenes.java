@@ -2,12 +2,17 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
@@ -17,6 +22,7 @@ public class ProcesadorDeImagenes {
 	private File file;
 	private String nombreArchivoImagen="";
 	private BufferedImage buffer;
+	private ProcesadorDeImagenesRAW procesadorRAW=null;
 	
 	public BufferedImage abrirImagen(){
 		String tipoImagen;		
@@ -50,9 +56,30 @@ public class ProcesadorDeImagenes {
 			if ((tipoImagen.equalsIgnoreCase("PPM"))){
 				proc = new ProcesadorDeImagenesPPM();
 				image = proc.abrirImagen(file.getPath());				
-			}else if ((tipoImagen.equalsIgnoreCase("PGM"))){
-				proc = new ProcesadorDeImagenesPGM();
-				image = proc.abrirImagen(file.getPath());
+			}else { 
+				if ((tipoImagen.equalsIgnoreCase("PGM"))){
+					proc = new ProcesadorDeImagenesPGM();
+					image = proc.abrirImagen(file.getPath());
+				} else {
+					if ((tipoImagen.equalsIgnoreCase("RAW"))){
+				    	/*definirAnchoAltoImagenRAW();
+						if (this.imageActual!=null){
+							System.out.println("En Procesador W"+this.imageActual.getAncho()
+									+" H"+this.imageActual.getAlto());
+							proc = new ProcesadorDeImagenesRAW(this.imageActual.getAncho(),this.imageActual.getAlto());
+							image = proc.abrirImagen(file.getPath());
+						}  else {
+							System.out.println("No pudo abrirse el archivo RAW");
+						}*/
+						
+						proc = definirAnchoAltoImagenRAW();
+						image = proc.abrirImagen(file.getPath());
+						
+					} else {
+						System.out.println(tipoImagen+" no es un formato soportado por la aplicación.");
+					}
+					
+				}
 			} 
 		}
 		this.imageActual.setAlto(proc.getAlto());
@@ -79,8 +106,11 @@ public class ProcesadorDeImagenes {
 			return imageActual;
 		return null;
 	}
-		
 	
+	public void setImage(Imagen imagen) {
+		this.imageActual=imagen;
+	}
+		
 	public String getNombreArchivoImagen() {
 		return nombreArchivoImagen;
 	}
@@ -222,6 +252,64 @@ public class ProcesadorDeImagenes {
 										   "Promedio Red: " + promedioR + "\n" +
 										   "Promedio Blue: " + promedioB);
 	   }
+	}
+	
+	private ProcesadorDeImagenesRAW definirAnchoAltoImagenRAW() {
+		final JFrame ventana = new JFrame("Parámetros Obligatorios");
+		ventana.setBounds(100, 100, 300, 160);
+		JButton botonAceptar = new JButton("Aceptar");
+		JButton botonCancelar = new JButton("Cancelar");
+		ventana.setLayout(null);
+		final JLabel labelAlto = new JLabel("Alto:");
+		final JTextField altoRAW = new JTextField();
+		altoRAW.setBounds(90, 20, 100, 23);
+		labelAlto.setBounds(10, 20, 90, 25);
+		final JLabel labelAncho = new JLabel("Ancho:");
+		final JTextField anchoRAW = new JTextField();
+		anchoRAW.setBounds(90, 60, 100, 23);
+		labelAncho.setBounds(10, 60, 90, 25);
+		ventana.add(botonAceptar);
+		ventana.add(botonCancelar);
+		ventana.add(altoRAW);
+		ventana.add(labelAlto);
+		ventana.add(anchoRAW);
+		ventana.add(labelAncho);
+		botonAceptar.setBounds(15,100,100,30);
+		botonCancelar.setBounds(115,100,100,30);
+		ventana.setVisible(true);
+		ventana.setResizable(false);
+		botonAceptar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aceptarlActionPerformed(evt,anchoRAW.getText(),altoRAW.getText());
+			}
+
+			private void aceptarlActionPerformed(ActionEvent evt, String ancho, String alto) {
+				try {
+				Integer intAncho=Integer.valueOf(ancho);
+				Integer intAlto=Integer.valueOf(alto);
+				if ((intAncho>0)&&(intAlto>0)){
+					procesadorRAW = new ProcesadorDeImagenesRAW(intAncho,intAlto);
+					ventana.dispose();
+					
+				}else {
+					procesadorRAW=null;
+					ventana.dispose();
+					JOptionPane.showMessageDialog(null,"Parámetros Incorrectos, verifique que sean enteros mayores a 0");
+				} 
+				}catch(Exception e){
+					procesadorRAW=null;
+					ventana.dispose();
+					JOptionPane.showMessageDialog(null,"Parámetros Incorrectos, verifique que sean enteros mayores a 0");
+				}
+			}
+		});
+		botonCancelar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) { 
+				ventana.dispose();
+			}
+		});
+		
+		return procesadorRAW;
 	}
 		
 }
