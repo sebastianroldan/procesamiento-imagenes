@@ -37,7 +37,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private JMenuItem itemR = new JMenuItem("Banda R");
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
-	private JMenuItem itemNegativo = new JMenuItem("Negativo");
+	private JMenuItem itemNegativoGris = new JMenuItem("Negativo");
+	private JMenuItem itemNegativoColor = new JMenuItem("Negativo Color");
 	private BufferedImage buffer;
 	private JMenu menuDegrade = new JMenu("Degrades");
 	private JMenuItem itemGris = new JMenuItem("Degrade grises");
@@ -108,7 +109,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		menuFiltros.add(itemR);
 		menuFiltros.add(itemG);
 		menuFiltros.add(itemB);
-		menuFiltros.add(itemNegativo);
+		menuFiltros.add(itemNegativoGris);
+		menuFiltros.add(itemNegativoColor);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDegrade);
 		menuPixel.add(itemGet);
@@ -137,7 +139,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		agregarMenuCargar();
 		agregarMenuCuadrado();
 		agregarMenuGrises();
-		agregarMenuNegativo();
+		agregarMenuNegativoGris();
+		agregarMenuNegativoColor();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuR();
@@ -323,16 +326,31 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		redimensionar(contenedorDeImagen.getIcon().getIconWidth(),contenedorDeImagen.getIcon().getIconHeight());
 	}
 	
-	private void agregarMenuNegativo() {
-		itemNegativo.addActionListener(new java.awt.event.ActionListener() {
+	private void agregarMenuNegativoGris() {
+		itemNegativoGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				negativoActionPerformed(evt);
+				negativoGrisActionPerformed(evt);
 			}
 		});		
 	}
 
-	private void negativoActionPerformed(ActionEvent evt) {
-		buffer = ObjProcesamiento.pasarANegativo(buffer);
+	private void negativoGrisActionPerformed(ActionEvent evt) {
+		buffer = ObjProcesamiento.pasarANegativoImagenGris(buffer);
+		contenedorDeImagen.setIcon(new ImageIcon(buffer));
+		redimensionar(contenedorDeImagen.getIcon().getIconWidth(),contenedorDeImagen.getIcon().getIconHeight());
+	}
+	
+	
+	private void agregarMenuNegativoColor() {
+		itemNegativoColor.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				negativoColorActionPerformed(evt);
+			}
+		});		
+	}
+
+	private void negativoColorActionPerformed(ActionEvent evt) {
+		buffer = ObjProcesamiento.pasarANegativoImagenColor(buffer);
 		contenedorDeImagen.setIcon(new ImageIcon(buffer));
 		redimensionar(contenedorDeImagen.getIcon().getIconWidth(),contenedorDeImagen.getIcon().getIconHeight());
 	}
