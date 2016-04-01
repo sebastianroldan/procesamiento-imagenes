@@ -342,5 +342,16 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;
 	}
+	
+	public int[] histograma(){
+        int histograma[]=new int[256];
+        for( int i = 0; i < this.imageActual.getAncho(); i++ ){
+            for( int j = 0; j < this.imageActual.getAlto(); j++ ){
+                histograma[calcularPromedio(this.buffer.getRGB(i, j))]+=1;
+
+            }
+        }
+        return histograma;
+    }
 		
 }

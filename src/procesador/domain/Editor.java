@@ -1,6 +1,5 @@
 package procesador.domain;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -17,9 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 @SuppressWarnings("serial")
 public class Editor extends javax.swing.JFrame implements MouseListener {
@@ -55,6 +61,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private JMenu menuPromedio = new JMenu("Promedio");
 	private JMenuItem itemPromedioGris = new JMenuItem("Promedio Grises");
 	private JMenuItem itemPromedioColor = new JMenuItem("Promedio Colores");
+	private JMenu menuHistograma = new JMenu("Histograma");
+	private JMenuItem itemHistograma = new JMenuItem("Crear Histograma");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -116,6 +124,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		menuPromedio.add(itemPromedioGris);
 		menuPromedio.add(itemPromedioColor);
 		menuBar.add(menuPromedio);
+		menuHistograma.add(itemHistograma);
+		menuBar.add(menuHistograma);
 		return menuBar;
 	}
 
@@ -147,6 +157,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		agregarMenuSet();
 		agregarMenuPromedioGris();
 		agregarMenuPromedioColor();
+		agregarMenuHistograma();
 	}
 
 	private void agregarMenuGet() {
@@ -366,6 +377,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 			}
 		});
 	}
+	
 	private void agregarMenuPromedioColor() {
 		itemPromedioColor.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -375,6 +387,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 				puntoInicial=null;
 				puntoFinal=null;
 				puntosSeleccionados=0;	
+			}
+		});
+	}
+	
+	private void agregarMenuHistograma() {
+		itemHistograma.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {;
+				crearHistograma(ObjProcesamiento.histograma(), contenedorDeImagen2, Color.BLACK);
 			}
 		});
 	}
@@ -459,6 +479,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 						cargarActionPerformed(evt);
 						mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
 								ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");
+						contenedorDeImagen2.setIcon(null);  
 					} catch (IOException e) {
 						System.out.println("error al cargar");
 					}
@@ -561,4 +582,27 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		// TODO Auto-generated method stub
 	}
 	
+	
+	private void crearHistograma(int[] histograma,JLabel jLabelHistograma,Color colorBarras) {
+ 
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        String serie = "Number of píxels";
+        for (int i = 0; i < histograma.length; i++){
+            dataset.addValue(histograma[i], serie, "" + i);
+        }
+        JFreeChart chart = ChartFactory.createBarChart("Frequency Histogram", null, null,
+                                    dataset, PlotOrientation.VERTICAL, true, true, false);
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        renderer.setSeriesPaint(0, colorBarras);
+        chart.setAntiAlias(true);
+        chart.setBackgroundPaint(new Color(214, 217, 223)); 
+        jLabelHistograma.removeAll();
+        jLabelHistograma.repaint();
+        jLabelHistograma.setLayout(new java.awt.BorderLayout());
+        jLabelHistograma.add(new ChartPanel(chart));
+        jLabelHistograma.validate();    
+    }
 }
+
+
