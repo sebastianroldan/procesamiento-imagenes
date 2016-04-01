@@ -68,6 +68,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private java.awt.Point puntoFinal=null;
     private int puntosSeleccionados=0;
     
+    
+    private ChartPanel chartPanel;
+    
 	public Editor() {
 		initComponents();
 	}
@@ -163,6 +166,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuGet() {
 		itemGet.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
+				contenedorDeImagen2.setIcon(null);
 				pixelActionPerformed(evt,1);
 			}
 		});
@@ -258,6 +263,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuSet() {
 		itemSet.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
+				contenedorDeImagen2.setIcon(null);
 				pixelActionPerformed(evt,2);
 			}
 		});
@@ -266,6 +273,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuR() {
 		itemR.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				canalActionPerformed(evt,1);
 			}
 		});
@@ -274,6 +282,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuG() {
 		itemG.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				canalActionPerformed(evt,2);
 			}
 		});
@@ -281,6 +290,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuB() {
 		itemB.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				canalActionPerformed(evt,3);
 			}
 		});
@@ -294,6 +304,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuDegradeGris() {
 		itemGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				degradeGrisActionPerformed(evt);
 			}
 		});
@@ -307,6 +318,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuDegradeColor() {
 		itemColor.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				degradeColorActionPerformed(evt);
 			}
 		});
@@ -320,6 +332,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuGrises() {
 		itemGrises.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				grisesActionPerformed(evt);
 			}
 		});		
@@ -333,6 +346,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuNegativoGris() {
 		itemNegativoGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				negativoGrisActionPerformed(evt);
 			}
 		});		
@@ -347,6 +361,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuNegativoColor() {
 		itemNegativoColor.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				negativoColorActionPerformed(evt);
 			}
 		});		
@@ -360,6 +375,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuCuadrado() {
 		itemCuadrado.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
+				contenedorDeImagen2.setIcon(null);  
 				cuadradoActionPerformed(evt);			
 			}
 		});
@@ -368,6 +385,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuPromedioGris() {
 		itemPromedioGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				if(puntoInicial!=null && puntoFinal!=null){
 					 ObjProcesamiento.promedioGrises(puntoInicial, puntoFinal);	 
 				}
@@ -381,6 +399,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuPromedioColor() {
 		itemPromedioColor.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
 				if(puntoInicial!=null && puntoFinal!=null){
 					 ObjProcesamiento.promedioColores(puntoInicial, puntoFinal);	 
 				}
@@ -433,6 +452,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private void agregarMenuCirculo() {
 		itemCirculo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				borrarHistograma();
+				contenedorDeImagen2.setIcon(null);  
 				circuloActionPerformed(evt);
 			}
 		});
@@ -480,6 +501,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 						mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
 								ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");
 						contenedorDeImagen2.setIcon(null);  
+						borrarHistograma();
+						
 					} catch (IOException e) {
 						System.out.println("error al cargar");
 					}
@@ -600,9 +623,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
         jLabelHistograma.removeAll();
         jLabelHistograma.repaint();
         jLabelHistograma.setLayout(new java.awt.BorderLayout());
-        jLabelHistograma.add(new ChartPanel(chart));
-        jLabelHistograma.validate();    
+        chartPanel = new ChartPanel(chart);
+        jLabelHistograma.add(chartPanel);
+        jLabelHistograma.validate();  
     }
+	
+	private void borrarHistograma() {
+		if(chartPanel!=null){
+			contenedorDeImagen2.remove(chartPanel);
+			contenedorDeImagen2.repaint();
+			contenedorDeImagen2.validate();
+		}	
+	}
 }
 
 
