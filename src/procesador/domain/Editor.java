@@ -399,6 +399,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		itemPromedioGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				borrarHistograma();
+				contenedorDeImagen2.setIcon(null);  
 				if(puntoInicial!=null && puntoFinal!=null){
 					 ObjProcesamiento.promedioGrises(puntoInicial, puntoFinal);	 
 				}
@@ -413,6 +414,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		itemPromedioColor.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				borrarHistograma();
+				contenedorDeImagen2.setIcon(null);  
 				if(puntoInicial!=null && puntoFinal!=null){
 					 ObjProcesamiento.promedioColores(puntoInicial, puntoFinal);	 
 				}

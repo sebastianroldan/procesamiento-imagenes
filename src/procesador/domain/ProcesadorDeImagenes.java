@@ -246,7 +246,7 @@ public class ProcesadorDeImagenes {
 		}
 		promedioG = sumaG/canValores;	
 		promedioR = sumaR/canValores;	
-		promedioB = sumaB/canValores;	
+		promedioB = sumaB/canValores;
 		JOptionPane.showMessageDialog(null,"Total Pixeles: "+ canValores + "\n" + 
 										   "Promedio Green: " + promedioG + "\n" +
 										   "Promedio Red: " + promedioR + "\n" +
@@ -358,7 +358,6 @@ public class ProcesadorDeImagenes {
  		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
  		Color blanco =new Color(255,255,255);
  		Color negro =new Color(0,0,0);
- 		//Color colorUmbral = new Color(umbral, umbral, umbral);
  		for (int i=0; i < buff.getWidth(); i++){
 			for(int j =0; j < buff.getHeight(); j++){
 				if(calcularPromedio(buff.getRGB(i, j))< umbral){
@@ -369,7 +368,6 @@ public class ProcesadorDeImagenes {
 			}
 		}
 		return salida;
-		
 	}
-		
+	
 }
