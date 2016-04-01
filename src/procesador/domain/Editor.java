@@ -77,12 +77,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		this.setBounds(0, 0, 1270, 720);
 		
 		jScrollPane1.setBounds(0, 0, 650, 650);
-		jScrollPane2.setBounds(650, 0, 700, 650);
+		jScrollPane2.setBounds(650, 0, 650, 650);
 		jScrollPane2.setViewportView(contenedorDeImagen2);
-		jScrollPane1.setViewportView(contenedorDeImagen);
-		contenedorDeImagen.setBounds(0, 0, 650, 650);
+		jScrollPane1.setViewportView(contenedorDeImagen);;
 		contenedorDeImagen.setVerticalAlignment(SwingConstants.TOP);
-		contenedorDeImagen2.setBounds(650, 0, 700, 650);
+		contenedorDeImagen2.setVerticalAlignment(SwingConstants.TOP);
 		this.setLayout(null);
 		this.add(jScrollPane1);
 		this.add(jScrollPane2);
@@ -517,10 +516,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 			System.out.println("x y final: "+ puntoFinal.getX()+" "+puntoFinal.getY());
 			if (clickValidos()){
 				dibujarRectangulo(puntoInicial, puntoFinal);
-			}	
-			puntoInicial = null;	
-			puntoFinal = null;
-			puntosSeleccionados=0;
+			}else{
+				puntoInicial = null;
+				puntoFinal = null;
+				puntosSeleccionados=0;
+			}
 		}
 	}	
 
