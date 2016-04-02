@@ -355,18 +355,18 @@ public class ProcesadorDeImagenes {
     }
 	
 	public BufferedImage umbralizarImagen(BufferedImage buff, int umbral) {
- 		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
- 		Color blanco =new Color(255,255,255);
- 		Color negro =new Color(0,0,0);
- 		for (int i=0; i < buff.getWidth(); i++){
-			for(int j =0; j < buff.getHeight(); j++){
-				if(calcularPromedio(buff.getRGB(i, j))< umbral){
-					salida.setRGB(i, j, negro.getRGB());
-				}else{
-					salida.setRGB(i, j, blanco.getRGB());
+		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			Color blanco =new Color(255,255,255);
+			Color negro =new Color(0,0,0);
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					if(calcularPromedio(buff.getRGB(i, j))< umbral){
+						salida.setRGB(i, j, negro.getRGB());
+					}else{
+						salida.setRGB(i, j, blanco.getRGB());
+					}
 				}
 			}
-		}
 		return salida;
 	}
 	

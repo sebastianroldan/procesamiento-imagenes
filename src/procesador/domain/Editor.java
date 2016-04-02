@@ -11,14 +11,18 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -36,6 +40,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private javax.swing.JLabel contenedorDeImagen2;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JScrollPane jScrollPane2;
+	private JSlider slider = new JSlider(0,255,127);
 	private JMenuBar menuBar = new JMenuBar();	
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
@@ -65,14 +70,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	private JMenu menuHistograma = new JMenu("Histograma");
 	private JMenuItem itemHistograma = new JMenuItem("Crear Histograma");
 	private JMenu menuUmbral = new JMenu("Umbral");
-	private JMenuItem itemElegirUmbral = new JMenuItem("Elegir Umbral");
-	private JMenuItem itemValorUmbral = new JMenuItem("Valor Umbral");
 	private JMenuItem itemUmbralizar = new JMenuItem("Umbralizar");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
     private int puntosSeleccionados=0;
-    private int umbral=-1;
     
     
     private ChartPanel chartPanel;
@@ -93,15 +95,32 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		
 		this.setBounds(0, 0, 1270, 720);
 		
-		jScrollPane1.setBounds(0, 0, 650, 650);
-		jScrollPane2.setBounds(650, 0, 650, 650);
+		jScrollPane1.setBounds(0, 0, 600, 650);
+		jScrollPane2.setBounds(600, 0, 600, 650);
 		jScrollPane2.setViewportView(contenedorDeImagen2);
 		jScrollPane1.setViewportView(contenedorDeImagen);;
 		contenedorDeImagen.setVerticalAlignment(SwingConstants.TOP);
 		contenedorDeImagen2.setVerticalAlignment(SwingConstants.TOP);
+		slider.setBounds(1250, 50, 30, 100);
+		slider.setOrientation(SwingConstants.VERTICAL);
+		valorUmbral.setText("Umbral: "+slider.getValue());
+		slider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (buffer1 != null){
+					borrarHistograma();
+					buffer2 = ObjProcesamiento.umbralizarImagen(buffer1, slider.getValue());
+					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+					valorUmbral.setText("Umbral: "+slider.getValue());
+				}
+			}
+		});
+		valorUmbral = new JLabel("Umbral:");
+		valorUmbral.setBounds(1230,30,70,20);
 		this.setLayout(null);
+		this.add(valorUmbral);
 		this.add(jScrollPane1);
 		this.add(jScrollPane2);
+		this.add(slider);
 		mensaje.setBounds(10, 655, 500, 20);
 		this.add(mensaje);
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -135,8 +154,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		menuBar.add(menuPromedio);
 		menuHistograma.add(itemHistograma);
 		menuBar.add(menuHistograma);
-		menuUmbral.add(itemElegirUmbral);
-		menuUmbral.add(itemValorUmbral);
 		menuUmbral.add(itemUmbralizar);
 		menuBar.add(menuUmbral);
 		return menuBar;
@@ -171,9 +188,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		agregarMenuPromedioGris();
 		agregarMenuPromedioColor();
 		agregarMenuHistograma();
-		agregarMenuElegirUmbral();
-		agregarMenuValorUmbral();
 		agregarMenuUmbralizar();
+	}
+
+	private JLabel valorUmbral = new JLabel();
+	
+	private void agregarMenuUmbralizar() {
+		itemUmbralizar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				slider.setValue(126);
+				valorUmbral.setText("Umbral: "+slider.getValue());
+			}
+		});		
 	}
 
 	private void agregarMenuGet() {
@@ -438,35 +464,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 		contenedorDeImagen.setIcon(new ImageIcon(buffer1));
 	}
 	
-	private void agregarMenuElegirUmbral() {
-		itemElegirUmbral.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {;
-				 elegirUmbral(evt);
-			}
-		});
-	}
-	
-	private void agregarMenuValorUmbral() {
-		itemValorUmbral.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {;
-			JOptionPane.showMessageDialog(null,"Valor del Umbral: "+ umbral);
-
-			}
-		});
-	}
-	
-	private void agregarMenuUmbralizar() {
-		itemUmbralizar.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {;
-			if(umbral != -1){
-				borrarHistograma();
-				buffer2 = ObjProcesamiento.umbralizarImagen(buffer1, umbral);
-				contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
-			}
-			}
-		});
-	}
-	
 	private BufferedImage crearImagenBinariaCuadrado(int lado) {
 		BufferedImage buff = new BufferedImage(200, 200, 1);
 		Color colorBlanco;
@@ -544,7 +541,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 						cargarActionPerformed(evt);
 						mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
 								ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");
-						contenedorDeImagen2.setIcon(null);  
+						contenedorDeImagen2.setIcon(null);
+						buffer2 = null;
 						borrarHistograma();
 						
 					} catch (IOException e) {
@@ -573,14 +571,26 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 	}
 
 	private void guardarActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
-		String nombreSalida= "Salida_"+ObjProcesamiento.getNombreArchivoImagen()+".bmp";
-		if (buffer1 != null)
-			guardarImagen(nombreSalida);
+		if (buffer1 != null){
+			JFileChooser fc=new JFileChooser();
+			int seleccion=fc.showSaveDialog(this);
+			if(seleccion==JFileChooser.APPROVE_OPTION){
+			    File fichero=fc.getSelectedFile();
+			    guardarImagen(fichero.getName());
+			}
+			
+		}else{
+			 JOptionPane.showMessageDialog(null, "No hay ninguna imagen cargada!");
+		}
 	}
 	
 	public void guardarImagen(String direccion) throws IOException{
 		File fileOutput = new File(direccion);
-		ImageIO.write(this.buffer1, "bmp", fileOutput);
+		if (buffer2 == null){
+			ImageIO.write(this.buffer1, "bmp", fileOutput);
+		}else{
+			ImageIO.write(this.buffer2, "bmp", fileOutput);
+		}
 	}
 
 	private void cerrarActionPerformed(java.awt.event.ActionEvent evt) {
@@ -677,44 +687,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener {
 			contenedorDeImagen2.repaint();
 			contenedorDeImagen2.validate();
 		}	
-	}
-	
-	private void elegirUmbral(ActionEvent evt){
-		final JFrame ventana = new JFrame();
-		ventana.setBounds(100, 100, 250, 200);
-		JButton botonAceptar = new JButton("Aceptar");
-		JButton botonCancelar = new JButton("Cancelar");
-		ventana.setLayout(null);
-		final JLabel labelUmbral = new JLabel("Valor Umbral:");
-		final JTextField textUmbral = new JTextField();
-		textUmbral.setBounds(90, 10, 100, 23);
-		labelUmbral.setBounds(10, 10, 90, 25);
-		ventana.add(botonAceptar);
-		ventana.add(botonCancelar);
-		ventana.add(textUmbral);
-		ventana.add(labelUmbral);
-		botonAceptar.setBounds(15,130,100,30);
-		botonCancelar.setBounds(115,130,100,30);
-		ventana.setVisible(true);
-		ventana.setResizable(false);
-		botonAceptar.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				int umbralAux;
-				umbralAux=Integer.valueOf(textUmbral.getText()); 
-				if(umbralAux>=0 && umbralAux<=255){
-					umbral=umbralAux;
-				}else{
-					JOptionPane.showMessageDialog(null,"Error al ingresar el valor del umbral"); 
-					umbral=-1;
-				}
-				ventana.dispose();
-			}
-		});
-		botonCancelar.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) { 
-				ventana.dispose();
-			}
-		});
 	}
 	
 }
