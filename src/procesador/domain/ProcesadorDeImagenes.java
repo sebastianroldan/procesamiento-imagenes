@@ -62,16 +62,6 @@ public class ProcesadorDeImagenes {
 					image = proc.abrirImagen(file.getPath());
 				} else {
 					if ((tipoImagen.equalsIgnoreCase("RAW"))){
-				    	/*definirAnchoAltoImagenRAW();
-						if (this.imageActual!=null){
-							System.out.println("En Procesador W"+this.imageActual.getAncho()
-									+" H"+this.imageActual.getAlto());
-							proc = new ProcesadorDeImagenesRAW(this.imageActual.getAncho(),this.imageActual.getAlto());
-							image = proc.abrirImagen(file.getPath());
-						}  else {
-							System.out.println("No pudo abrirse el archivo RAW");
-						}*/
-						
 						proc = definirAnchoAltoImagenRAW();
 						image = proc.abrirImagen(file.getPath());
 						
@@ -140,32 +130,6 @@ public class ProcesadorDeImagenes {
 		return promedio;
 	}	
 	
-	public BufferedImage dezplegarDegradeGrises() {
-		BufferedImage buff = new BufferedImage(256, 256, 1);
-		Color color;
-		this.setNombreArchivoImagen("Degrade_Grises");
-		for (int i=0; i < 256; i++){
-			for (int j=0; j < 256; j++){
-				color = new Color(j,j,j);
-				buff.setRGB(j, i, color.getRGB());
-			}
-		}		
-		return buff;
-	}
-	
-	public BufferedImage dezplegarDegradeColor() {
-		BufferedImage buff = new BufferedImage(256, 256, 1);
-		Color color;
-		this.setNombreArchivoImagen("Degrade_Colores");
-		for (int i=0; i < 256; i++){
-			for (int j=0; j < 256; j++){
-				color = new Color(255-j,i,j);
-				buff.setRGB(j, i, color.getRGB());
-			}
-		}
-		return buff;
-	}
-	
 	public BufferedImage canal(int canal, BufferedImage buff){
 		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
 		Color color;  
@@ -215,9 +179,6 @@ public class ProcesadorDeImagenes {
 				}
 			}
 			promedio = suma /contador;
-			System.out.println("Promedio: "+promedio);
-			System.out.println("Suma: "+suma);
-			System.out.println("ContadorGris: "+contador);
 			JOptionPane.showMessageDialog(null,"Total Pixeles: "+contador+"\n"+"Promedio De Grises: " + promedio);
 	   }
 	}
