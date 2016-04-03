@@ -22,8 +22,7 @@ public class ProcesadorDeImagenes {
 	private File file;
 	private String nombreArchivoImagen="";
 	private BufferedImage buffer;
-	private ProcesadorDeImagenesRAW procesadorRAW=null;
-	
+		
 	public BufferedImage abrirImagen(){
 		String tipoImagen;		
 		BufferedImage BImg=null;
@@ -36,9 +35,11 @@ public class ProcesadorDeImagenes {
 			try {
 				file=selector.getSelectedFile();
 				tipoImagen=obtenerTipo(file);
+				imageActual.setTipo(tipoImagen);
 				this.nombreArchivoImagen=file.getName();
 				BImg = obtenerImagen(tipoImagen, file);
 			} catch (Exception e) {
+				System.out.println("ERROR DE APERTURA DE ARCHIVO: " + nombreArchivoImagen);
 			}
 		}
 		this.buffer = BImg;
@@ -62,9 +63,15 @@ public class ProcesadorDeImagenes {
 					image = proc.abrirImagen(file.getPath());
 				} else {
 					if ((tipoImagen.equalsIgnoreCase("RAW"))){
-						proc = definirAnchoAltoImagenRAW();
-						image = proc.abrirImagen(file.getPath());
-						
+						Integer ancho=imageActual.getAncho();
+						Integer alto=imageActual.getAlto();
+						String tipo=imageActual.getTipo();
+						if ((ancho>0)&&(alto>0)&&(tipo.equalsIgnoreCase("RAW"))){
+							proc = new ProcesadorDeImagenesRAW(ancho,alto);
+							image = proc.abrirImagen(file.getPath());
+						}else{
+							JOptionPane.showMessageDialog(null,"Primero debe definir Ancho y Alto para el archivo RAW desde el Menu");
+						}
 					} else {
 						System.out.println(tipoImagen+" no es un formato soportado por la aplicación.");
 					}
@@ -74,6 +81,7 @@ public class ProcesadorDeImagenes {
 		}
 		this.imageActual.setAlto(proc.getAlto());
 		this.imageActual.setAncho(proc.getAncho());
+		this.imageActual.setTipo(tipoImagen);
 		this.imageActual.setMatriz(proc.getMatriz(),proc.getAncho(),proc.getAlto());
 		return image;
 	}
@@ -213,64 +221,6 @@ public class ProcesadorDeImagenes {
 										   "Promedio Red: " + promedioR + "\n" +
 										   "Promedio Blue: " + promedioB);
 	   }
-	}
-	
-	private ProcesadorDeImagenesRAW definirAnchoAltoImagenRAW() {
-		final JFrame ventana = new JFrame("Parámetros Obligatorios");
-		ventana.setBounds(100, 100, 300, 160);
-		JButton botonAceptar = new JButton("Aceptar");
-		JButton botonCancelar = new JButton("Cancelar");
-		ventana.setLayout(null);
-		final JLabel labelAlto = new JLabel("Alto:");
-		final JTextField altoRAW = new JTextField();
-		altoRAW.setBounds(90, 20, 100, 23);
-		labelAlto.setBounds(10, 20, 90, 25);
-		final JLabel labelAncho = new JLabel("Ancho:");
-		final JTextField anchoRAW = new JTextField();
-		anchoRAW.setBounds(90, 60, 100, 23);
-		labelAncho.setBounds(10, 60, 90, 25);
-		ventana.add(botonAceptar);
-		ventana.add(botonCancelar);
-		ventana.add(altoRAW);
-		ventana.add(labelAlto);
-		ventana.add(anchoRAW);
-		ventana.add(labelAncho);
-		botonAceptar.setBounds(15,100,100,30);
-		botonCancelar.setBounds(115,100,100,30);
-		ventana.setVisible(true);
-		ventana.setResizable(false);
-		botonAceptar.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aceptarlActionPerformed(evt,anchoRAW.getText(),altoRAW.getText());
-			}
-
-			private void aceptarlActionPerformed(ActionEvent evt, String ancho, String alto) {
-				try {
-				Integer intAncho=Integer.valueOf(ancho);
-				Integer intAlto=Integer.valueOf(alto);
-				if ((intAncho>0)&&(intAlto>0)){
-					procesadorRAW = new ProcesadorDeImagenesRAW(intAncho,intAlto);
-					ventana.dispose();
-					
-				}else {
-					procesadorRAW=null;
-					ventana.dispose();
-					JOptionPane.showMessageDialog(null,"Parámetros Incorrectos, verifique que sean enteros mayores a 0");
-				} 
-				}catch(Exception e){
-					procesadorRAW=null;
-					ventana.dispose();
-					JOptionPane.showMessageDialog(null,"Parámetros Incorrectos, verifique que sean enteros mayores a 0");
-				}
-			}
-		});
-		botonCancelar.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) { 
-				ventana.dispose();
-			}
-		});
-		
-		return procesadorRAW;
 	}
 	
 	public BufferedImage pasarANegativoImagenGris(BufferedImage buff) {

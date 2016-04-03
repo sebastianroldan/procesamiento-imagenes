@@ -45,6 +45,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuBar menuBar = new JMenuBar();	
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
+	private JMenuItem itemRAW = new JMenuItem("Definir Ancho y Alto RAW");
 	private JMenuItem itemGuardar = new JMenuItem("Guardar Imagen");
 	private JMenuItem itemCerrar = new JMenuItem("Cerrar");
 	private JMenu menuFiguras = new JMenu("Figuras");
@@ -130,6 +131,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	private JMenuBar crearMenu() {
 		menuArchivo.add(itemCargar);
+		menuArchivo.add(itemRAW);
 		menuArchivo.add(itemGuardar);
 		menuArchivo.add(itemCerrar);
 		menuBar.add(menuArchivo);
@@ -171,6 +173,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuGuardar();
 		agregarMenuCirculo();
 		agregarMenuCargar();
+		agregarMenuRAW();
 		agregarMenuCuadrado();
 		agregarMenuGrises();
 		agregarMenuNegativoGris();
@@ -449,12 +452,62 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuCargar(){;
 		itemCargar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try {	
 					cargarImagen(ObjProcesamiento.abrirImagen());
 					mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
 							ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");
+				}catch(Exception e){
+					System.out.println("ERROR DE CARGA ARCHIVO: "+ObjProcesamiento.getNombreArchivoImagen());
+				}	
 			}
 		});
 	}
+	
+	
+	
+	
+	private void agregarMenuRAW() {
+		itemRAW.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				rawActionPerformed(evt);
+			}
+		});
+	}
+	
+	private void rawActionPerformed(ActionEvent evt) {
+		Imagen imagen=ObjProcesamiento.getImage();
+		JTextField ancho = new JTextField();
+		JTextField alto = new JTextField();
+		Object[] message = {
+		    "Ancho:", ancho,
+		    "Alto:", alto,
+		};
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese las coordenadas del pixel", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			int i = Integer.valueOf(ancho.getText());
+			int j = Integer.valueOf(alto.getText());
+			if ((i>0)&&(j>0)){
+				imagen.setTipo("RAW");
+				imagen.setAncho(i);
+				imagen.setAlto(j);
+				mensaje.setText("Los limites para el archivo RAW son: Ancho "+ i +" pixeles / Alto "+ j +" pixeles");
+			}else{
+				imagen.setTipo("");
+				imagen.setAncho(0);
+				imagen.setAlto(0);
+				JOptionPane.showMessageDialog(null,"Parámetros Incorrectos, verifique que sean enteros mayores a 0");
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private void agregarMenuGuardar(){
 		itemGuardar.addActionListener(new java.awt.event.ActionListener() {

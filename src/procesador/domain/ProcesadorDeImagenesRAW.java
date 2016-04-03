@@ -17,7 +17,6 @@ public class ProcesadorDeImagenesRAW extends Procesador {
 	public ProcesadorDeImagenesRAW(Integer ancho,Integer alto){
 		this.ancho=ancho;
 		this.alto=alto;
-		System.out.println("Constructor W"+ancho+" H"+alto);
 		this.pixeles = new Integer[ancho][alto];
 		this.matrizGrises = new Integer[ancho][alto];
 	}
