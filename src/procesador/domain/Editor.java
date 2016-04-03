@@ -45,7 +45,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuBar menuBar = new JMenuBar();	
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
-	private JMenuItem itemRAW = new JMenuItem("Definir Ancho y Alto RAW");
 	private JMenuItem itemGuardar = new JMenuItem("Guardar Imagen");
 	private JMenuItem itemCerrar = new JMenuItem("Cerrar");
 	private JMenu menuFiguras = new JMenu("Figuras");
@@ -70,6 +69,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenu menuPromedio = new JMenu("Seleccion");
 	private JMenuItem itemSeleccionar = new JMenuItem("Seleccionar");	
 	private JMenuItem itemPromedioGris = new JMenuItem("Promedio Grises");
+	private JMenuItem itemCopiar = new JMenuItem("Copiar Imagen");
 	private JMenuItem itemPromedioColor = new JMenuItem("Promedio Colores");
 	private JMenu menuHistograma = new JMenu("Histograma");
 	private JMenuItem itemHistograma = new JMenuItem("Crear Histograma");
@@ -103,6 +103,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		jScrollPane1.setViewportView(contenedorDeImagen);;
 		contenedorDeImagen.setVerticalAlignment(SwingConstants.TOP);
 		contenedorDeImagen2.setVerticalAlignment(SwingConstants.TOP);
+		valorUmbral = new JLabel("Umbral:");
+		valorUmbral.setBounds(1230,30,70,20);
+		valorUmbral.setVisible(false);
+		slider.setVisible(false);
 		slider.setBounds(1250, 50, 30, 100);
 		slider.setOrientation(SwingConstants.VERTICAL);
 		valorUmbral.setText("Umbral: "+slider.getValue());
@@ -116,13 +120,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				}
 			}
 		});
-		valorUmbral = new JLabel("Umbral:");
-		valorUmbral.setBounds(1230,30,70,20);
 		this.setLayout(null);
 		this.add(valorUmbral);
 		this.add(jScrollPane1);
 		this.add(jScrollPane2);
 		this.add(slider);
+		this.add(valorUmbral);
 		mensaje.setBounds(10, 655, 500, 20);
 		this.add(mensaje);
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -131,7 +134,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	private JMenuBar crearMenu() {
 		menuArchivo.add(itemCargar);
-		menuArchivo.add(itemRAW);
 		menuArchivo.add(itemGuardar);
 		menuArchivo.add(itemCerrar);
 		menuBar.add(menuArchivo);
@@ -153,6 +155,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuPixel.add(itemSet);
 		menuBar.add(menuPixel);
 		menuPromedio.add(itemSeleccionar);
+		menuPromedio.add(itemCopiar);
 		menuPromedio.add(itemPromedioGris);
 		menuPromedio.add(itemPromedioColor);
 		menuBar.add(menuPromedio);
@@ -173,7 +176,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuGuardar();
 		agregarMenuCirculo();
 		agregarMenuCargar();
-		agregarMenuRAW();
 		agregarMenuCuadrado();
 		agregarMenuGrises();
 		agregarMenuNegativoGris();
@@ -186,18 +188,47 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuB();
 		agregarMenuGet();
 		agregarMenuSet();
+		agregarMenuCopiar();
 		agregarMenuPromedioGris();
 		agregarMenuPromedioColor();
 		agregarMenuHistograma();
 		agregarMenuUmbralizar();
 	}
 
+	private void agregarMenuCopiar() {
+		itemCopiar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (seleccionando){
+					Integer ancho = (int) (puntoFinal.getX()-puntoInicial.getX());
+					Integer alto = (int) (puntoFinal.getY()-puntoInicial.getY());
+					BufferedImage copia = new BufferedImage(ancho,alto,1);
+					copiar(copia);
+					redibujarImagen();
+					seleccionando = false;
+					resetPoints();	
+				}
+			}
+		});
+	}
+	
+	private void copiar(BufferedImage copia) {
+		for (int i=(int)puntoInicial.getX(); i < (int)puntoFinal.getX(); i++){
+			for (int j= (int)puntoInicial.getY(); j < (int)puntoFinal.getY(); j++){
+				copia.setRGB(i-(int)puntoInicial.getX(), j-(int)puntoInicial.getY(), buffer1.getRGB(i, j));
+				aplicarOperacion(copia);
+			}
+		}
+		
+	}
+
 	private void agregarMenuSeleccionar() {
 		itemSeleccionar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				seleccionando = true;
-				original = new BufferedImage(buffer1.getWidth(),buffer1.getHeight(),1);
-				resetPoints();
+				if (!seleccionando){
+					seleccionando = true;
+					original = new BufferedImage(buffer1.getWidth(),buffer1.getHeight(),1);
+					resetPoints();
+				}
 			}
 		});
 	}
@@ -205,8 +236,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuUmbralizar() {
 		itemUmbralizar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				slider.setValue(126);
-				valorUmbral.setText("Umbral: "+slider.getValue());
+				if (!slider.isVisible()){
+					slider.setValue(126);
+					valorUmbral.setText("Umbral: "+slider.getValue());
+					valorUmbral.setVisible(true);
+					slider.setVisible(true);
+				}else{
+					valorUmbral.setVisible(false);
+					slider.setVisible(false);
+				}
 			}
 		});		
 	}
@@ -391,10 +429,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemPromedioGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {  
 				if(puntoInicial!=null && puntoFinal!=null){
-					 ObjProcesamiento.promedioGrises(puntoInicial, puntoFinal);
-					 redibujarImagen();
+					ObjProcesamiento.promedioGrises(puntoInicial, puntoFinal);
+					redibujarImagen();
+					resetPoints();
+					seleccionando = false;
 				}
-				resetPoints();	
 			}
 		});
 	}
@@ -405,8 +444,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				if(puntoInicial!=null && puntoFinal!=null){
 					 ObjProcesamiento.promedioColores(puntoInicial, puntoFinal);
 					 redibujarImagen();
+					 seleccionando = false;
+					 resetPoints();	
 				}
-				resetPoints();	
 			}
 		});
 	}
@@ -444,6 +484,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void cargarImagen(BufferedImage imagen){
 		buffer1 = imagen;
 		buffer2 = null;
+		ObjProcesamiento.setBuffer(buffer1);
 		borrarHistograma();
 		contenedorDeImagen2.setIcon(null);
 		contenedorDeImagen.setIcon(new ImageIcon(buffer1));
@@ -462,53 +503,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
-	
-	
-	
-	
-	private void agregarMenuRAW() {
-		itemRAW.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				rawActionPerformed(evt);
-			}
-		});
-	}
-	
-	private void rawActionPerformed(ActionEvent evt) {
-		Imagen imagen=ObjProcesamiento.getImage();
-		JTextField ancho = new JTextField();
-		JTextField alto = new JTextField();
-		Object[] message = {
-		    "Ancho:", ancho,
-		    "Alto:", alto,
-		};
-		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese las coordenadas del pixel", JOptionPane.OK_CANCEL_OPTION);
-		if (option == JOptionPane.OK_OPTION)
-		{
-			int i = Integer.valueOf(ancho.getText());
-			int j = Integer.valueOf(alto.getText());
-			if ((i>0)&&(j>0)){
-				imagen.setTipo("RAW");
-				imagen.setAncho(i);
-				imagen.setAlto(j);
-				mensaje.setText("Los limites para el archivo RAW son: Ancho "+ i +" pixeles / Alto "+ j +" pixeles");
-			}else{
-				imagen.setTipo("");
-				imagen.setAncho(0);
-				imagen.setAlto(0);
-				JOptionPane.showMessageDialog(null,"Parámetros Incorrectos, verifique que sean enteros mayores a 0");
-			}
-		}
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private void agregarMenuGuardar(){
 		itemGuardar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -550,6 +545,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		this.dispose();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void mouseClicked(MouseEvent ev) {
 		if (seleccionando){
 			if(puntosSeleccionados==0){
@@ -557,7 +553,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					puntoInicial=ev.getPoint();
 					puntosSeleccionados++;
 				}
-				System.out.println("x y inicio: "+ puntoInicial.getX()+" "+puntoInicial.getY());
 			}else{	
 				puntosSeleccionados++;
 				if (puntosSeleccionados==3){
@@ -566,7 +561,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					resetPoints();
 				}else{
 					puntoFinal=ev.getPoint();
-					System.out.println("x y final: "+ puntoFinal.getX()+" "+puntoFinal.getY());
 					if (clickValidos()){
 						dibujarRectangulo(puntoInicial, puntoFinal);
 						contenedorDeImagen.setCursor(new Cursor(DEFAULT_CURSOR));
@@ -587,10 +581,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		return (0<point.getX()&&point.getX()<buffer1.getWidth()&&0<point.getY()&&point.getY()<buffer1.getHeight());
 	}
 
+	@SuppressWarnings("deprecation")
 	public void mouseExited(MouseEvent ev) {
 			contenedorDeImagen.setCursor(new Cursor(DEFAULT_CURSOR));
 	}
 
+	@SuppressWarnings("deprecation")
 	public void mouseEntered(MouseEvent ev) {
 		if (seleccionando){
 			contenedorDeImagen.setCursor(new Cursor(MOVE_CURSOR));

@@ -2,15 +2,11 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -63,14 +59,23 @@ public class ProcesadorDeImagenes {
 					image = proc.abrirImagen(file.getPath());
 				} else {
 					if ((tipoImagen.equalsIgnoreCase("RAW"))){
-						Integer ancho=imageActual.getAncho();
-						Integer alto=imageActual.getAlto();
-						String tipo=imageActual.getTipo();
-						if ((ancho>0)&&(alto>0)&&(tipo.equalsIgnoreCase("RAW"))){
-							proc = new ProcesadorDeImagenesRAW(ancho,alto);
-							image = proc.abrirImagen(file.getPath());
-						}else{
-							JOptionPane.showMessageDialog(null,"Primero debe definir Ancho y Alto para el archivo RAW desde el Menu");
+						JTextField anchura = new JTextField();
+						JTextField altura = new JTextField();
+						Object[] message = {
+						    "Ancho:", anchura,
+						    "Alto:", altura,
+						};
+						int option = JOptionPane.showConfirmDialog(null, message, "Ingrese las coordenadas del pixel", JOptionPane.OK_CANCEL_OPTION);
+						if (option == JOptionPane.OK_OPTION)
+						{
+							Integer ancho = Integer.valueOf(anchura.getText()); 
+							Integer alto = Integer.valueOf(altura.getText());
+							if ((ancho>0)&&(alto>0)){
+								proc = new ProcesadorDeImagenesRAW(ancho,alto);
+								image = proc.abrirImagen(file.getPath());
+							}else{
+								JOptionPane.showMessageDialog(null,"Primero debe definir Ancho y Alto para el archivo RAW desde el Menu");
+							}
 						}
 					} else {
 						System.out.println(tipoImagen+" no es un formato soportado por la aplicación.");
@@ -178,7 +183,7 @@ public class ProcesadorDeImagenes {
 		float promedio=0;
 		long suma=0;
 		long contador=0;
-		if ((finalX < this.imageActual.getAncho()) && (finalY < this.imageActual.getAlto())){
+		if ((finalX < this.buffer.getWidth()) && (finalY < this.buffer.getHeight())){
 			for(int i=inicialX; i <= finalX; i++){
 				for(int j=inicialY; j <= finalY; j++){
 					
@@ -203,10 +208,10 @@ public class ProcesadorDeImagenes {
 		int sumaG=0;	
 		int sumaR=0;
 		int sumaB=0;
-		if ((finalX < this.imageActual.getAncho())&& (finalY < this.imageActual.getAlto())){
+		if ((finalX < this.buffer.getWidth())&& (finalY < this.buffer.getHeight())){
 		for(int i=inicialX; i <= finalX; i++){
 			for(int j=inicialY; j <= finalY; j++){
-				Color c = new Color(this.imageActual.getValorPixel(i, j));
+				Color c = new Color(this.buffer.getRGB(i, j));
 				sumaG= sumaG + c.getGreen();
 				sumaR= sumaR + c.getRed();
 				sumaB= sumaB + c.getBlue();
@@ -256,8 +261,8 @@ public class ProcesadorDeImagenes {
 	
 	public int[] histograma(){
         int histograma[]=new int[256];
-        for( int i = 0; i < this.imageActual.getAncho(); i++ ){
-            for( int j = 0; j < this.imageActual.getAlto(); j++ ){
+        for( int i = 0; i < this.buffer.getWidth(); i++ ){
+            for( int j = 0; j < this.buffer.getHeight(); j++ ){
                 histograma[calcularPromedio(this.buffer.getRGB(i, j))]+=1;
 
             }
@@ -279,6 +284,10 @@ public class ProcesadorDeImagenes {
 				}
 			}
 		return salida;
+	}
+
+	public void setBuffer(BufferedImage buffer1) {
+		this.buffer=buffer1;	
 	}
 	
 }
