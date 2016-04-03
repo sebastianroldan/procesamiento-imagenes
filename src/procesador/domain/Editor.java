@@ -37,6 +37,7 @@ import procesador.generador.GeneradorDeImagenes;
 public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	private ProcesadorDeImagenes ObjProcesamiento = new ProcesadorDeImagenes();
+	private ProcesadorDeImagenes ObjProcesamiento2 = new ProcesadorDeImagenes();
 	private javax.swing.JLabel contenedorDeImagen;
 	private javax.swing.JLabel contenedorDeImagen2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -490,13 +491,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		contenedorDeImagen.setIcon(new ImageIcon(buffer1));
 	}
 	
-	private void agregarMenuCargar(){;
+	private void agregarMenuCargar(){
 		itemCargar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try {	
-					cargarImagen(ObjProcesamiento.abrirImagen());
-					mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
-							ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");
+					cargarActionPermorfed();
 				}catch(Exception e){
 					System.out.println("ERROR DE CARGA ARCHIVO: "+ObjProcesamiento.getNombreArchivoImagen());
 				}	
@@ -504,6 +503,16 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 
+	private void cargarActionPermorfed() {
+		if (buffer1 == null){
+			cargarImagen(ObjProcesamiento.abrirImagen());
+		}else{
+			this.aplicarOperacion(ObjProcesamiento2.abrirImagen());
+		}
+		mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
+				ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");		
+	}
+	
 	private void agregarMenuGuardar(){
 		itemGuardar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
