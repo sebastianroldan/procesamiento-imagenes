@@ -43,6 +43,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JScrollPane jScrollPane2;
 	private JSlider slider = new JSlider(0,255,127);
+	private JSlider sliderContraste = new JSlider(30,225,127);
 	private JMenuBar menuBar = new JMenuBar();	
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
@@ -76,12 +77,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemHistograma = new JMenuItem("Crear Histograma");
 	private JMenu menuUmbral = new JMenu("Umbral");
 	private JMenuItem itemUmbralizar = new JMenuItem("Umbralizar");
+	private JMenu menuContraste = new JMenu("Contraste");
+	private JMenuItem itemContraste = new JMenuItem("Contrastar");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
     private int puntosSeleccionados=0;
     private ChartPanel chartPanel;
     private JLabel valorUmbral = new JLabel();
+    private JLabel valorContraste = new JLabel();
 	private boolean seleccionando = false;
     
 	public Editor() {
@@ -121,12 +125,30 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				}
 			}
 		});
+		valorContraste = new JLabel("Contraste");
+		valorContraste.setBounds(1230,200,70,20);
+		valorContraste.setVisible(false);
+		sliderContraste.setVisible(false);
+		sliderContraste.setBounds(1250, 220, 30, 100);
+		sliderContraste.setOrientation(SwingConstants.VERTICAL);
+		valorContraste.setText("Contraste: "+sliderContraste.getValue());
+		sliderContraste.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (buffer1 != null){
+					borrarHistograma();
+					buffer2 = ObjProcesamiento.contrastarImagen(buffer1, sliderContraste.getValue());
+					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+					valorContraste.setText("Contraste: "+sliderContraste.getValue());
+				}
+			}
+		});
 		this.setLayout(null);
-		this.add(valorUmbral);
 		this.add(jScrollPane1);
 		this.add(jScrollPane2);
 		this.add(slider);
 		this.add(valorUmbral);
+		this.add(sliderContraste);
+		this.add(valorContraste);
 		mensaje.setBounds(10, 655, 500, 20);
 		this.add(mensaje);
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -164,6 +186,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuBar.add(menuHistograma);
 		menuUmbral.add(itemUmbralizar);
 		menuBar.add(menuUmbral);
+		menuContraste.add(itemContraste);
+		menuBar.add(menuContraste);
 		return menuBar;
 	}
 
@@ -194,6 +218,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuPromedioColor();
 		agregarMenuHistograma();
 		agregarMenuUmbralizar();
+		agregarMenuContrastar();
 	}
 
 	private void agregarMenuCopiar() {
@@ -250,6 +275,22 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});		
 	}
 
+	private void agregarMenuContrastar() {
+		itemContraste.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (!sliderContraste.isVisible()){
+					sliderContraste.setValue(128);
+					valorContraste.setText("Contraste");
+					valorContraste.setVisible(true);
+					sliderContraste.setVisible(true);
+				}else{
+					valorContraste.setVisible(false);
+					sliderContraste.setVisible(false);
+				}
+			}
+		});		
+	}
+	
 	private void agregarMenuGet() {
 		itemGet.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
