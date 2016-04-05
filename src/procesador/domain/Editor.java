@@ -76,7 +76,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemCopiar = new JMenuItem("Copiar Imagen");
 	private JMenuItem itemPromedioColor = new JMenuItem("Promedio Colores");
 	private JMenu menuHistograma = new JMenu("Histograma");
-	private JMenuItem itemHistograma = new JMenuItem("Crear Histograma");
+	private JMenuItem itemHistograma = new JMenuItem("Crear");
+	private JMenuItem itemEcualizarHistograma = new JMenuItem("Ecualizar");
 	private JMenu menuUmbral = new JMenu("Umbral");
 	private JMenuItem itemUmbralizar = new JMenuItem("Umbralizar");
 	private JMenu menuOperaciones = new JMenu("Operaciones");
@@ -101,7 +102,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	public Editor(BufferedImage resultado) {
 		initComponents();
 		cargarImagen(resultado);
-		this.setBounds(150, 50, 600, 600);
+		//this.setBounds(150, 50, 600, 600);
 	}
 
 	private void initComponents() {
@@ -195,6 +196,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuPromedio.add(itemPromedioColor);
 		menuBar.add(menuPromedio);
 		menuHistograma.add(itemHistograma);
+		menuHistograma.add(itemEcualizarHistograma);
 		menuBar.add(menuHistograma);
 		menuUmbral.add(itemUmbralizar);
 		menuBar.add(menuUmbral);
@@ -233,6 +235,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuPromedioGris();
 		agregarMenuPromedioColor();
 		agregarMenuHistograma();
+		agregarMenuEcualizarHistograma();
 		agregarMenuUmbralizar();
 		agregarMenuSumar();
 		agregarMenuRestar();
@@ -578,6 +581,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemHistograma.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {;
 				crearHistograma(ObjProcesamiento.histograma(), contenedorDeImagen2, Color.BLACK);
+			}
+		});
+	}
+	
+	private void agregarMenuEcualizarHistograma(){
+		itemEcualizarHistograma.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {;
+			BufferedImage resultado = ObjProcesamiento.ecualizarHistograma();
+			new Editor(resultado);
 			}
 		});
 	}

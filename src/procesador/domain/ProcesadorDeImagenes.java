@@ -399,6 +399,28 @@ public class ProcesadorDeImagenes {
 		return resultado;
 	}
 	
+	public BufferedImage ecualizarHistograma(){
+		int [] histograma = histograma();
+		int cantPixels=buffer.getWidth()*buffer.getHeight();
+		Color color;
+		int sumatoria=0;
+		BufferedImage salida = new BufferedImage(buffer.getWidth(),buffer.getHeight(), 1);
+		for(int i=0;i<buffer.getWidth();i++ ){
+			for(int j=0;j<buffer.getHeight();j++) {
+				sumatoria=  (int) (255*sumatoriaDePixel(histograma, calcularPromedio(buffer.getRGB(i, j)), cantPixels));
+				color =new Color(sumatoria,sumatoria,sumatoria);
+				salida.setRGB(i, j, color.getRGB());
+			}
+		}
+		return salida;	
+	}
 	
+	private double sumatoriaDePixel(int [] histograma, int limite, int cantPixeles){
+		double sumatoria = 0;
+		for(int i=0;i<=limite;i++){	
+			sumatoria = sumatoria + (((double)histograma[i])/cantPixeles);	
+		}
+		return sumatoria;
+	}	
 	
 }
