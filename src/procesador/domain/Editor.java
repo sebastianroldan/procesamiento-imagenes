@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -660,11 +659,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	@SuppressWarnings("unchecked")
 	private void cargarActionPermorfed() {
-		if (buffer1 != null && buffer2 != null){
+		if (buffer1 != null){
 			@SuppressWarnings("rawtypes")
 			JComboBox lado = new JComboBox();
-			lado.addItem("Izquierdo");
 			lado.addItem("Derecho");
+			lado.addItem("Izquierdo");
 			Object[] message = {
 					"Panel: ", lado,
 			};
