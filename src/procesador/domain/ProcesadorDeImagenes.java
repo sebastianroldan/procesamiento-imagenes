@@ -285,7 +285,48 @@ public class ProcesadorDeImagenes {
 			}
 		return salida;
 	}
+	
+	public BufferedImage contrastarImagen(BufferedImage buff, int valorContraste) {
+		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+		int deltaContraste=30;
+			Color colorPrevio =null;
+			Color colorSalida =null;
+			int rColor=0;
+			int gColor=0;
+			int bColor=0;
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					colorPrevio=new Color(buff.getRGB(i, j));
+					rColor=contrastarBanda(colorPrevio.getRed(),valorContraste,deltaContraste);
+					gColor=contrastarBanda(colorPrevio.getGreen(),valorContraste,deltaContraste);
+					bColor=contrastarBanda(colorPrevio.getBlue(),valorContraste,deltaContraste);
+					colorSalida=new Color(rColor,gColor,bColor);
+					salida.setRGB(i, j, colorSalida.getRGB());
+				}
+			}
+		return salida;
+	}
+	
+	private int contrastarBanda(int banda,int contraste,int delta){
+		int salida=0;
+		
+		if (banda<=(contraste-delta)){
+			salida=(int)Math.round(0.75*banda);
+		}else if (banda>=(contraste+delta)){
+			salida=(int)Math.round(1.24*banda);
+		}else{
+			salida=(int)Math.round(1.12*banda);
+		}
+		
+		if (salida<0){
+			salida=0;
+		}else if (salida>255){
+			salida=255;
+		}
 
+		return salida;
+	}
+	
 	public void setBuffer(BufferedImage buffer1) {
 		this.buffer=buffer1;
 	}
