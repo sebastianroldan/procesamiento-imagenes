@@ -82,7 +82,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenu menuOperaciones = new JMenu("Operaciones");
 	private JMenuItem itemSumar = new JMenuItem("Sumar");	
 	private JMenuItem itemRestar = new JMenuItem("Restar");
-	private JMenuItem itemProducto = new JMenuItem("Producto");
+	private JMenuItem itemProducto = new JMenuItem("Producto por escalar");
+	private JMenuItem itemProductoMatriz = new JMenuItem("Producto de imagenes");
 	private JMenuItem itemPotencia = new JMenuItem("Potencia");
 	private JMenu menuContraste = new JMenu("Contraste");
 	private JMenuItem itemContraste = new JMenuItem("Contrastar");
@@ -205,6 +206,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuOperaciones.add(itemRestar);
 		menuOperaciones.add(itemProducto);
 		menuOperaciones.add(itemPotencia);
+		menuOperaciones.add(itemProductoMatriz);
 		menuContraste.add(itemContraste);
 		menuBar.add(menuContraste);
 		return menuBar;
@@ -241,8 +243,24 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuSumar();
 		agregarMenuRestar();
 		agregarMenuProducto();
+		agregarMenuProductoMatriz();
 		agregarMenuPotencia();
 		agregarMenuContrastar();
+	}
+
+	private void agregarMenuProductoMatriz() {
+		itemProductoMatriz.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1!= null && buffer2!= null){
+					BufferedImage resultado = ObjProcesamiento.producto(buffer1, buffer2);
+					if (resultado != null){
+						new Editor(resultado);						
+					}else{
+						JOptionPane.showMessageDialog(null, "Las imagenes son de diferentes dimensiones!");
+					}
+				}
+			}
+		});
 	}
 
 	private void agregarMenuProducto() {

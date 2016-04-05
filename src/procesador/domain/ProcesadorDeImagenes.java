@@ -438,5 +438,25 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;	
 	}
+
+	public BufferedImage producto(BufferedImage buff, BufferedImage buff2) {
+		buff = this.pasarAEscalaDeGrises(buff);
+		buff2 = this.pasarAEscalaDeGrises(buff2);
+		int suma, gris1, gris2;
+		if (sonIguales(buff, buff2)){
+			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					gris1 = new Color(buff.getRGB(i, j)).getBlue();
+					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
+					suma = comprimirRango((gris1*gris2),255*255);
+					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
+				}
+			}
+			return resultado;
+		}else{
+			return null;
+		}
+	}
 	
 }
