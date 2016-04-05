@@ -287,7 +287,40 @@ public class ProcesadorDeImagenes {
 	}
 
 	public void setBuffer(BufferedImage buffer1) {
-		this.buffer=buffer1;	
+		this.buffer=buffer1;
+	}
+
+	public BufferedImage sumar(BufferedImage buff, BufferedImage buff2) {
+		buff = this.pasarAEscalaDeGrises(buff);
+		buff2 = this.pasarAEscalaDeGrises(buff2);
+		int suma, gris1, gris2;
+		if (sonIguales(buff, buff2)){
+			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					gris1 = new Color(buff.getRGB(i, j)).getBlue();
+					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
+					suma = (gris1+gris2)/2;
+					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
+				}
+			}
+			return resultado;
+		}else{
+			return null;
+		}
+	}
+
+	
+	
+	private int comprimirRango(int r, int max) {
+		int um = (int) (Math.log(max+1) / Math.log(2));
+		int c = (255/um)*  (int) (Math.log(r+1) / Math.log(2));
+		return c;
+	}
+
+	private boolean sonIguales(BufferedImage buff, BufferedImage buff2) {
+		
+		return buff.getWidth()==buff2.getWidth() && buff.getHeight()==buff2.getHeight();
 	}
 	
 }

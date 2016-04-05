@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -76,6 +77,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemHistograma = new JMenuItem("Crear Histograma");
 	private JMenu menuUmbral = new JMenu("Umbral");
 	private JMenuItem itemUmbralizar = new JMenuItem("Umbralizar");
+	private JMenu menuOperaciones = new JMenu("Operaciones");
+	private JMenuItem itemSumar = new JMenuItem("Sumar");	
+	private JMenuItem itemRestar = new JMenuItem("Restar");
+	private JMenuItem itemProducto = new JMenuItem("Producto");
+	
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -86,6 +92,16 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     
 	public Editor() {
 		initComponents();
+	}
+
+	public Editor(BufferedImage resultado) {
+		initComponents();
+		
+		if (resultado != null){
+			cargarImagen(resultado);
+		}else{
+			JOptionPane.showMessageDialog(null, "Las imagenes no se pueden sumar, son de diferentes dimensiones!");
+		}
 	}
 
 	private void initComponents() {
@@ -164,11 +180,16 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuBar.add(menuHistograma);
 		menuUmbral.add(itemUmbralizar);
 		menuBar.add(menuUmbral);
+		menuBar.add(menuOperaciones);
+		menuOperaciones.add(itemSumar);
+		menuOperaciones.add(itemRestar);
+		menuOperaciones.add(itemProducto);
+		
 		return menuBar;
 	}
 
 	private void definirFuncionCerrar() {
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Procesador de Imagenes");
 	}
 
@@ -194,6 +215,20 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuPromedioColor();
 		agregarMenuHistograma();
 		agregarMenuUmbralizar();
+		agregarMenuSumar();
+		//agregarMenuRestar();
+		//agregarMenuProducto();
+	}
+
+	private void agregarMenuSumar() {
+		itemSumar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1!= null && buffer2!= null){
+					BufferedImage resultado = ObjProcesamiento.sumar(buffer1, buffer2);
+					new Editor(resultado);
+				}
+			}
+		});
 	}
 
 	private void agregarMenuCopiar() {
@@ -487,7 +522,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		buffer2 = null;
 		ObjProcesamiento.setBuffer(buffer1);
 		borrarHistograma();
-		contenedorDeImagen2.setIcon(null);
 		contenedorDeImagen.setIcon(new ImageIcon(buffer1));
 	}
 	
@@ -504,15 +538,42 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	private void cargarActionPermorfed() {
-		if (buffer1 == null){
-			cargarImagen(ObjProcesamiento.abrirImagen());
+		if (buffer1 != null && buffer2 != null){
+			JCheckBox der = new JCheckBox();
+			JCheckBox izq = new JCheckBox();
+			Object[] message = {
+					"Panel derecho:", der,
+					"Panel izquierdo:", izq,
+			};
+			int option = JOptionPane.showConfirmDialog(getParent(), message, "Elija el panel donde cargar la imagen", JOptionPane.OK_CANCEL_OPTION);
+			if (option == JOptionPane.OK_OPTION)
+			{	
+				if (!der.isSelected()&&!izq.isSelected()){
+					JOptionPane.showMessageDialog(null, "Debe elegir un panel!");
+				}else{
+					if (der.isSelected()&&izq.isSelected()){
+						JOptionPane.showMessageDialog(null, "Debe elegir solo un panel!");
+					}else{
+						if (der.isSelected()){
+							this.aplicarOperacion(ObjProcesamiento2.abrirImagen());					
+						}
+						if (izq.isSelected()){
+							cargarImagen(ObjProcesamiento.abrirImagen());
+						}
+					}
+				}			
+			}
 		}else{
-			this.aplicarOperacion(ObjProcesamiento2.abrirImagen());
+			if (buffer1 == null){
+				cargarImagen(ObjProcesamiento.abrirImagen());
+			}else{
+				aplicarOperacion(ObjProcesamiento2.abrirImagen());
+			}
 		}
 		mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
 				ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");		
 	}
-	
+
 	private void agregarMenuGuardar(){
 		itemGuardar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
