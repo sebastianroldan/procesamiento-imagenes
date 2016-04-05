@@ -84,6 +84,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemSumar = new JMenuItem("Sumar");	
 	private JMenuItem itemRestar = new JMenuItem("Restar");
 	private JMenuItem itemProducto = new JMenuItem("Producto");
+	private JMenuItem itemPotencia = new JMenuItem("Potencia");
 	private JMenu menuContraste = new JMenu("Contraste");
 	private JMenuItem itemContraste = new JMenuItem("Contrastar");
 	private JLabel mensaje = new JLabel("");
@@ -204,6 +205,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuOperaciones.add(itemSumar);
 		menuOperaciones.add(itemRestar);
 		menuOperaciones.add(itemProducto);
+		menuOperaciones.add(itemPotencia);
 		menuContraste.add(itemContraste);
 		menuBar.add(menuContraste);
 		return menuBar;
@@ -240,6 +242,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuSumar();
 		agregarMenuRestar();
 		agregarMenuProducto();
+		agregarMenuPotencia();
 		agregarMenuContrastar();
 	}
 
@@ -249,6 +252,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				if (buffer1!= null){
 					int valor = ingresarValorEscalar();
 					BufferedImage resultado = ObjProcesamiento.producto(buffer1, valor);
+					new Editor(resultado);
+				}
+			}		
+		});
+	}
+	
+	private void agregarMenuPotencia() {
+		itemPotencia.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1!= null){
+					double valor = ingresarValorDePotencia();
+					BufferedImage resultado = ObjProcesamiento.potencia(valor);
 					new Editor(resultado);
 				}
 			}		
@@ -283,7 +298,21 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
-
+	
+	private double ingresarValorDePotencia() {
+		JTextField valor = new JTextField();
+		Object[] message = {
+		    "Valor real:", valor,
+		};
+		double i = 1;
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese la potencia a aplicar", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			i = Double.valueOf(valor.getText());
+		}
+		return i;
+	}
+	
 	private void agregarMenuSumar() {
 		itemSumar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {

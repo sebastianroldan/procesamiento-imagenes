@@ -423,4 +423,20 @@ public class ProcesadorDeImagenes {
 		return sumatoria;
 	}	
 	
+	public BufferedImage potencia(double potencia ){
+		Color color;
+		double division=0;
+		int resultado=0;
+		BufferedImage salida = new BufferedImage(buffer.getWidth(),buffer.getHeight(), 1);
+		for(int i=0;i<buffer.getWidth();i++ ){
+			for(int j=0;j<buffer.getHeight();j++) {
+				division= (double) calcularPromedio(buffer.getRGB(i, j))/255;
+				resultado = (int) (255*Math.pow(division, potencia));
+				color =new Color(resultado,resultado,resultado);
+				salida.setRGB(i, j, color.getRGB());
+			}
+		}
+		return salida;	
+	}
+	
 }
