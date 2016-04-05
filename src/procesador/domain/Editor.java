@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -99,12 +100,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	public Editor(BufferedImage resultado) {
 		initComponents();
-		
-		if (resultado != null){
-			cargarImagen(resultado);
-		}else{
-			JOptionPane.showMessageDialog(null, "Las imagenes no se pueden sumar, son de diferentes dimensiones!");
-		}
+		cargarImagen(resultado);
+		this.setBounds(150, 50, 600, 600);
 	}
 
 	private void initComponents() {
@@ -141,7 +138,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 		valorContraste = new JLabel("Contraste");
-		valorContraste.setBounds(1230,200,70,20);
+		valorContraste.setBounds(1230,200,100,20);
 		valorContraste.setVisible(false);
 		sliderContraste.setVisible(false);
 		sliderContraste.setBounds(1250, 220, 30, 100);
@@ -238,8 +235,50 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuHistograma();
 		agregarMenuUmbralizar();
 		agregarMenuSumar();
-		//agregarMenuRestar();
-		//agregarMenuProducto();
+		agregarMenuRestar();
+		agregarMenuProducto();
+		agregarMenuContrastar();
+	}
+
+	private void agregarMenuProducto() {
+		itemProducto.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1!= null){
+					int valor = ingresarValorEscalar();
+					BufferedImage resultado = ObjProcesamiento.producto(buffer1, valor);
+					new Editor(resultado);
+				}
+			}		
+		});
+	}
+
+	private int ingresarValorEscalar() {
+		JTextField valor = new JTextField();
+		Object[] message = {
+		    "Valor escalar:", valor,
+		};
+		int i = 1;
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el valor del escalar a multiplicar", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			i = Integer.valueOf(valor.getText());
+		}
+		return i;
+	}
+	
+	private void agregarMenuRestar() {
+		itemRestar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1!= null && buffer2!= null){
+					BufferedImage resultado = ObjProcesamiento.restar(buffer1, buffer2);
+					if (resultado != null){
+						new Editor(resultado);						
+					}else{
+						JOptionPane.showMessageDialog(null, "Las imagenes son de diferentes dimensiones!");
+					}
+				}
+			}
+		});
 	}
 
 	private void agregarMenuSumar() {
@@ -247,11 +286,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null && buffer2!= null){
 					BufferedImage resultado = ObjProcesamiento.sumar(buffer1, buffer2);
-					new Editor(resultado);
+					if (resultado != null){
+						new Editor(resultado);						
+					}else{
+						JOptionPane.showMessageDialog(null, "Las imagenes son de diferentes dimensiones!");
+					}
 				}
 			}
 		});
-		agregarMenuContrastar();
 	}
 
 	private void agregarMenuCopiar() {
@@ -558,7 +600,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	
 	private void cargarImagen(BufferedImage imagen){
 		buffer1 = imagen;
-		buffer2 = null;
 		ObjProcesamiento.setBuffer(buffer1);
 		borrarHistograma();
 		contenedorDeImagen.setIcon(new ImageIcon(buffer1));
@@ -576,30 +617,24 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	private void cargarActionPermorfed() {
 		if (buffer1 != null && buffer2 != null){
-			JCheckBox der = new JCheckBox();
-			JCheckBox izq = new JCheckBox();
+			@SuppressWarnings("rawtypes")
+			JComboBox lado = new JComboBox();
+			lado.addItem("Izquierdo");
+			lado.addItem("Derecho");
 			Object[] message = {
-					"Panel derecho:", der,
-					"Panel izquierdo:", izq,
+					"Panel: ", lado,
 			};
 			int option = JOptionPane.showConfirmDialog(getParent(), message, "Elija el panel donde cargar la imagen", JOptionPane.OK_CANCEL_OPTION);
 			if (option == JOptionPane.OK_OPTION)
 			{	
-				if (!der.isSelected()&&!izq.isSelected()){
-					JOptionPane.showMessageDialog(null, "Debe elegir un panel!");
+				String eleccion = (String)lado.getSelectedItem();
+				if (eleccion == "Izquierdo" ){
+					cargarImagen(ObjProcesamiento.abrirImagen());
 				}else{
-					if (der.isSelected()&&izq.isSelected()){
-						JOptionPane.showMessageDialog(null, "Debe elegir solo un panel!");
-					}else{
-						if (der.isSelected()){
-							this.aplicarOperacion(ObjProcesamiento2.abrirImagen());					
-						}
-						if (izq.isSelected()){
-							cargarImagen(ObjProcesamiento.abrirImagen());
-						}
-					}
+					this.aplicarOperacion(ObjProcesamiento2.abrirImagen());					
 				}			
 			}
 		}else{
