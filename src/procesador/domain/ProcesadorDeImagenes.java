@@ -398,6 +398,47 @@ public class ProcesadorDeImagenes {
 		}
 		return resultado;
 	}
+		
+	public BufferedImage compresionRangoDinamico(BufferedImage buff) {
+		
+		if (buff!=null){
+			int valorGris=0;
+			int maxValorGris=getMaxValorGris(buff);
+			
+			buff = this.pasarAEscalaDeGrises(buff);
+			
+			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					valorGris =calcularPromedio(buff.getRGB(i, j));
+					valorGris = comprimirRango(valorGris,maxValorGris);
+					resultado.setRGB(i, j, (new Color(valorGris, valorGris, valorGris)).getRGB());
+				}
+			}
+			return resultado;
+		}else{
+			return null;
+		}
+	}
+	
+	private int getMaxValorGris(BufferedImage buff){
+		
+		int resultado=0;
+		int valorGris=0;
+		
+		if (buff!=null){
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					valorGris =calcularPromedio(buff.getRGB(i, j));
+					if (valorGris>resultado){
+						resultado=valorGris;
+					}
+				}
+			}
+		}
+		return resultado;
+	}
 	
 	public BufferedImage ecualizarHistograma(){
 		int [] histograma = histograma();
