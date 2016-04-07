@@ -2,7 +2,6 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -14,14 +13,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ProcesadorDeImagenes {
 	
-	private Imagen imageActual = new Imagen();
 	private File file;
 	private String nombreArchivoImagen="";
-	private BufferedImage buffer;
+	private Imagen image;
 		
-	public BufferedImage abrirImagen(){
+	public Imagen abrirImagen(){
 		String tipoImagen;		
-		BufferedImage BImg=null;
+		Imagen BImg=null;
 		JFileChooser selector=new JFileChooser();
 		selector.setDialogTitle("Seleccione una imagen");
 		FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & RAW", "ppm", "pgm", "bmp", "jpg", "raw");
@@ -31,22 +29,21 @@ public class ProcesadorDeImagenes {
 			try {
 				file=selector.getSelectedFile();
 				tipoImagen=obtenerTipo(file);
-				imageActual.setTipo(tipoImagen);
 				this.nombreArchivoImagen=file.getName();
 				BImg = obtenerImagen(tipoImagen, file);
 			} catch (Exception e) {
 				System.out.println("ERROR DE APERTURA DE ARCHIVO: " + nombreArchivoImagen);
 			}
 		}
-		this.buffer = BImg;
+		this.image = BImg;
 		return BImg;
 	}
 
-	public BufferedImage obtenerImagen(String tipoImagen, File file) throws IOException {
-		BufferedImage image = null;
+	public Imagen obtenerImagen(String tipoImagen, File file) throws IOException {
+		Imagen image = null;
 		Procesador proc = null;
 		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
-			image = ImageIO.read(file);
+			image = (Imagen)ImageIO.read(file);
 			proc = new ProcesadorDeImagenesJPGyBMP(image);
 			
 		} else{ 
@@ -84,10 +81,6 @@ public class ProcesadorDeImagenes {
 				}
 			} 
 		}
-		this.imageActual.setAlto(proc.getAlto());
-		this.imageActual.setAncho(proc.getAncho());
-		this.imageActual.setTipo(tipoImagen);
-		this.imageActual.setMatriz(proc.getMatriz(),proc.getAncho(),proc.getAlto());
 		return image;
 	}
 
@@ -98,20 +91,10 @@ public class ProcesadorDeImagenes {
 		
 	}
 
-	public BufferedImage getBuffer() {
-		if (buffer != null)
-			return buffer;
+	public Imagen getImagen() {
+		if (image != null)
+			return image;
 		return null;
-	}
-	
-	public Imagen getImage() {
-		if (imageActual != null)
-			return imageActual;
-		return null;
-	}
-	
-	public void setImage(Imagen imagen) {
-		this.imageActual=imagen;
 	}
 		
 	public String getNombreArchivoImagen() {
@@ -122,8 +105,8 @@ public class ProcesadorDeImagenes {
 		this.nombreArchivoImagen = nombreArchivoImagen;
 	}
 
-	public BufferedImage pasarAEscalaDeGrises(BufferedImage buff) {
-		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+	public Imagen pasarAEscalaDeGrises(Imagen buff) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
 		Color color;  
 		int c;
 		for (int i=0; i < buff.getWidth(); i++){
@@ -143,8 +126,8 @@ public class ProcesadorDeImagenes {
 		return promedio;
 	}	
 	
-	public BufferedImage canal(int canal, BufferedImage buff){
-		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+	public Imagen canal(int canal, Imagen buff){
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
 		Color color;  
 		for (int i=0; i < buff.getWidth(); i++){
 			for(int j =0; j < buff.getHeight(); j++){
@@ -183,11 +166,11 @@ public class ProcesadorDeImagenes {
 		float promedio=0;
 		long suma=0;
 		long contador=0;
-		if ((finalX < this.buffer.getWidth()) && (finalY < this.buffer.getHeight())){
+		if ((finalX < this.image.getWidth()) && (finalY < this.image.getHeight())){
 			for(int i=inicialX; i <= finalX; i++){
 				for(int j=inicialY; j <= finalY; j++){
 					
-					suma= suma + calcularPromedio(this.buffer.getRGB(i, j));// this.imageActual.getValorPixel(i,j);
+					suma= suma + calcularPromedio(this.image.getRGB(i, j));// this.imageActual.getValorPixel(i,j);
 					contador++;
 				}
 			}
@@ -208,10 +191,10 @@ public class ProcesadorDeImagenes {
 		int sumaG=0;	
 		int sumaR=0;
 		int sumaB=0;
-		if ((finalX < this.buffer.getWidth())&& (finalY < this.buffer.getHeight())){
+		if ((finalX < this.image.getWidth())&& (finalY < this.image.getHeight())){
 		for(int i=inicialX; i <= finalX; i++){
 			for(int j=inicialY; j <= finalY; j++){
-				Color c = new Color(this.buffer.getRGB(i, j));
+				Color c = new Color(this.image.getRGB(i, j));
 				sumaG= sumaG + c.getGreen();
 				sumaR= sumaR + c.getRed();
 				sumaB= sumaB + c.getBlue();
@@ -229,8 +212,8 @@ public class ProcesadorDeImagenes {
 	}
 	
 	
-	public BufferedImage pasarANegativoImagen(BufferedImage buff) {
-		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+	public Imagen pasarANegativoImagen(Imagen buff) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
 		Color color;  
 		int colorR,colorG, colorB;
 		for (int i=0; i < buff.getWidth(); i++){
@@ -248,17 +231,17 @@ public class ProcesadorDeImagenes {
 	
 	public int[] histograma(){
         int histograma[]=new int[256];
-        for( int i = 0; i < this.buffer.getWidth(); i++ ){
-            for( int j = 0; j < this.buffer.getHeight(); j++ ){
-                histograma[calcularPromedio(this.buffer.getRGB(i, j))]+=1;
+        for( int i = 0; i < this.image.getWidth(); i++ ){
+            for( int j = 0; j < this.image.getHeight(); j++ ){
+                histograma[calcularPromedio(this.image.getRGB(i, j))]+=1;
 
             }
         }
         return histograma;
     }
 	
-	public BufferedImage umbralizarImagen(BufferedImage buff, int umbral) {
-		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+	public Imagen umbralizarImagen(Imagen buff, int umbral) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
 			Color blanco =new Color(255,255,255);
 			Color negro =new Color(0,0,0);
 			for (int i=0; i < buff.getWidth(); i++){
@@ -273,8 +256,8 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public BufferedImage contrastarImagen(BufferedImage buff, int valorContraste) {
-		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+	public Imagen contrastarImagen(Imagen buff, int valorContraste) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
 		int deltaContraste=30;
 			Color colorPrevio =null;
 			Color colorSalida =null;
@@ -314,22 +297,21 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public void setBuffer(BufferedImage buffer1) {
-		this.buffer=buffer1;
+	public void setImagen(Imagen image1) {
+		this.image=image1;
 	}
 
-	public BufferedImage sumar(BufferedImage buff, BufferedImage buff2) {
+	public Imagen sumar(Imagen buff, Imagen buff2) {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
 		if (sonIguales(buff, buff2)){
-			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
 					suma = (int) transformacionLineal(gris1+gris2, 510, 0);
-				//	suma = comprimirRango((gris1+gris2),510);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}
@@ -339,8 +321,6 @@ public class ProcesadorDeImagenes {
 		}
 	}
 
-	
-	
 	private double transformacionLineal(double suma, double max, int origen) {
 		double salida = suma*(255/max)+origen;
 		return salida;
@@ -352,24 +332,22 @@ public class ProcesadorDeImagenes {
 		return c;
 	}
 
-	private boolean sonIguales(BufferedImage buff, BufferedImage buff2) {
+	private boolean sonIguales(Imagen buff, Imagen buff2) {
 		
 		return buff.getWidth()==buff2.getWidth() && buff.getHeight()==buff2.getHeight();
 	}
 
-	public BufferedImage restar(BufferedImage buff, BufferedImage buff2) {
+	public Imagen restar(Imagen buff, Imagen buff2) {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
 		if (sonIguales(buff, buff2)){
-			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
 					suma = (int) transformacionLineal(gris1-gris2, 765, 85);
-					//suma = comprimirRango((gris1-gris2)+255,510);
-					//modificar con una transformacion lineal.
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}
@@ -379,22 +357,21 @@ public class ProcesadorDeImagenes {
 		}
 	}
 
-	public BufferedImage producto(BufferedImage buff, int valor) {
-		BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+	public Imagen producto(Imagen buff, int valor) {
+		Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 		int gris = 0;
 		int producto = 0;
 		for (int i=0; i < buff.getWidth(); i++){
 			for(int j =0; j < buff.getHeight(); j++){
 				gris = new Color(buff.getRGB(i, j)).getBlue();
 				producto = (int) transformacionLineal(gris*valor, valor*255, 0);
-				//producto = comprimirRango(gris, valor*255);
 				resultado.setRGB(i, j, new Color(producto, producto, producto).getRGB());
 			}
 		}
 		return resultado;
 	}
 		
-	public BufferedImage compresionRangoDinamico(BufferedImage buff) {
+	public Imagen compresionRangoDinamico(Imagen buff) {
 		
 		if (buff!=null){
 			int valorGris=0;
@@ -402,7 +379,7 @@ public class ProcesadorDeImagenes {
 			
 			buff = this.pasarAEscalaDeGrises(buff);
 			
-			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
@@ -417,11 +394,9 @@ public class ProcesadorDeImagenes {
 		}
 	}
 	
-	private int getMaxValorGris(BufferedImage buff){
-		
+	private int getMaxValorGris(Imagen buff){		
 		int resultado=0;
 		int valorGris=0;
-		
 		if (buff!=null){
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
@@ -435,15 +410,15 @@ public class ProcesadorDeImagenes {
 		return resultado;
 	}
 	
-	public BufferedImage ecualizarHistograma(){
+	public Imagen ecualizarHistograma(){
 		int [] histograma = histograma();
-		int cantPixels=buffer.getWidth()*buffer.getHeight();
+		int cantPixels=image.getWidth()*image.getHeight();
 		Color color;
 		int sumatoria=0;
-		BufferedImage salida = new BufferedImage(buffer.getWidth(),buffer.getHeight(), 1);
-		for(int i=0;i<buffer.getWidth();i++ ){
-			for(int j=0;j<buffer.getHeight();j++) {
-				sumatoria=  (int) (255*sumatoriaDePixel(histograma, calcularPromedio(buffer.getRGB(i, j)), cantPixels));
+		Imagen salida = new Imagen(image.getWidth(),image.getHeight());
+		for(int i=0;i<image.getWidth();i++ ){
+			for(int j=0;j<image.getHeight();j++) {
+				sumatoria=  (int) (255*sumatoriaDePixel(histograma, calcularPromedio(image.getRGB(i, j)), cantPixels));
 				color =new Color(sumatoria,sumatoria,sumatoria);
 				salida.setRGB(i, j, color.getRGB());
 			}
@@ -459,14 +434,14 @@ public class ProcesadorDeImagenes {
 		return sumatoria;
 	}	
 	
-	public BufferedImage potencia(double potencia ){
+	public Imagen potencia(double potencia ){
 		Color color;
 		double division=0;
 		int resultado=0;
-		BufferedImage salida = new BufferedImage(buffer.getWidth(),buffer.getHeight(), 1);
-		for(int i=0;i<buffer.getWidth();i++ ){
-			for(int j=0;j<buffer.getHeight();j++) {
-				division= (double) calcularPromedio(buffer.getRGB(i, j))/255;
+		Imagen salida = new Imagen(image.getWidth(),image.getHeight());
+		for(int i=0;i<image.getWidth();i++ ){
+			for(int j=0;j<image.getHeight();j++) {
+				division= (double) calcularPromedio(image.getRGB(i, j))/255;
 				resultado = (int) (255*Math.pow(division, potencia));
 				//ver potencia..
 				color =new Color(resultado,resultado,resultado);
@@ -476,18 +451,17 @@ public class ProcesadorDeImagenes {
 		return salida;	
 	}
 
-	public BufferedImage producto(BufferedImage buff, BufferedImage buff2) {
+	public Imagen producto(Imagen buff, Imagen buff2) {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
 		if (sonIguales(buff, buff2)){
-			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
 					suma = (int) transformacionLineal(gris1*gris2, 255*255, 0);
-//					suma = comprimirRango((gris1*gris2),255*255);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}

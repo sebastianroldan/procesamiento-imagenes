@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -58,9 +57,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
 	private JMenuItem itemNegativo = new JMenuItem("Negativo");
-	private BufferedImage buffer1;
-	private BufferedImage buffer2;
-	private BufferedImage original;
+	private Imagen buffer1;
+	private Imagen buffer2;
+	private Imagen original;
 	private JMenu menuDegrade = new JMenu("Degrades");
 	private JMenuItem itemGris = new JMenuItem("Degrade grises");
 	private JMenuItem itemColor = new JMenuItem("Degrade colores");
@@ -99,7 +98,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		initComponents();
 	}
 
-	public Editor(BufferedImage resultado) {
+	public Editor(Imagen resultado) {
 		initComponents();
 		cargarImagen(resultado);
 		//this.setBounds(150, 50, 600, 600);
@@ -251,7 +250,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemProductoMatriz.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null && buffer2!= null){
-					BufferedImage resultado = ObjProcesamiento.producto(buffer1, buffer2);
+					Imagen resultado = ObjProcesamiento.producto(buffer1, buffer2);
 					if (resultado != null){
 						new Editor(resultado);						
 					}else{
@@ -266,7 +265,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemCompRangoDinamico.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null){
-					BufferedImage resultado = ObjProcesamiento.compresionRangoDinamico(buffer1);
+					Imagen resultado = ObjProcesamiento.compresionRangoDinamico(buffer1);
 					if (resultado != null){
 						new Editor(resultado);						
 					}else{
@@ -286,7 +285,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null){
 					int valor = ingresarValorEscalar();
-					BufferedImage resultado = ObjProcesamiento.producto(buffer1, valor);
+					Imagen resultado = ObjProcesamiento.producto(buffer1, valor);
 					new Editor(resultado);
 				}
 			}		
@@ -298,7 +297,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null){
 					double valor = ingresarValorDePotencia();
-					BufferedImage resultado = ObjProcesamiento.potencia(valor);
+					Imagen resultado = ObjProcesamiento.potencia(valor);
 					new Editor(resultado);
 				}
 			}		
@@ -323,7 +322,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemRestar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null && buffer2!= null){
-					BufferedImage resultado = ObjProcesamiento.restar(buffer1, buffer2);
+					Imagen resultado = ObjProcesamiento.restar(buffer1, buffer2);
 					if (resultado != null){
 						new Editor(resultado);						
 					}else{
@@ -352,7 +351,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemSumar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null && buffer2!= null){
-					BufferedImage resultado = ObjProcesamiento.sumar(buffer1, buffer2);
+					Imagen resultado = ObjProcesamiento.sumar(buffer1, buffer2);
 					if (resultado != null){
 						new Editor(resultado);						
 					}else{
@@ -369,7 +368,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				if (seleccionando){
 					Integer ancho = (int) (puntoFinal.getX()-puntoInicial.getX());
 					Integer alto = (int) (puntoFinal.getY()-puntoInicial.getY());
-					BufferedImage copia = new BufferedImage(ancho,alto,1);
+					Imagen copia = new Imagen(ancho,alto);
 					copiar(copia);
 					redibujarImagen();
 					seleccionando = false;
@@ -379,7 +378,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
-	private void copiar(BufferedImage copia) {
+	private void copiar(Imagen copia) {
 		for (int i=(int)puntoInicial.getX(); i < (int)puntoFinal.getX(); i++){
 			for (int j= (int)puntoInicial.getY(); j < (int)puntoFinal.getY(); j++){
 				copia.setRGB(i-(int)puntoInicial.getX(), j-(int)puntoInicial.getY(), buffer1.getRGB(i, j));
@@ -394,7 +393,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (!seleccionando){
 					seleccionando = true;
-					original = new BufferedImage(buffer1.getWidth(),buffer1.getHeight(),1);
+					original = new Imagen(buffer1.getWidth(),buffer1.getHeight());
 					resetPoints();
 				}
 			}
@@ -463,11 +462,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 	
 	private boolean validarAncho(int ancho){
-		return ((ancho>=0)&&(ancho<this.ObjProcesamiento.getImage().getAncho()));
+		return ((ancho>=0)&&(ancho<this.ObjProcesamiento.getImagen().getAncho()));
 	}
 	
 	private boolean validarAlto(int alto){
-		return ((alto>=0)&&(alto<this.ObjProcesamiento.getImage().getAlto()));
+		return ((alto>=0)&&(alto<this.ObjProcesamiento.getImagen().getAlto()));
 	}
 	
 	private boolean validarValorByte(int valor){
@@ -588,7 +587,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	
-	private void aplicarOperacion(BufferedImage proceso) {
+	private void aplicarOperacion(Imagen proceso) {
 		buffer2 = proceso;
 		borrarHistograma();
 		contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
@@ -645,7 +644,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuEcualizarHistograma(){
 		itemEcualizarHistograma.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {;
-			BufferedImage resultado = ObjProcesamiento.ecualizarHistograma();
+			Imagen resultado = ObjProcesamiento.ecualizarHistograma();
 			new Editor(resultado);
 			}
 		});
@@ -667,9 +666,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
-	private void cargarImagen(BufferedImage imagen){
+	private void cargarImagen(Imagen imagen){
 		buffer1 = imagen;
-		ObjProcesamiento.setBuffer(buffer1);
+		ObjProcesamiento.setImagen(buffer1);
 		borrarHistograma();
 		contenedorDeImagen.setIcon(new ImageIcon(buffer1));
 	}
@@ -688,7 +687,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	private void cargarActionPermorfed() {
 		if (buffer1 != null){
-			JComboBox lado = new JComboBox();
+			JComboBox<String> lado = new JComboBox<String>();
 			lado.addItem("Derecho");
 			lado.addItem("Izquierdo");
 			Object[] message = {
@@ -712,7 +711,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		}
 		mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +
-				ObjProcesamiento.getBuffer().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getBuffer().getHeight()+ " pixeles");		
+				ObjProcesamiento.getImagen().getWidth() + " pixeles - Alto: "+ObjProcesamiento.getImagen().getHeight()+ " pixeles");		
 	}
 
 	private void agregarMenuGuardar(){

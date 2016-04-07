@@ -1,7 +1,6 @@
 package procesador.domain;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,7 +18,7 @@ public class ProcesadorDeImagenesPPM extends Procesador{
 	private Integer[][] matrizRGB;
 	
 	@Override
-	public BufferedImage abrirImagen(String name) throws IOException {
+	public Imagen abrirImagen(String name) throws IOException {
 		FileInputStream is =this.openFile(name);
 		return cargarImagen(is);
 	}
@@ -30,7 +29,7 @@ public class ProcesadorDeImagenesPPM extends Procesador{
 		return input;
 	}
 
-	private BufferedImage cargarImagen(FileInputStream br) throws IOException{
+	private Imagen cargarImagen(FileInputStream br) throws IOException{
 		Color color;
 		char[] encabezado = new char[15];
 		for (int i=0; i< 15; i++){
@@ -40,7 +39,7 @@ public class ProcesadorDeImagenesPPM extends Procesador{
 		String[] array = cabecera.split("\\s");
 		ancho = Integer.valueOf(array[1]);
 		alto = Integer.valueOf(array[2]);
-		BufferedImage buff = new BufferedImage(ancho, alto, 1);
+		Imagen buff = new Imagen(ancho, alto);
 		pixeles = new Integer[ancho][alto];
 		matrizRGB = new Integer[ancho][alto]; 
 		Rband = new Integer[ancho][alto];

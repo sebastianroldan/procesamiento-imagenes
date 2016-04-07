@@ -1,7 +1,6 @@
 package procesador.domain;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,10 +15,10 @@ public class ProcesadorDeImagenesPGM extends Procesador {
 	private Integer[][] pixeles;
 
 	@Override
-	public BufferedImage abrirImagen(String fileName) throws IOException {
+	public Imagen abrirImagen(String fileName) throws IOException {
 		File file = openFile(fileName);
 		cargarImagen(file);
-		BufferedImage buff = obtenerImagen();
+		Imagen buff = obtenerImagen();
 		return buff;
 	}
 
@@ -69,8 +68,8 @@ public class ProcesadorDeImagenesPGM extends Procesador {
 		alto = Integer.valueOf(array[1]);
 	}
 
-	private BufferedImage obtenerImagen() {
-		BufferedImage buff = new BufferedImage(ancho, alto, 1);
+	private Imagen obtenerImagen() {
+		Imagen buff = new Imagen(ancho, alto);
 		Color color;
 		for (int i=0; i < ancho; i++){
 			for (int j=0; j < alto; j++){

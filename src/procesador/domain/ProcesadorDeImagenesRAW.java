@@ -37,7 +37,7 @@ public class ProcesadorDeImagenesRAW extends Procesador {
 	}
 	
 	@Override
-	public BufferedImage abrirImagen(String name) throws IOException {
+	public Imagen abrirImagen(String name) throws IOException {
 		FileInputStream is =this.openFile(name);
 		return cargarImagen(is);
 	}
@@ -48,9 +48,9 @@ public class ProcesadorDeImagenesRAW extends Procesador {
 		return input;
 	}
 	
-	private BufferedImage cargarImagen(FileInputStream br) throws IOException{
+	private Imagen cargarImagen(FileInputStream br) throws IOException{
 		Color color;
-		BufferedImage buff = new BufferedImage(ancho, alto, 1);
+		Imagen buff = new Imagen(ancho, alto);
 		for (int i=0; i < ancho; i++){
 			for (int j=0; j < alto; j++){		
 				pixeles[i][j] = br.read();
