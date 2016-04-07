@@ -376,6 +376,7 @@ public class ProcesadorDeImagenes {
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
 					suma = comprimirRango((gris1-gris2)+255,510);
+					//modificar con una transformacion lineal.
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}
@@ -432,6 +433,7 @@ public class ProcesadorDeImagenes {
 			for(int j=0;j<buffer.getHeight();j++) {
 				division= (double) calcularPromedio(buffer.getRGB(i, j))/255;
 				resultado = (int) (255*Math.pow(division, potencia));
+				//ver potencia..
 				color =new Color(resultado,resultado,resultado);
 				salida.setRGB(i, j, color.getRGB());
 			}
