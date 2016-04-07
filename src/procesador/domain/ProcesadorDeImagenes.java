@@ -328,7 +328,7 @@ public class ProcesadorDeImagenes {
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
-					suma = (gris1+gris2)/2;
+					suma = (int) transformacionLineal(gris1+gris2, 510, 0);
 				//	suma = comprimirRango((gris1+gris2),510);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
@@ -341,6 +341,11 @@ public class ProcesadorDeImagenes {
 
 	
 	
+	private double transformacionLineal(double suma, double max, int origen) {
+		double salida = suma*(255/max)+origen;
+		return salida;
+	}
+
 	private int comprimirRango(int r, int max) {
 		int um = (int) (Math.log(max+1) / Math.log(2));
 		int c = (255/um)*  (int) (Math.log(r+1) / Math.log(2));
@@ -362,7 +367,8 @@ public class ProcesadorDeImagenes {
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
-					suma = comprimirRango((gris1-gris2)+255,510);
+					suma = (int) transformacionLineal(gris1-gris2, 765, 85);
+					//suma = comprimirRango((gris1-gris2)+255,510);
 					//modificar con una transformacion lineal.
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
@@ -380,7 +386,8 @@ public class ProcesadorDeImagenes {
 		for (int i=0; i < buff.getWidth(); i++){
 			for(int j =0; j < buff.getHeight(); j++){
 				gris = new Color(buff.getRGB(i, j)).getBlue();
-				producto = comprimirRango(gris, valor*255);
+				producto = (int) transformacionLineal(gris*valor, valor*255, 0);
+				//producto = comprimirRango(gris, valor*255);
 				resultado.setRGB(i, j, new Color(producto, producto, producto).getRGB());
 			}
 		}
@@ -479,7 +486,8 @@ public class ProcesadorDeImagenes {
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
-					suma = comprimirRango((gris1*gris2),255*255);
+					suma = (int) transformacionLineal(gris1*gris2, 255*255, 0);
+//					suma = comprimirRango((gris1*gris2),255*255);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}
