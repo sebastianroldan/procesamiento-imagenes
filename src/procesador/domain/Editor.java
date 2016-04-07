@@ -23,7 +23,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -58,8 +57,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemR = new JMenuItem("Banda R");
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
-	private JMenuItem itemNegativoGris = new JMenuItem("Negativo");
-	private JMenuItem itemNegativoColor = new JMenuItem("Negativo Color");
+	private JMenuItem itemNegativo = new JMenuItem("Negativo");
 	private BufferedImage buffer1;
 	private BufferedImage buffer2;
 	private BufferedImage original;
@@ -85,6 +83,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemProducto = new JMenuItem("Producto por escalar");
 	private JMenuItem itemProductoMatriz = new JMenuItem("Producto de imagenes");
 	private JMenuItem itemPotencia = new JMenuItem("Potencia");
+	private JMenuItem itemCompRangoDinamico = new JMenuItem("Comp Rango Dinámico");
 	private JMenu menuContraste = new JMenu("Contraste");
 	private JMenuItem itemContraste = new JMenuItem("Contrastar");
 	private JLabel mensaje = new JLabel("");
@@ -184,8 +183,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemR);
 		menuFiltros.add(itemG);
 		menuFiltros.add(itemB);
-		menuFiltros.add(itemNegativoGris);
-		menuFiltros.add(itemNegativoColor);
+		menuFiltros.add(itemNegativo);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDegrade);
 		menuPixel.add(itemGet);
@@ -207,6 +205,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuOperaciones.add(itemProducto);
 		menuOperaciones.add(itemPotencia);
 		menuOperaciones.add(itemProductoMatriz);
+		menuOperaciones.add(itemCompRangoDinamico);
 		menuContraste.add(itemContraste);
 		menuBar.add(menuContraste);
 		return menuBar;
@@ -224,8 +223,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuCargar();
 		agregarMenuCuadrado();
 		agregarMenuGrises();
-		agregarMenuNegativoGris();
-		agregarMenuNegativoColor();
+		agregarMenuNegativo();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -245,6 +243,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuProducto();
 		agregarMenuProductoMatriz();
 		agregarMenuPotencia();
+		agregarMenuCompRangoDinamico();
 		agregarMenuContrastar();
 	}
 
@@ -263,6 +262,25 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 
+	private void agregarMenuCompRangoDinamico() {
+		itemCompRangoDinamico.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1!= null){
+					BufferedImage resultado = ObjProcesamiento.compresionRangoDinamico(buffer1);
+					if (resultado != null){
+						new Editor(resultado);						
+					}else{
+						JOptionPane.showMessageDialog(null, "Error al calcular la compresión de rango dinámico sobre la imagen.");
+					}
+				}else{
+					JOptionPane.showMessageDialog(null, "Debe abrir una imagen primero sobre el panel izquierdo para procesar la operación.");
+				}
+			}
+		});
+	}
+	
+	
+	
 	private void agregarMenuProducto() {
 		itemProducto.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -561,21 +579,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		aplicarOperacion(ObjProcesamiento.pasarAEscalaDeGrises(buffer1));
 	}
 	
-	private void agregarMenuNegativoGris() {
-		itemNegativoGris.addActionListener(new java.awt.event.ActionListener() {
+	private void agregarMenuNegativo() {
+		itemNegativo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aplicarOperacion(ObjProcesamiento.pasarANegativoImagenGris(buffer1));
+				aplicarOperacion(ObjProcesamiento.pasarANegativoImagen(buffer1));
 			}
 		});		
 	}
 
-	private void agregarMenuNegativoColor() {
-		itemNegativoColor.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aplicarOperacion(ObjProcesamiento.pasarANegativoImagenColor(buffer1));
-			}
-		});		
-	}
 	
 	private void aplicarOperacion(BufferedImage proceso) {
 		buffer2 = proceso;
@@ -675,10 +686,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	private void cargarActionPermorfed() {
 		if (buffer1 != null){
-			@SuppressWarnings("rawtypes")
 			JComboBox lado = new JComboBox();
 			lado.addItem("Derecho");
 			lado.addItem("Izquierdo");
@@ -835,8 +844,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
         for (int i = 0; i < histograma.length; i++){
             dataset.addValue(histograma[i], serie, "" + i);
         }
-        JFreeChart chart = ChartFactory.createBarChart("Frequency Histogram", null, null,
+        JFreeChart chart = ChartFactory.createBarChart("Frequency Histogram", "Escala de grises", "Cantidad de Pixeles",
                                     dataset, PlotOrientation.VERTICAL, true, true, false);
+
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setSeriesPaint(0, colorBarras);

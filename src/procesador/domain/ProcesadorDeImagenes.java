@@ -228,21 +228,8 @@ public class ProcesadorDeImagenes {
 	   }
 	}
 	
-	public BufferedImage pasarANegativoImagenGris(BufferedImage buff) {
-		 		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
-		 		Color color;  
-		 		int c;
-		    	for (int i=0; i < buff.getWidth(); i++){
-		 			for(int j =0; j < buff.getHeight(); j++){
-		 				c = 255 - calcularPromedio(buff.getRGB(i, j));
-		 				color = new Color(c,c,c);
-		 				salida.setRGB(i, j, color.getRGB());
-		 			}
-		 		}
-		 		return salida;
-		 	}
 	
-	public BufferedImage pasarANegativoImagenColor(BufferedImage buff) {
+	public BufferedImage pasarANegativoImagen(BufferedImage buff) {
 		BufferedImage salida = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
 		Color color;  
 		int colorR,colorG, colorB;
@@ -395,6 +382,47 @@ public class ProcesadorDeImagenes {
 				gris = new Color(buff.getRGB(i, j)).getBlue();
 				producto = comprimirRango(gris, valor*255);
 				resultado.setRGB(i, j, new Color(producto, producto, producto).getRGB());
+			}
+		}
+		return resultado;
+	}
+		
+	public BufferedImage compresionRangoDinamico(BufferedImage buff) {
+		
+		if (buff!=null){
+			int valorGris=0;
+			int maxValorGris=getMaxValorGris(buff);
+			
+			buff = this.pasarAEscalaDeGrises(buff);
+			
+			BufferedImage resultado = new BufferedImage(buff.getWidth(),buff.getHeight(),1);
+			
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					valorGris =calcularPromedio(buff.getRGB(i, j));
+					valorGris = comprimirRango(valorGris,maxValorGris);
+					resultado.setRGB(i, j, (new Color(valorGris, valorGris, valorGris)).getRGB());
+				}
+			}
+			return resultado;
+		}else{
+			return null;
+		}
+	}
+	
+	private int getMaxValorGris(BufferedImage buff){
+		
+		int resultado=0;
+		int valorGris=0;
+		
+		if (buff!=null){
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					valorGris =calcularPromedio(buff.getRGB(i, j));
+					if (valorGris>resultado){
+						resultado=valorGris;
+					}
+				}
 			}
 		}
 		return resultado;
