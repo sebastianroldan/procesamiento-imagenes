@@ -57,8 +57,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemR = new JMenuItem("Banda R");
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
-	private JMenuItem itemNegativoGris = new JMenuItem("Negativo");
-	private JMenuItem itemNegativoColor = new JMenuItem("Negativo Color");
+	private JMenuItem itemNegativo = new JMenuItem("Negativo");
 	private BufferedImage buffer1;
 	private BufferedImage buffer2;
 	private BufferedImage original;
@@ -184,8 +183,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemR);
 		menuFiltros.add(itemG);
 		menuFiltros.add(itemB);
-		menuFiltros.add(itemNegativoGris);
-		menuFiltros.add(itemNegativoColor);
+		menuFiltros.add(itemNegativo);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDegrade);
 		menuPixel.add(itemGet);
@@ -225,8 +223,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuCargar();
 		agregarMenuCuadrado();
 		agregarMenuGrises();
-		agregarMenuNegativoGris();
-		agregarMenuNegativoColor();
+		agregarMenuNegativo();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -582,21 +579,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		aplicarOperacion(ObjProcesamiento.pasarAEscalaDeGrises(buffer1));
 	}
 	
-	private void agregarMenuNegativoGris() {
-		itemNegativoGris.addActionListener(new java.awt.event.ActionListener() {
+	private void agregarMenuNegativo() {
+		itemNegativo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aplicarOperacion(ObjProcesamiento.pasarANegativoImagenGris(buffer1));
+				aplicarOperacion(ObjProcesamiento.pasarANegativoImagen(buffer1));
 			}
 		});		
 	}
 
-	private void agregarMenuNegativoColor() {
-		itemNegativoColor.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aplicarOperacion(ObjProcesamiento.pasarANegativoImagenColor(buffer1));
-			}
-		});		
-	}
 	
 	private void aplicarOperacion(BufferedImage proceso) {
 		buffer2 = proceso;
