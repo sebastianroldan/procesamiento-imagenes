@@ -327,8 +327,8 @@ public class ProcesadorDeImagenes {
 	}
 
 	private int comprimirRango(int r, int max) {
-		int um = (int) (Math.log(max+1) / Math.log(2));
-		int c = (255/um)*  (int) (Math.log(r+1) / Math.log(2));
+		int um = (int) (Math.log(max+1));
+		int c = (255/um)*  (int) (Math.log(r+1));
 		return c;
 	}
 
