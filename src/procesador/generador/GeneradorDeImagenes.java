@@ -73,4 +73,48 @@ public class GeneradorDeImagenes {
 		return buff;
 	}
 	
+	public Imagen ruidoExponencial() {
+		Imagen buff = new Imagen(100, 100);
+		Color color;
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		int r = 0;
+		for (int i=0; i < 100; i++){
+			for (int j=0; j < 100; j++){
+					r = gen.generadorExponencial(0.2);
+					color = new Color(r,r,r);
+					buff.setRGB(j, i, color.getRGB());
+			}
+		}		
+		return buff;
+	}
+	
+	public Imagen ruidoGauss() {
+		Imagen buff = new Imagen(100, 100);
+		Color color;
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		int r = 0;
+		for (int i=0; i < 100; i++){
+			for (int j=0; j < 100; j++){
+					r = gen.generadorGaussiano(84, 1);
+					color = new Color(r,r,r);
+					buff.setRGB(j, i, color.getRGB());
+			}
+		}		
+		return buff;
+	}
+	
+	public Imagen ruidoRayleigh() {
+		Imagen buff = new Imagen(100, 100);
+		Color color;
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		int r = 0;
+		for (int i=0; i < 100; i++){
+			for (int j=0; j < 100; j++){
+					r = gen.generadorExponencial(0.2);
+					color = new Color(r,r,r);
+					buff.setRGB(j, i, color.getRGB());
+			}
+		}		
+		return buff;
+	}
 }

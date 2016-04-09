@@ -85,6 +85,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemCompRangoDinamico = new JMenuItem("Comp Rango Dinámico");
 	private JMenu menuContraste = new JMenu("Contraste");
 	private JMenuItem itemContraste = new JMenuItem("Contrastar");
+	private JMenu menuRuidos = new JMenu("Ruido");
+	private JMenuItem itemExponencial = new JMenuItem("Ruido exponencial");	
+	private JMenuItem itemGauss = new JMenuItem("Ruido gaussiano");
+	private JMenuItem itemRayleigh = new JMenuItem("Ruido rayleigh");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -206,6 +210,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuOperaciones.add(itemProductoMatriz);
 		menuOperaciones.add(itemCompRangoDinamico);
 		menuContraste.add(itemContraste);
+		menuBar.add(menuRuidos);
+		menuRuidos.add(itemExponencial);
+		menuRuidos.add(itemGauss);
+		menuRuidos.add(itemRayleigh);
 		menuBar.add(menuContraste);
 		return menuBar;
 	}
@@ -244,8 +252,35 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuPotencia();
 		agregarMenuCompRangoDinamico();
 		agregarMenuContrastar();
+		agregarMenuExponencial();
+		agregarMenuGauss();
+		agregarMenuRayleigh();
 	}
 
+	private void agregarMenuExponencial() {
+		itemExponencial.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				cargarImagen(new GeneradorDeImagenes().ruidoExponencial());
+			}
+		});
+	}
+	
+	private void agregarMenuGauss() {
+		itemGauss.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				cargarImagen(new GeneradorDeImagenes().ruidoGauss());
+			}
+		});
+	}
+
+	private void agregarMenuRayleigh() {
+		itemRayleigh.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				cargarImagen(new GeneradorDeImagenes().ruidoRayleigh());
+			}
+		});
+	}
+	
 	private void agregarMenuProductoMatriz() {
 		itemProductoMatriz.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -545,37 +580,25 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuDegradeGris() {
 		itemGris.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				degradeGrisActionPerformed(evt);
+				cargarImagen(new GeneradorDeImagenes().dezplegarDegradeGrises());
 			}
 		});
-	}
-	
-	private void degradeGrisActionPerformed(ActionEvent evt) {
-		cargarImagen(new GeneradorDeImagenes().dezplegarDegradeGrises());
 	}
 	
 	private void agregarMenuDegradeColor() {
 		itemColor.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				degradeColorActionPerformed(evt);
+				cargarImagen(new GeneradorDeImagenes().dezplegarDegradeColor());
 			}
 		});
-	}
-	
-	private void degradeColorActionPerformed(ActionEvent evt) {
-		cargarImagen(new GeneradorDeImagenes().dezplegarDegradeColor());
 	}
 
 	private void agregarMenuGrises() {
 		itemGrises.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				grisesActionPerformed(evt);
+				aplicarOperacion(ObjProcesamiento.pasarAEscalaDeGrises(buffer1));
 			}
 		});		
-	}
-
-	private void grisesActionPerformed(ActionEvent evt) {
-		aplicarOperacion(ObjProcesamiento.pasarAEscalaDeGrises(buffer1));
 	}
 	
 	private void agregarMenuNegativo() {
