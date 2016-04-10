@@ -73,14 +73,14 @@ public class GeneradorDeImagenes {
 		return buff;
 	}
 	
-	public Imagen ruidoExponencial() {
+	public Imagen ruidoExponencial(double lambda) {
 		Imagen buff = new Imagen(100, 100);
 		Color color;
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
 		for (int i=0; i < 100; i++){
 			for (int j=0; j < 100; j++){
-					r = gen.generadorExponencial(0.2);
+					r = gen.generadorExponencial(lambda);
 					color = new Color(r,r,r);
 					buff.setRGB(j, i, color.getRGB());
 			}
@@ -88,14 +88,14 @@ public class GeneradorDeImagenes {
 		return buff;
 	}
 	
-	public Imagen ruidoGauss() {
+	public Imagen ruidoGauss(double mu, double sigma) {
 		Imagen buff = new Imagen(100, 100);
 		Color color;
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
 		for (int i=0; i < 100; i++){
 			for (int j=0; j < 100; j++){
-					r = gen.generadorGaussiano(84, 1);
+					r = gen.generadorGaussiano(mu, sigma);
 					color = new Color(r,r,r);
 					buff.setRGB(j, i, color.getRGB());
 			}
@@ -103,14 +103,14 @@ public class GeneradorDeImagenes {
 		return buff;
 	}
 	
-	public Imagen ruidoRayleigh() {
+	public Imagen ruidoRayleigh(double fi) {
 		Imagen buff = new Imagen(100, 100);
 		Color color;
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
 		for (int i=0; i < 100; i++){
 			for (int j=0; j < 100; j++){
-					r = gen.generadorExponencial(0.2);
+					r = gen.generadorRayleigh(fi);
 					color = new Color(r,r,r);
 					buff.setRGB(j, i, color.getRGB());
 			}

@@ -89,6 +89,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemExponencial = new JMenuItem("Ruido exponencial");	
 	private JMenuItem itemGauss = new JMenuItem("Ruido gaussiano");
 	private JMenuItem itemRayleigh = new JMenuItem("Ruido rayleigh");
+	private JMenuItem itemSal = new JMenuItem("Agregar sal y pimienta");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -214,6 +215,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuRuidos.add(itemExponencial);
 		menuRuidos.add(itemGauss);
 		menuRuidos.add(itemRayleigh);
+		menuRuidos.add(itemSal);
 		menuBar.add(menuContraste);
 		return menuBar;
 	}
@@ -255,12 +257,39 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuExponencial();
 		agregarMenuGauss();
 		agregarMenuRayleigh();
+		agregarMenuSal();
+	}
+
+	private void agregarMenuSal() {
+		itemSal.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField porcen = new JTextField();
+				JTextField valorp0 = new JTextField();
+				JTextField valorp1 = new JTextField();
+				Object[] message = {
+				    "Porcentaje afectado:", porcen,
+				    "Valor P0:" , valorp0,
+				    "Valor P1:" , valorp1
+				};
+				int porcentaje = 0;
+				double p0 = 0;
+				double p1 = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese loos valores de ruido", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 porcentaje = Integer.valueOf(porcen.getText());
+					 p0 = Double.valueOf(valorp0.getText());
+					 p1 = Double.valueOf(valorp1.getText());
+				}
+				aplicarOperacion(ObjProcesamiento.agregarRuidoSalYPimienta(buffer1,p0,p1, porcentaje));
+			}
+		});
 	}
 
 	private void agregarMenuExponencial() {
 		itemExponencial.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagen(new GeneradorDeImagenes().ruidoExponencial());
+				cargarImagen(new GeneradorDeImagenes().ruidoExponencial(0.2));
 			}
 		});
 	}
@@ -268,7 +297,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuGauss() {
 		itemGauss.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagen(new GeneradorDeImagenes().ruidoGauss());
+				cargarImagen(new GeneradorDeImagenes().ruidoGauss(12,0.2));
 			}
 		});
 	}
@@ -276,7 +305,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuRayleigh() {
 		itemRayleigh.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagen(new GeneradorDeImagenes().ruidoRayleigh());
+				cargarImagen(new GeneradorDeImagenes().ruidoRayleigh(25));
 			}
 		});
 	}

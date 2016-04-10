@@ -43,7 +43,8 @@ public class Imagen extends BufferedImage{
 
 	private int obtenerValorGris(int valorRGB) {
 		Color color = new Color(valorRGB);
-		return (int)((color.getBlue()+color.getRed()+color.getGreen())/3);
+		int valor = (int)((color.getBlue()+color.getRed()+color.getGreen())/3);
+		return valor;
 	}
 	
 	public int getRed(int x, int y){

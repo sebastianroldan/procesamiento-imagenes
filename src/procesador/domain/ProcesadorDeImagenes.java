@@ -470,5 +470,36 @@ public class ProcesadorDeImagenes {
 			return null;
 		}
 	}
+
+	public Imagen agregarRuidoSalYPimienta(Imagen buff, double p0, double p1, int porcentaje) {
+		int pixelesAfectados = (buff.getAlto()*buff.getAncho()*porcentaje)/100;
+		int countPixel = 0;
+		int coef = (buff.getAlto()*buff.getAncho())/pixelesAfectados;
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());		
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				if ((countPixel%coef) == 0){
+						salida.setRGB(i, j, agregarRuido(buff,i,j,p0,p1));
+				}else{
+					salida.setRGB(i, j, buff.getRGB(i, j));
+				}
+				countPixel++;
+			}
+		}
+	return salida;
+	}
+
+	private int agregarRuido(Imagen buff, int i, int j, double p0, double p1) {
+		Color negro =new Color(0,0,0);
+		Color blanco =new Color(255,255,255);
+		double u = Math.random();
+		if (u<p0){
+			return negro.getRGB();
+		}
+		if (u>p1){
+			return blanco.getRGB();
+		}
+		return buff.getRGB(i, j);
+	}
 	
 }
