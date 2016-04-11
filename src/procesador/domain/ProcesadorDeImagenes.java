@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import procesador.generador.GeneradorDeNumeros;
+
 
 public class ProcesadorDeImagenes {
 	
@@ -471,25 +473,118 @@ public class ProcesadorDeImagenes {
 		}
 	}
 
-	public Imagen agregarRuidoSalYPimienta(Imagen buff, double p0, double p1, int porcentaje) {
-		int pixelesAfectados = (buff.getAlto()*buff.getAncho()*porcentaje)/100;
-		int countPixel = 0;
-		int coef = (buff.getAlto()*buff.getAncho())/pixelesAfectados;
-		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());		
+	public Imagen agregarRuidoExponencial(Imagen buff, double lambda) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		int ruido=0;
 		for (int i=0; i < buff.getWidth(); i++){
 			for(int j =0; j < buff.getHeight(); j++){
-				if ((countPixel%coef) == 0){
-						salida.setRGB(i, j, agregarRuido(buff,i,j,p0,p1));
-				}else{
-					salida.setRGB(i, j, buff.getRGB(i, j));
-				}
-				countPixel++;
+				ruido=gen.generadorAleatorioExponencial(lambda);
+				salida.setRGB(i, j,colorRGBconRuidoMultiplicativo(buff.getRGB(i,j),ruido));
 			}
 		}
 	return salida;
 	}
+	
+	public Imagen agregarRuidoRayleigh(Imagen buff, double fi) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		int ruido=0;
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				ruido=gen.generadorAleatorioRayleigh(fi);
+				salida.setRGB(i, j,colorRGBconRuidoMultiplicativo(buff.getRGB(i,j),ruido));
+			}
+		}
+	return salida;
+	}
+	
+	public Imagen agregarRuidoGauss(Imagen buff, double media, double desvio) {
+		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		int ruido=0;
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				ruido=gen.generadorAleatorioGaussiano(media,desvio);
+				salida.setRGB(i, j,colorRGBconRuidoAditivo(buff.getRGB(i,j),ruido));
+			}
+		}
+	return salida;
+	}
+	
+	private int colorRGBconRuidoMultiplicativo(int rgb,int ruido){
+		int salida=0;
+		Color colorIN=null;
+		Color colorOUT=null;
+		int red=0;
+		int green=0;
+		int blue=0;
+		
+		colorIN=new Color(rgb);
+		red=validarColor(colorIN.getRed()*ruido);
+		green=validarColor(colorIN.getGreen()*ruido);
+		blue=validarColor(colorIN.getBlue()*ruido);
+		colorOUT=new Color(red,green,blue);
+		
+		salida=colorOUT.getRGB();
+		
+		return salida;
+	}
+	
+	private int colorRGBconRuidoAditivo(int rgb,int ruido){
+		int salida=0;
+		Color colorIN=null;
+		Color colorOUT=null;
+		int red=0;
+		int green=0;
+		int blue=0;
+		
+		colorIN=new Color(rgb);
+		red=validarColor(colorIN.getRed()+ruido);
+		green=validarColor(colorIN.getGreen()+ruido);
+		blue=validarColor(colorIN.getBlue()+ruido);
+		colorOUT=new Color(red,green,blue);
+		
+		salida=colorOUT.getRGB();
+		
+		return salida;
+	}
+	
+	private int validarColor(int valor){
+		int salida=valor;
+		if (valor<0){
+			salida=0;
+		} else if (valor>255){
+			salida=255;
+		}
+		return salida;
+	}
+	
+	public Imagen agregarRuidoSalYPimienta(Imagen buff, double p0, double p1, int porcentaje) {
+		Imagen salida=null;
+		
+		if (buff!=null){
+		
+			int pixelesAfectados = (buff.getAlto()*buff.getAncho()*porcentaje)/100;
+			int countPixel = 0;
+			int coef = (buff.getAlto()*buff.getAncho())/pixelesAfectados;
+			salida = new Imagen(buff.getWidth(),buff.getHeight());		
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					if ((countPixel%coef) == 0){
+							salida.setRGB(i, j, agregarRuidoSyP(buff,i,j,p0,p1));
+					}else{
+						salida.setRGB(i, j, buff.getRGB(i, j));
+					}
+					countPixel++;
+				}
+			}
+		}
+	
+		return salida;
+	}
 
-	private int agregarRuido(Imagen buff, int i, int j, double p0, double p1) {
+	private int agregarRuidoSyP(Imagen buff, int i, int j, double p0, double p1) {
 		Color negro =new Color(0,0,0);
 		Color blanco =new Color(255,255,255);
 		double u = Math.random();
