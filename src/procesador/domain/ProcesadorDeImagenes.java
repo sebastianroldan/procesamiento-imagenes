@@ -596,5 +596,70 @@ public class ProcesadorDeImagenes {
 		}
 		return buff.getRGB(i, j);
 	}
+
+	public Imagen pasarFiltreDeLaMedia(Imagen buff, int mascara) {
+		Imagen salida=null;
+		if (buff!=null){
+			int[][] matrizMascara= crearMascaraMedia(mascara);
+			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
+			if(mascara%2!=0){
+				salida=pasarMascaraImpar(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
+			}
+			else{
+				salida=pasarMascaraImpar(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
+			}
+		}
+		return salida;
+	}
+	
+	private int[][] crearMascaraMedia(int mascara) {
+		int[][] matrizMascara = new int[mascara][mascara];
+		for (int i=0; i < mascara; i++){
+			for(int j =0; j < mascara; j++){
+				matrizMascara[i][j]=1;
+			}
+		}
+		return matrizMascara;
+	}
+
+	private Imagen pasarMascaraImpar(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascara, int mascara, int divisor) {
+		int red=0;
+		int green=0;
+		int blue=0;
+		for (int i=0; i <= ancho-mascara; i++){
+			for(int j =0; j <= alto-mascara; j++){
+				for (int k=0; k < mascara; k++){
+					for(int m =0; m < mascara; m++){
+						red = red + (new Color(buff.getRGB(i+k, j+m)).getRed())*matrizMascara[k][m]; 
+						green = green + (new Color(buff.getRGB(i+k, j+m)).getGreen())*matrizMascara[k][m]; 
+						blue = blue + (new Color(buff.getRGB(i+k, j+m)).getBlue())*matrizMascara[k][m]; 
+					}
+				}
+				red= (int) (red/divisor);
+				green= (int) (green/divisor);
+				blue= (int) (blue/divisor);
+				Color color= new Color(red,green, blue);
+				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
+				red=0;
+				green=0;
+				blue=0;
+			}
+		}
+		return salida;
+	}
+	
+
+
+	private Imagen rellenarImagen( int ancho, int alto){
+		Color color = new Color(255,255,255);
+		Imagen salida;
+		salida = new Imagen(ancho,alto);		
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				salida.setRGB(i, j, color.getRGB());
+			}
+		}
+		return salida;
+	}
 	
 }

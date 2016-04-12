@@ -12,8 +12,6 @@ public int generadorAleatorioExponencial(double lambda){
 		}else{
 			valor = (int)Math.round((-1*(Math.log(u))/lambda));
 		}
-		//System.out.println("X: "+u+" Y: "+valor);
-		
 		return valor;
 	}
 	

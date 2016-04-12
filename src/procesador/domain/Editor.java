@@ -58,6 +58,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
 	private JMenuItem itemNegativo = new JMenuItem("Negativo");
+	private JMenuItem itemMedia = new JMenuItem("Media");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -211,6 +212,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemB.setMnemonic(KeyEvent.VK_B);
 		menuFiltros.add(itemNegativo);
 		itemNegativo.setMnemonic(KeyEvent.VK_N);
+		menuFiltros.add(itemMedia);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -286,6 +288,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuCuadrado();
 		agregarMenuGrises();
 		agregarMenuNegativo();
+		agregarMenuMedia();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -753,12 +756,32 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});		
 	}
-
 	
+	private void agregarMenuMedia() {
+		itemMedia.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField mascara = new JTextField();
+				Object[] message = {
+				    "Tamaño de mascara", mascara
+				};
+				int tamañoMascara = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					tamañoMascara = Integer.valueOf(mascara.getText());
+				}
+				aplicarOperacion(ObjProcesamiento2.pasarFiltreDeLaMedia(buffer2,tamañoMascara));
+			}
+		});
+	}
+	
+		
 	private void aplicarOperacion(Imagen proceso) {
-		buffer2 = proceso;
-		borrarHistograma();
-		contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+		if(proceso!=null){
+			buffer2 = proceso;
+			borrarHistograma();
+			contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+		}
 	}
 
 	private void agregarMenuCuadrado() {
