@@ -11,5 +11,4 @@ public abstract class Procesador {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

@@ -2,6 +2,7 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -45,8 +46,9 @@ public class ProcesadorDeImagenes {
 		Imagen image = null;
 		Procesador proc = null;
 		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
-			image = (Imagen)ImageIO.read(file);
-			proc = new ProcesadorDeImagenesJPGyBMP(image);
+			BufferedImage image2 = ImageIO.read(file);
+			ProcesadorDeImagenesJPGyBMP proc2 = new ProcesadorDeImagenesJPGyBMP(image2);
+			image = proc2.getImage();
 			
 		} else{ 
 			if ((tipoImagen.equalsIgnoreCase("PPM"))){
@@ -306,14 +308,16 @@ public class ProcesadorDeImagenes {
 	public Imagen sumar(Imagen buff, Imagen buff2) {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
-		int suma, gris1, gris2;
+		int suma, gris1, gris2, max, min;
+		max = buscarMaximo(buff, buff2,1);
+		min = buscarMinimo(buff, buff2,1);
 		if (sonIguales(buff, buff2)){
 			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
-					suma = (int) transformacionLineal(gris1+gris2, 510, 0);
+					suma = (int) transformacionLineal(gris1+gris2, max, min);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}
@@ -323,8 +327,55 @@ public class ProcesadorDeImagenes {
 		}
 	}
 
-	private double transformacionLineal(double suma, double max, int origen) {
-		double salida = suma*(255/max)+origen;
+	private int buscarMaximo(Imagen buff, Imagen buff2, int operacion) {
+		int suma, gris1, gris2, max = 0;
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				gris1 = new Color(buff.getRGB(i, j)).getBlue();
+				gris2 = new Color(buff2.getRGB(i, j)).getBlue();
+				if (operacion == 1){
+					suma = gris1+gris2;
+				}else{
+					if (operacion == 2){
+						suma = gris1-gris2;
+					}else{
+						suma = gris1*gris2;
+					}
+				}
+				if (suma > max){
+					max = suma;
+				}
+			}
+		}
+		return max;
+	}
+
+	private int buscarMinimo(Imagen buff, Imagen buff2, int operacion) {
+		int suma, gris1, gris2, min = 255*255;
+		for (int i=0; i < buff.getWidth(); i++){
+			for(int j =0; j < buff.getHeight(); j++){
+				gris1 = new Color(buff.getRGB(i, j)).getBlue();
+				gris2 = new Color(buff2.getRGB(i, j)).getBlue();
+				if (operacion == 1){
+					suma = gris1+gris2;
+				}else{
+					if (operacion == 2){
+						suma = gris1-gris2;
+					}else{
+						suma = gris1*gris2;
+					}
+				}
+				if (suma < min){
+					min = suma;
+				}
+			}
+		}
+		return min;
+	}
+	
+	
+	private double transformacionLineal(double suma, double max, int min) {
+		double salida = suma*(255/(max-min))+(255-((255*max)/(max-min)));
 		return salida;
 	}
 
@@ -333,6 +384,7 @@ public class ProcesadorDeImagenes {
 		int c = (255/um)*  (int) (Math.log(r+1));
 		return c;
 	}
+	
 
 	private boolean sonIguales(Imagen buff, Imagen buff2) {
 		
@@ -343,13 +395,15 @@ public class ProcesadorDeImagenes {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
+		int max = buscarMaximo(buff, buff2,2);
+		int min = buscarMinimo(buff, buff2,2);
 		if (sonIguales(buff, buff2)){
 			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
-					suma = (int) transformacionLineal(gris1-gris2, 765, 85);
+					suma = (int) transformacionLineal(gris1-gris2, max, min);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}
@@ -457,13 +511,15 @@ public class ProcesadorDeImagenes {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
+		int max = buscarMaximo(buff, buff2,3);
+		int min = buscarMinimo(buff, buff2,3);
 		if (sonIguales(buff, buff2)){
 			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					gris1 = new Color(buff.getRGB(i, j)).getBlue();
 					gris2 = new Color(buff2.getRGB(i, j)).getBlue();
-					suma = (int) transformacionLineal(gris1*gris2, 255*255, 0);
+					suma = (int) transformacionLineal(gris1*gris2, max, min);
 					resultado.setRGB(i, j, new Color(suma, suma, suma).getRGB());
 				}
 			}

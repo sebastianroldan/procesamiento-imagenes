@@ -3,23 +3,21 @@ package procesador.domain;
 import java.awt.image.BufferedImage;
 
 public class ProcesadorDeImagenesJPGyBMP extends Procesador{
-	private BufferedImage image = null;
+	private Imagen image = null;
 	private Integer ancho;
 	private Integer alto;
-	private Integer[][] pixeles;
 	
 	ProcesadorDeImagenesJPGyBMP(BufferedImage image){
-		this.image = image;
+		this.image = new Imagen(image.getWidth(),image.getHeight());
 		this.alto= image.getHeight();
 		this.ancho= image.getWidth();
-		crearMatriz();
+		crearMatriz(image);
 	}
 	
-	private void crearMatriz(){
-		pixeles = new Integer[ancho][alto]; 
+	private void crearMatriz(BufferedImage image){
 		for (int i=0; i < ancho; i++){
 			for (int j=0; j < alto; j++){		
-				pixeles[i][j] = image.getRGB(i,j);
+				this.image.setRGB(i, j, image.getRGB(i,j));
 			}
 		}
 	}
@@ -36,7 +34,11 @@ public class ProcesadorDeImagenesJPGyBMP extends Procesador{
 
 	@Override
 	public Integer[][] getMatriz() {
-		return pixeles;
+		return null;
+	}
+	
+	public Imagen getImage(){
+		return image;
 	}
 
 }
