@@ -602,16 +602,34 @@ public class ProcesadorDeImagenes {
 		if (buff!=null){
 			int[][] matrizMascara= crearMascaraMedia(mascara);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			if(mascara%2!=0){
-				salida=pasarMascaraImpar(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
-			}
-			else{
-				salida=pasarMascaraImpar(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
-			}
+			salida =pasarMascara(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
 		}
 		return salida;
 	}
 	
+	public Imagen pasarFiltroDeBorde(Imagen buff, int mascara) {
+		Imagen salida=null;
+		if (buff!=null){
+			int[][] matrizMascara= crearMascaraBorde(mascara);
+			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
+			salida =pasarMascara(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
+		}
+		return salida;
+	}
+	
+	private int[][] crearMascaraBorde(int mascara) {
+		int[][] matrizMascara = new int[mascara][mascara];
+		for (int i=0; i < mascara; i++){
+			for(int j =0; j < mascara; j++){
+				matrizMascara[i][j]=-1;
+			}
+		}
+		matrizMascara[mascara/2][mascara/2]=((int) Math.pow(mascara,2))-1;
+				System.out.println ("x " + mascara/2 + "y " + mascara/2 + "valor " + matrizMascara[mascara/2][mascara/2] );
+		
+		return matrizMascara;
+	}
+
 	private int[][] crearMascaraMedia(int mascara) {
 		int[][] matrizMascara = new int[mascara][mascara];
 		for (int i=0; i < mascara; i++){
@@ -622,7 +640,7 @@ public class ProcesadorDeImagenes {
 		return matrizMascara;
 	}
 
-	private Imagen pasarMascaraImpar(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascara, int mascara, int divisor) {
+	private Imagen pasarMascara(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascara, int mascara, int divisor) {
 		int red=0;
 		int green=0;
 		int blue=0;
@@ -635,11 +653,11 @@ public class ProcesadorDeImagenes {
 						blue = blue + (new Color(buff.getRGB(i+k, j+m)).getBlue())*matrizMascara[k][m]; 
 					}
 				}
-				red= (int) (red/divisor);
-				green= (int) (green/divisor);
-				blue= (int) (blue/divisor);
+				red= Math.abs((int) (red/divisor));
+				green=Math.abs((int) (green/divisor));
+				blue= Math.abs((int) (blue/divisor));
 				Color color= new Color(red,green, blue);
-				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
+			  salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
 				red=0;
 				green=0;
 				blue=0;
@@ -661,5 +679,7 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;
 	}
+
+	
 	
 }
