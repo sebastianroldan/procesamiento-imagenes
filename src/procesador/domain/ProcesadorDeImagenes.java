@@ -600,7 +600,7 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltreDeLaMedia(Imagen buff, int mascara) {
 		Imagen salida=null;
 		if (buff!=null){
-			int[][] matrizMascara= crearMascaraMedia(mascara);
+			int[][] matrizMascara= crearMascara(mascara);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
 			salida =pasarMascara(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
 		}
@@ -620,8 +620,9 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroMediana(Imagen buff, int mascara) {
 		Imagen salida=null;
 		if (buff!=null){
+			int[][] matrizMascara= crearMascara(mascara);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			salida =pasarMascaraMediana(buff, salida,buff.getWidth(), buff.getHeight(), mascara );	
+			salida =pasarMascaraMediana(buff, salida,buff.getWidth(), buff.getHeight(),matrizMascara, mascara );	
 		}
 		return salida;
 	}	
@@ -638,7 +639,7 @@ public class ProcesadorDeImagenes {
 		return matrizMascara;
 	}
 
-	private int[][] crearMascaraMedia(int mascara) {
+	private int[][] crearMascara(int mascara) {
 		int[][] matrizMascara = new int[mascara][mascara];
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
@@ -674,7 +675,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	private Imagen pasarMascaraMediana(Imagen buff, Imagen salida, int ancho, int alto, int mascara) {
+	private Imagen pasarMascaraMediana(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascara, int mascara) {
 		int valorColor=0;
 		int[] resultado=new int[(int) Math.pow(mascara, 2)];
 		for (int i=0; i <= ancho-mascara; i++){
@@ -682,7 +683,7 @@ public class ProcesadorDeImagenes {
 				int indice=0;
 				for (int k=0; k < mascara; k++){
 					for(int m =0; m < mascara; m++){
-						resultado[indice]= buff.getRGB(i+k, j+m);
+						resultado[indice]= buff.getRGB(i+k, j+m)*matrizMascara[k][m];
 						indice++;
 					}
 				}
@@ -711,7 +712,15 @@ public class ProcesadorDeImagenes {
 		if(mascara%2!=0){
 			valor=resultado[potencia /2];
 		}else{
-			valor=(resultado[(potencia +1)%2] + resultado[((potencia+1)%2)-1])/2;
+			int red=0;
+			int green=0;
+			int blue=0;
+			Color color1 =new Color(resultado[(potencia +1)%2]);
+			Color color2 =new Color(resultado[((potencia+1)%2)-1]);
+			red = (color1.getRed() + color2.getRed())/2;
+			green = (color1.getGreen() + color2.getGreen())/2;
+			blue = (color1.getBlue() + color2.getBlue())/2;
+			valor=(new Color(red,green,blue)).getRGB() ;
 		}
 		return valor;
 	}
