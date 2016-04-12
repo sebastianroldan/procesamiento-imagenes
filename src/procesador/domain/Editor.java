@@ -58,7 +58,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
 	private JMenuItem itemNegativo = new JMenuItem("Negativo");
-	private JMenuItem itemMedia = new JMenuItem("Media");
+	private JMenuItem itemMediana = new JMenuItem("Media");
+	private JMenuItem itemMedia = new JMenuItem("Mediana");
 	private JMenuItem itemBorde = new JMenuItem("Borde");
 	private Imagen buffer1;
 	private Imagen buffer2;
@@ -214,6 +215,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemNegativo);
 		itemNegativo.setMnemonic(KeyEvent.VK_N);
 		menuFiltros.add(itemMedia);
+		menuFiltros.add(itemMediana);
 		menuFiltros.add(itemBorde);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
@@ -291,6 +293,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuGrises();
 		agregarMenuNegativo();
 		agregarMenuMedia();
+		agregarMenuMediana();
 		agregarMenuBorde();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
@@ -796,6 +799,23 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
+	private void agregarMenuMediana() {
+		itemMediana.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField mascara = new JTextField();
+				Object[] message = {
+				    "Tamaño de mascara", mascara
+				};
+				int tamañoMascara = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					tamañoMascara = Integer.valueOf(mascara.getText());
+				}
+				aplicarOperacion(ObjProcesamiento2.pasarFiltroMediana(buffer2,tamañoMascara));
+			}
+		});
+	}
 		
 	private void aplicarOperacion(Imagen proceso) {
 		if(proceso!=null){

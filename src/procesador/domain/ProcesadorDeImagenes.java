@@ -617,6 +617,16 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
+	public Imagen pasarFiltroMediana(Imagen buff, int mascara) {
+		Imagen salida=null;
+		if (buff!=null){
+			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
+			salida =pasarMascaraMediana(buff, salida,buff.getWidth(), buff.getHeight(), mascara );	
+		}
+		return salida;
+	}	
+	
+
 	private int[][] crearMascaraBorde(int mascara) {
 		int[][] matrizMascara = new int[mascara][mascara];
 		for (int i=0; i < mascara; i++){
@@ -657,7 +667,7 @@ public class ProcesadorDeImagenes {
 				green=Math.abs((int) (green/divisor));
 				blue= Math.abs((int) (blue/divisor));
 				Color color= new Color(red,green, blue);
-			  salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
+				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
 				red=0;
 				green=0;
 				blue=0;
@@ -666,7 +676,44 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
+	private Imagen pasarMascaraMediana(Imagen buff, Imagen salida, int ancho, int alto, int mascara) {
+		int valorColor=0;
+		int[] resultado=new int[(int) Math.pow(mascara, 2)];
+		for (int i=0; i <= ancho-mascara; i++){
+			for(int j =0; j <= alto-mascara; j++){
+				int indice=0;
+				for (int k=0; k < mascara; k++){
+					for(int m =0; m < mascara; m++){
+						resultado[indice]= buff.getRGB(i+k, j+m);
+						indice++;
+					}
+				}
+				valorColor=valorMedio(resultado, mascara);
+			salida.setRGB(i+ mascara/2, j+mascara/2, valorColor);
+			}
+		}
+		return salida;
+	}
 
+	private int valorMedio(int[] resultado, int mascara) {
+		int valor = 0;
+		for(int i=0;i<mascara;i++) {
+            for(int j=0;j<mascara-i;j++) {
+                if (resultado[j]>resultado[j+1]) {
+                    int aux;
+                    aux=resultado[j];
+                    resultado[j]=resultado[j+1];
+                    resultado[j+1]=aux;
+                }
+            }
+        }
+		if(mascara%2!=0){
+			valor=resultado[mascara/2];
+		}else{
+			valor=(resultado[(mascara+1)%2] + resultado[((mascara+1)%2)-1])/2;
+		}
+		return valor;
+	}
 
 	private Imagen rellenarImagen( int ancho, int alto){
 		Color color = new Color(255,255,255);
@@ -679,7 +726,5 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;
 	}
-
-	
 	
 }
