@@ -58,8 +58,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemG = new JMenuItem("Banda G");
 	private JMenuItem itemB = new JMenuItem("Banda B");
 	private JMenuItem itemNegativo = new JMenuItem("Negativo");
-	private JMenuItem itemMediana = new JMenuItem("Media");
-	private JMenuItem itemMedia = new JMenuItem("Mediana");
+	private JMenuItem itemMedia = new JMenuItem("Media");
+	private JMenuItem itemMediana = new JMenuItem("Mediana");
 	private JMenuItem itemBorde = new JMenuItem("Borde");
 	private Imagen buffer1;
 	private Imagen buffer2;

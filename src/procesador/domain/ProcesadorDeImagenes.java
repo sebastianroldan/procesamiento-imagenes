@@ -635,8 +635,6 @@ public class ProcesadorDeImagenes {
 			}
 		}
 		matrizMascara[mascara/2][mascara/2]=((int) Math.pow(mascara,2))-1;
-				System.out.println ("x " + mascara/2 + "y " + mascara/2 + "valor " + matrizMascara[mascara/2][mascara/2] );
-		
 		return matrizMascara;
 	}
 
@@ -688,7 +686,7 @@ public class ProcesadorDeImagenes {
 						indice++;
 					}
 				}
-				valorColor=valorMedio(resultado, mascara);
+			valorColor=valorMedio(resultado, mascara);
 			salida.setRGB(i+ mascara/2, j+mascara/2, valorColor);
 			}
 		}
@@ -697,8 +695,11 @@ public class ProcesadorDeImagenes {
 
 	private int valorMedio(int[] resultado, int mascara) {
 		int valor = 0;
-		for(int i=0;i<mascara;i++) {
-            for(int j=0;j<mascara-i;j++) {
+		int potencia = (int) Math.pow(mascara, 2);
+
+
+		for(int i=0;i<potencia -1 ;i++) {
+            for(int j=0;j<potencia-1-i;j++) {
                 if (resultado[j]>resultado[j+1]) {
                     int aux;
                     aux=resultado[j];
@@ -708,9 +709,9 @@ public class ProcesadorDeImagenes {
             }
         }
 		if(mascara%2!=0){
-			valor=resultado[mascara/2];
+			valor=resultado[potencia /2];
 		}else{
-			valor=(resultado[(mascara+1)%2] + resultado[((mascara+1)%2)-1])/2;
+			valor=(resultado[(potencia +1)%2] + resultado[((potencia+1)%2)-1])/2;
 		}
 		return valor;
 	}
