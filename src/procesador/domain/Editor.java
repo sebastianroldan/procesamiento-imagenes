@@ -61,6 +61,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemNegativo = new JMenuItem("Negativo");
 	private JMenuItem itemMedia = new JMenuItem("Media");
 	private JMenuItem itemMediana = new JMenuItem("Mediana");
+	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
 	private JMenuItem itemBorde = new JMenuItem("Borde");
 	private Imagen buffer1;
 	private Imagen buffer2;
@@ -222,6 +223,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemNegativo.setMnemonic(KeyEvent.VK_N);
 		menuFiltros.add(itemMedia);
 		menuFiltros.add(itemMediana);
+		menuFiltros.add(itemGaussiano);
 		menuFiltros.add(itemBorde);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
@@ -301,6 +303,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuNegativo();
 		agregarMenuMedia();
 		agregarMenuMediana();
+		agregarMenuGaussiano();
 		agregarMenuBorde();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
@@ -845,6 +848,29 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					tamañoMascara = Integer.valueOf(mascara.getText());
 				}
 				aplicarOperacion(ObjProcesamiento2.pasarFiltroMediana(buffer2,tamañoMascara));
+			}
+		});
+	}
+	
+	private void agregarMenuGaussiano() {
+		itemGaussiano.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField mascara = new JTextField();
+				JTextField desvio = new JTextField();
+				Object[] message = {
+				    "Tamaño de mascara", mascara,
+				    "Desvio (gamma)", desvio
+				};
+				int tamañoMascara = 0;
+				double tamañoDesvio =0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores del filtro", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					tamañoMascara = Integer.valueOf(mascara.getText());
+					tamañoDesvio = Double.valueOf(desvio.getText());
+				}
+				
+				aplicarOperacion(ObjProcesamiento2.pasarFiltroGaussiano(buffer2,tamañoMascara, tamañoDesvio));
 			}
 		});
 	}

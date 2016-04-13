@@ -214,8 +214,7 @@ public class ProcesadorDeImagenes {
 										   "Promedio Blue: " + promedioB);
 	   }
 	}
-	
-	
+		
 	public Imagen pasarANegativoImagen(Imagen buff) {
 		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
 		Color color;  
@@ -373,7 +372,6 @@ public class ProcesadorDeImagenes {
 		return min;
 	}
 	
-	
 	private double transformacionLineal(double suma, double max, int min) {
 		double salida = suma*(255/(max-min))+(255-((255*max)/(max-min)));
 		return salida;
@@ -387,7 +385,6 @@ public class ProcesadorDeImagenes {
 	
 
 	private boolean sonIguales(Imagen buff, Imagen buff2) {
-		
 		return buff.getWidth()==buff2.getWidth() && buff.getHeight()==buff2.getHeight();
 	}
 
@@ -428,7 +425,6 @@ public class ProcesadorDeImagenes {
 	}
 		
 	public Imagen compresionRangoDinamico(Imagen buff) {
-		
 		if (buff!=null){
 			int valorGris=0;
 			int maxValorGris=getMaxValorGris(buff);
@@ -574,16 +570,13 @@ public class ProcesadorDeImagenes {
 		Color colorOUT=null;
 		int red=0;
 		int green=0;
-		int blue=0;
-		
+		int blue=0;	
 		colorIN=new Color(rgb);
 		red=validarColor(colorIN.getRed()*ruido);
 		green=validarColor(colorIN.getGreen()*ruido);
 		blue=validarColor(colorIN.getBlue()*ruido);
 		colorOUT=new Color(red,green,blue);
-		
 		salida=colorOUT.getRGB();
-		
 		return salida;
 	}
 	
@@ -594,15 +587,12 @@ public class ProcesadorDeImagenes {
 		int red=0;
 		int green=0;
 		int blue=0;
-		
 		colorIN=new Color(rgb);
 		red=validarColor(colorIN.getRed()+ruido);
 		green=validarColor(colorIN.getGreen()+ruido);
 		blue=validarColor(colorIN.getBlue()+ruido);
 		colorOUT=new Color(red,green,blue);
-		
 		salida=colorOUT.getRGB();
-		
 		return salida;
 	}
 	
@@ -618,9 +608,7 @@ public class ProcesadorDeImagenes {
 	
 	public Imagen agregarRuidoSalYPimienta(Imagen buff, double p0, double p1, int porcentaje) {
 		Imagen salida=null;
-		
 		if (buff!=null){
-		
 			int pixelesAfectados = (buff.getAlto()*buff.getAncho()*porcentaje)/100;
 			int countPixel = 0;
 			int coef = (buff.getAlto()*buff.getAncho())/pixelesAfectados;
@@ -636,7 +624,6 @@ public class ProcesadorDeImagenes {
 				}
 			}
 		}
-	
 		return salida;
 	}
 
@@ -683,6 +670,67 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}	
 	
+	public Imagen pasarFiltroGaussiano(Imagen buff, int mascara, double desvio) {
+		Imagen salida=null;
+		int divisor=0;
+		if (buff!=null){
+			int[][] matrizMascara= crearMascaraGaussiana(mascara, desvio);
+			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
+			divisor =sumaMascara(mascara,matrizMascara);
+			salida =pasarMascara(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, divisor);	
+		}
+		return salida;
+	}
+	
+	private int sumaMascara(int mascara, int[][] matrizMascara) {
+		int suma=0;
+		for (int i=0; i < mascara; i++){
+			for(int j =0; j < mascara; j++){
+				suma+=matrizMascara[i][j];
+			}
+		}				
+		return suma;
+	}
+
+	private int[][] crearMascaraGaussiana(int mascara, double desvio) {
+		double[][] matrizMascaraAux = new double[mascara][mascara];
+		int[][] matrizMascara = null;
+		double valor=0;
+		double exponencial=0;
+		double minimo=0;
+		for (int i=0; i < mascara; i++){
+			for(int j =0; j < mascara; j++){
+				exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/Math.pow(desvio,2));
+				valor =(1.0/(2.0*Math.pow(desvio,2)*Math.PI))*(exponencial);
+				matrizMascaraAux[i][j]= valor;
+			}
+		}
+		minimo = minimo(mascara,  matrizMascaraAux);
+		matrizMascara = convertirMatizAInt(mascara,  matrizMascaraAux, minimo);
+		return matrizMascara;
+	}
+	
+	private int[][] convertirMatizAInt(int mascara, double[][] matrizMascaraAux, double minimo) {
+		int[][] matrizMascara = new int[mascara][mascara];
+		for (int i=0; i < mascara; i++){
+			for(int j =0; j < mascara; j++){
+				matrizMascara[i][j]=(int) (matrizMascaraAux[i][j]/minimo);
+			}
+		}		
+		return matrizMascara;
+	}
+
+	private double minimo(int mascara, double[][] matrizMascara){
+		double minimo=matrizMascara[0][0];
+		for (int i=0; i < mascara; i++){
+			for(int j =0; j < mascara; j++){
+				if(minimo > matrizMascara[i][j]){
+					minimo=matrizMascara[i][j];
+				}
+			}
+		}
+		return minimo;
+	}
 
 	private int[][] crearMascaraBorde(int mascara) {
 		int[][] matrizMascara = new int[mascara][mascara];
@@ -753,8 +801,6 @@ public class ProcesadorDeImagenes {
 	private int valorMedio(int[] resultado, int mascara) {
 		int valor = 0;
 		int potencia = (int) Math.pow(mascara, 2);
-
-
 		for(int i=0;i<potencia -1 ;i++) {
             for(int j=0;j<potencia-1-i;j++) {
                 if (resultado[j]>resultado[j+1]) {
@@ -792,5 +838,5 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;
 	}
-	
+
 }
