@@ -309,9 +309,9 @@ public class ProcesadorDeImagenes {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2, max, min;
-		max = buscarMaximo(buff, buff2,1);
-		min = buscarMinimo(buff, buff2,1);
 		if (sonIguales(buff, buff2)){
+			max = buscarMaximo(buff, buff2,1);
+			min = buscarMinimo(buff, buff2,1);
 			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
@@ -395,9 +395,9 @@ public class ProcesadorDeImagenes {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
-		int max = buscarMaximo(buff, buff2,2);
-		int min = buscarMinimo(buff, buff2,2);
 		if (sonIguales(buff, buff2)){
+			int max = buscarMaximo(buff, buff2,2);
+			int min = buscarMinimo(buff, buff2,2);
 			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
@@ -511,9 +511,9 @@ public class ProcesadorDeImagenes {
 		buff = this.pasarAEscalaDeGrises(buff);
 		buff2 = this.pasarAEscalaDeGrises(buff2);
 		int suma, gris1, gris2;
-		int max = buscarMaximo(buff, buff2,3);
-		int min = buscarMinimo(buff, buff2,3);
 		if (sonIguales(buff, buff2)){
+			int max = buscarMaximo(buff, buff2,3);
+			int min = buscarMinimo(buff, buff2,3);
 			Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){

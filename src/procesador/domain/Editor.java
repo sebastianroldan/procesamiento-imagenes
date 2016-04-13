@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -102,6 +103,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private java.awt.Point puntoFinal=null;
     private int puntosSeleccionados=0;
     private ChartPanel chartPanel;
+    private JButton cambiar = new JButton();
     private JLabel valorUmbral = new JLabel();
     private JLabel valorContraste = new JLabel();
 	private boolean seleccionando = false;
@@ -122,6 +124,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		contenedorDeImagen = new javax.swing.JLabel();
 		contenedorDeImagen2 = new javax.swing.JLabel();
 		contenedorDeImagen.addMouseListener(this);
+		cambiar.setBounds(575, 650, 50, 20);
+		cambiar.setText("<>");
 		this.setJMenuBar(crearMenu());
 		definirFuncionCerrar();		
 		agregarBotones();		
@@ -177,6 +181,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		this.add(mensaje);
 		this.setExtendedState(MAXIMIZED_BOTH);
 		this.setVisible(true);
+		cambiar.setVisible(true);
+		this.add(cambiar);
 	}
 
 	private JMenuBar crearMenu() {
@@ -285,6 +291,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	private void agregarBotones() {
+		agregarBotonCambiar();
 		agregarMenuCerrar();
 		agregarMenuGuardar();
 		agregarMenuCirculo();
@@ -323,6 +330,31 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuDibujoGauss();
 		agregarMenuDibujoRayleigh();
 		agregarMenuSal();
+	}
+
+	private void agregarBotonCambiar() {
+		cambiar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1 != null && buffer2 != null){
+					original = buffer1;
+					cargarImagen(buffer2);
+					aplicarOperacion(original);
+				}else{
+					if (buffer2 == null && buffer1 != null){
+						aplicarOperacion(buffer1);
+						buffer1 = null;
+						contenedorDeImagen.setIcon(null);
+						
+					}else{
+						if (buffer2 != null && buffer1 == null){
+							cargarImagen(buffer2);
+							buffer2 = null;
+							contenedorDeImagen2.setIcon(null);
+						}
+					}
+				}
+			}
+		});
 	}
 
 	private void agregarMenuSal() {
@@ -821,6 +853,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		if(proceso!=null){
 			buffer2 = proceso;
 			borrarHistograma();
+			ObjProcesamiento2.setImagen(proceso);
 			contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
 		}
 	}
