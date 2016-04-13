@@ -771,8 +771,8 @@ public class ProcesadorDeImagenes {
 			int red=0;
 			int green=0;
 			int blue=0;
-			Color color1 =new Color(resultado[(potencia +1)%2]);
-			Color color2 =new Color(resultado[((potencia+1)%2)-1]);
+			Color color1 =new Color(resultado[(potencia +1)/2]);
+			Color color2 =new Color(resultado[((potencia+1)/2)-1]);
 			red = (color1.getRed() + color2.getRed())/2;
 			green = (color1.getGreen() + color2.getGreen())/2;
 			blue = (color1.getBlue() + color2.getBlue())/2;
