@@ -45,6 +45,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private javax.swing.JScrollPane jScrollPane2;
 	private JSlider slider = new JSlider(0,255,127);
 	private JSlider sliderContraste = new JSlider(30,225,127);
+	private JSlider sliderPotencia = new JSlider(0,200,100);
 	private JMenuBar menuBar = new JMenuBar();	
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
@@ -108,6 +109,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private JButton nuevoEditor = new JButton();
     private JLabel valorUmbral = new JLabel();
     private JLabel valorContraste = new JLabel();
+    private JLabel valorPotencia = new JLabel();
 	private boolean seleccionando = false;
     
 	public Editor() {
@@ -143,10 +145,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		contenedorDeImagen.setVerticalAlignment(SwingConstants.TOP);
 		contenedorDeImagen2.setVerticalAlignment(SwingConstants.TOP);
 		valorUmbral = new JLabel("Umbral:");
-		valorUmbral.setBounds(1230,30,70,20);
+		valorUmbral.setBounds(1200,30,70,20);
 		valorUmbral.setVisible(false);
 		slider.setVisible(false);
-		slider.setBounds(1250, 50, 30, 100);
+		slider.setBounds(1225, 50, 30, 100);
 		slider.setOrientation(SwingConstants.VERTICAL);
 		valorUmbral.setText("Umbral: "+slider.getValue());
 		slider.addChangeListener(new ChangeListener() {
@@ -160,10 +162,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 		valorContraste = new JLabel("Contraste");
-		valorContraste.setBounds(1230,200,100,20);
+		valorContraste.setBounds(1200,200,100,20);
 		valorContraste.setVisible(false);
 		sliderContraste.setVisible(false);
-		sliderContraste.setBounds(1250, 220, 30, 100);
+		sliderContraste.setBounds(1225, 220, 30, 100);
 		sliderContraste.setOrientation(SwingConstants.VERTICAL);
 		valorContraste.setText("Contraste: "+sliderContraste.getValue());
 		sliderContraste.addChangeListener(new ChangeListener() {
@@ -176,6 +178,24 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				}
 			}
 		});
+		
+		valorPotencia = new JLabel("Potencia");
+		valorPotencia.setBounds(1200,370,100,20);
+		valorPotencia.setVisible(false);
+		sliderPotencia.setVisible(false);
+		sliderPotencia.setBounds(1225, 390, 30, 100);
+		sliderPotencia.setOrientation(SwingConstants.VERTICAL);
+		valorPotencia.setText("Potencia: " + (double) sliderPotencia.getValue()/100);
+		sliderPotencia.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (buffer1 != null){
+					borrarHistograma();
+					buffer2 = ObjProcesamiento.potencia((double) sliderPotencia.getValue()/100);
+					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+					valorPotencia.setText("Potencia: "+ (double) sliderPotencia.getValue()/100);
+				}
+			}
+		});
 		this.setLayout(null);
 		this.add(jScrollPane1);
 		this.add(jScrollPane2);
@@ -183,6 +203,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		this.add(valorUmbral);
 		this.add(sliderContraste);
 		this.add(valorContraste);
+		this.add(sliderPotencia);
+		this.add(valorPotencia);
 		mensaje.setBounds(10, 655, 500, 20);
 		this.add(mensaje);
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -370,7 +392,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarBotonNuevoEditor() {
 			nuevoEditor.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
-					new Editor(buffer1);
+					new Editor(buffer2);
 				}
 			});
 		}
@@ -569,14 +591,17 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	
 	private void agregarMenuPotencia() {
 		itemPotencia.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				if (buffer1!= null){
-					double valor = ingresarValorDePotencia();
-					Imagen resultado = ObjProcesamiento.potencia(valor);
-					new Editor(resultado);
-				}
-			}		
-		});
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						if (!sliderPotencia.isVisible()){
+							valorPotencia.setText("Potencia: "+  (double) sliderPotencia.getValue()/100);
+							valorPotencia.setVisible(true);
+							sliderPotencia.setVisible(true);
+						}else{
+							valorPotencia.setVisible(false);
+							sliderPotencia.setVisible(false);
+						}
+					}
+				});		
 	}
 
 	private int ingresarValorEscalar() {
@@ -608,20 +633,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
-	private double ingresarValorDePotencia() {
-		JTextField valor = new JTextField();
-		Object[] message = {
-		    "Valor real:", valor,
-		};
-		double i = 1;
-		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese la potencia a aplicar", JOptionPane.OK_CANCEL_OPTION);
-		if (option == JOptionPane.OK_OPTION)
-		{
-			i = Double.valueOf(valor.getText());
-		}
-		return i;
-	}
-	
+
 	private void agregarMenuSumar() {
 		itemSumar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -679,7 +691,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemUmbralizar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (!slider.isVisible()){
-					slider.setValue(126);
 					valorUmbral.setText("Umbral: "+slider.getValue());
 					valorUmbral.setVisible(true);
 					slider.setVisible(true);
@@ -695,8 +706,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemContraste.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (!sliderContraste.isVisible()){
-					sliderContraste.setValue(128);
-					valorContraste.setText("Contraste");
+					valorContraste.setText("Contraste" + sliderContraste.getValue());
 					valorContraste.setVisible(true);
 					sliderContraste.setVisible(true);
 				}else{
@@ -988,6 +998,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 			ObjProcesamiento.setImagen(buffer1);
 			Imagen resultado = ObjProcesamiento.ecualizarHistograma();
+			new Editor(resultado);
 			}
 		});
 	}
