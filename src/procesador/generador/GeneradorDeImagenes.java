@@ -88,22 +88,23 @@ public class GeneradorDeImagenes {
 		return buff;
 	}
 	
-	public Imagen ruidoAleatorioGauss() {
+	public Imagen ruidoAleatorioGauss(double media, double desvio) {
 		Imagen buff = new Imagen(100, 100);
 		Color color;
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
 		for (int i=0; i < 100; i++){
 			for (int j=0; j < 100; j++){
-					r = gen.generadorAleatorioGaussiano(84,1);
-					color = new Color(r,r,r);
+					r = gen.generadorAleatorioGaussiano(media,desvio);
+					System.out.println(r);
+					color = new Color(0,0,0);
 					buff.setRGB(j, i, color.getRGB());
 			}
 		}		
 		return buff;
 	}
 	
-	public Imagen ruidoAleatorioRayleigh(int valor) {
+	public Imagen ruidoAleatorioRayleigh(double valor) {
 		Imagen buff = new Imagen(100, 100);
 		Color color;
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();

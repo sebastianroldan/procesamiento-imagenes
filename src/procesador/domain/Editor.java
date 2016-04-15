@@ -105,6 +105,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private int puntosSeleccionados=0;
     private ChartPanel chartPanel;
     private JButton cambiar = new JButton();
+    private JButton nuevoEditor = new JButton();
     private JLabel valorUmbral = new JLabel();
     private JLabel valorContraste = new JLabel();
 	private boolean seleccionando = false;
@@ -115,18 +116,22 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 	public Editor(Imagen resultado) {
 		initComponents();
-		cargarImagen(resultado);
-		//this.setBounds(150, 50, 600, 600);
+		if(resultado!=null){
+			cargarImagen(resultado);
+		}
+		this.setBounds(150, 50, 600, 600);
 	}
-
+	
 	private void initComponents() {
 		jScrollPane1 = new javax.swing.JScrollPane();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		contenedorDeImagen = new javax.swing.JLabel();
 		contenedorDeImagen2 = new javax.swing.JLabel();
 		contenedorDeImagen.addMouseListener(this);
-		cambiar.setBounds(575, 650, 50, 20);
+		cambiar.setBounds(650, 650, 100, 20);
 		cambiar.setText("<>");
+		nuevoEditor.setBounds(450, 650, 100, 20);
+		nuevoEditor.setText("new");
 		this.setJMenuBar(crearMenu());
 		definirFuncionCerrar();		
 		agregarBotones();		
@@ -184,6 +189,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		this.setVisible(true);
 		cambiar.setVisible(true);
 		this.add(cambiar);
+		nuevoEditor.setVisible(true);
+		this.add(nuevoEditor);
 	}
 
 	private JMenuBar crearMenu() {
@@ -288,12 +295,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	private void definirFuncionCerrar() {
-		//setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Procesador de Imagenes");
 	}
 
 	private void agregarBotones() {
 		agregarBotonCambiar();
+		agregarBotonNuevoEditor();
 		agregarMenuCerrar();
 		agregarMenuGuardar();
 		agregarMenuCirculo();
@@ -359,6 +366,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
+	
+	private void agregarBotonNuevoEditor() {
+			nuevoEditor.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent evt) {
+					new Editor(buffer1);
+				}
+			});
+		}
 
 	private void agregarMenuSal() {
 		itemSal.addActionListener(new java.awt.event.ActionListener() {
@@ -449,7 +464,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuDibujoExponencial() {
 		itemDibujoExponencial.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagenEHistograma(new GeneradorDeImagenes().ruidoAleatorioExponencial(0.2));
+				JTextField campo = new JTextField();
+				Object[] message = {
+				    "Lambda:", campo
+				};
+				double lambda = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores de ruido", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 lambda = Double.valueOf(campo.getText());
+					 
+				}
+				cargarImagenEHistograma(new GeneradorDeImagenes().ruidoAleatorioExponencial(lambda));
 			}
 		});
 	}
@@ -457,7 +483,21 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuDibujoGauss() {
 		itemDibujoGauss.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagenEHistograma(new GeneradorDeImagenes().ruidoAleatorioGauss());
+				JTextField campo1 = new JTextField();
+				JTextField campo2 = new JTextField();
+				Object[] message = {
+					"Media (mu):" , campo1,
+				    "Desvío (gamma):" , campo2
+				};
+				double media=0;
+				double desvio=0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores de ruido", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					media = Double.valueOf(campo1.getText());
+					desvio = Double.valueOf(campo2.getText()); 
+				}
+				cargarImagenEHistograma(new GeneradorDeImagenes().ruidoAleatorioGauss(media,desvio));
 			}
 		});
 	}
@@ -465,7 +505,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuDibujoRayleigh() {
 		itemDibujoRayleigh.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagenEHistograma(new GeneradorDeImagenes().ruidoAleatorioRayleigh(25));
+				JTextField campo = new JTextField();
+				Object[] message = {
+				    "Fi:", campo
+				};
+				double fi = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores de ruido", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					fi = Double.valueOf(campo.getText());
+					 
+				}
+				cargarImagenEHistograma(new GeneradorDeImagenes().ruidoAleatorioRayleigh(fi));
 			}
 		});
 	}
@@ -811,7 +862,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				{
 					tamañoMascara = Integer.valueOf(mascara.getText());
 				}
-				aplicarOperacion(ObjProcesamiento2.pasarFiltreDeLaMedia(buffer2,tamañoMascara));
+				aplicarOperacion(ObjProcesamiento.pasarFiltreDeLaMedia(buffer1,tamañoMascara));
 			}
 		});
 	}
@@ -829,7 +880,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				{
 					tamañoMascara = Integer.valueOf(mascara.getText());
 				}
-				aplicarOperacion(ObjProcesamiento2.pasarFiltroDeBorde(buffer2,tamañoMascara));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDeBorde(buffer1,tamañoMascara));
 			}
 		});
 	}
@@ -847,7 +898,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				{
 					tamañoMascara = Integer.valueOf(mascara.getText());
 				}
-				aplicarOperacion(ObjProcesamiento2.pasarFiltroMediana(buffer2,tamañoMascara));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroMediana(buffer1,tamañoMascara));
 			}
 		});
 	}
@@ -870,7 +921,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					tamañoDesvio = Double.valueOf(desvio.getText());
 				}
 				
-				aplicarOperacion(ObjProcesamiento2.pasarFiltroGaussiano(buffer2,tamañoMascara, tamañoDesvio));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroGaussiano(buffer1,tamañoMascara, tamañoDesvio));
 			}
 		});
 	}
@@ -931,13 +982,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
-	
+
 	private void agregarMenuEcualizarHistograma(){
 		itemEcualizarHistograma.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 			ObjProcesamiento.setImagen(buffer1);
 			Imagen resultado = ObjProcesamiento.ecualizarHistograma();
-			new Editor(resultado);
 			}
 		});
 	}

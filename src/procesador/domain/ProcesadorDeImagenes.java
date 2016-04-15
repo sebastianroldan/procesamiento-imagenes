@@ -700,7 +700,7 @@ public class ProcesadorDeImagenes {
 		double minimo=0;
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
-				exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/Math.pow(desvio,2));
+				exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/(Math.pow(desvio,2)*2));
 				valor =(1.0/(2.0*Math.pow(desvio,2)*Math.PI))*(exponencial);
 				matrizMascaraAux[i][j]= valor;
 			}
