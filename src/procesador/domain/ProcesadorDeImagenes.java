@@ -414,10 +414,19 @@ public class ProcesadorDeImagenes {
 		Imagen resultado = new Imagen(buff.getWidth(),buff.getHeight());
 		int gris = 0;
 		int producto = 0;
+		Imagen aux = this.pasarAEscalaDeGrises(buff);
+		int max = 0;
 		for (int i=0; i < buff.getWidth(); i++){
 			for(int j =0; j < buff.getHeight(); j++){
-				gris = new Color(buff.getRGB(i, j)).getBlue();
-				producto = (int) transformacionLineal(gris*valor, valor*255, 0);
+				if (max < aux.getValorGrisPixel(i, j)*valor){
+					max = aux.getValorGrisPixel(i, j)*valor;
+				}
+			}
+		}
+		for (int i=0; i < aux.getWidth(); i++){
+			for(int j =0; j < aux.getHeight(); j++){
+				gris = new Color(aux.getRGB(i, j)).getBlue();
+				producto = comprimirRango(gris*valor, max);
 				resultado.setRGB(i, j, new Color(producto, producto, producto).getRGB());
 			}
 		}
