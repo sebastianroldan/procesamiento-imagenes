@@ -348,7 +348,7 @@ public class ProcesadorDeImagenes {
 		}
 		return max;
 	}
-
+	
 	private int buscarMinimo(Imagen buff, Imagen buff2, int operacion) {
 		int suma, gris1, gris2, min = 255*255;
 		for (int i=0; i < buff.getWidth(); i++){
@@ -525,85 +525,159 @@ public class ProcesadorDeImagenes {
 		}
 	}
 
-	public Imagen agregarRuidoExponencial(Imagen buff, double lambda) {
-		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
-		GeneradorDeNumeros gen = new GeneradorDeNumeros();
-		int ruido=0;
-		for (int i=0; i < buff.getWidth(); i++){
-			for(int j =0; j < buff.getHeight(); j++){
-				ruido=gen.generadorAleatorioExponencial(lambda);
-				salida.setRGB(i, j,colorRGBconRuidoMultiplicativo(buff.getRGB(i,j),ruido));
+	public Imagen agregarRuidoExponencial(Imagen entrada, double lambda) {
+		Imagen salida = new Imagen(entrada.getWidth(),entrada.getHeight());
+		Color color=null;
+		Integer [][] matrizRuidoExponencial = calcularMatrizRuidoExponencial(entrada,lambda);
+		Integer [][] matrizBandaConRuidoRED = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoExponencial,'R','M');
+		Integer [][] matrizBandaConRuidoGREN = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoExponencial,'G','M');
+		Integer [][] matrizBandaConRuidoBLUE = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoExponencial,'B','M');
+		
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				color= new Color(matrizBandaConRuidoRED[i][j],matrizBandaConRuidoGREN[i][j],matrizBandaConRuidoBLUE[i][j]);
+				salida.setRGB(i,j,color.getRGB());
 			}
 		}
+		
 	return salida;
 	}
 	
-	public Imagen agregarRuidoRayleigh(Imagen buff, double fi) {
-		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
-		GeneradorDeNumeros gen = new GeneradorDeNumeros();
-		int ruido=0;
-		for (int i=0; i < buff.getWidth(); i++){
-			for(int j =0; j < buff.getHeight(); j++){
-				ruido=gen.generadorAleatorioRayleigh(fi);
-				salida.setRGB(i, j,colorRGBconRuidoMultiplicativo(buff.getRGB(i,j),ruido));
+	public Imagen agregarRuidoRayleigh(Imagen entrada, double fi) {
+		Imagen salida = new Imagen(entrada.getWidth(),entrada.getHeight());
+		Color color=null;
+		Integer [][] matrizRuidoRayleigh = calcularMatrizRuidoRayleigh(entrada,fi);
+		Integer [][] matrizBandaConRuidoRED = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoRayleigh,'R','M');
+		Integer [][] matrizBandaConRuidoGREN = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoRayleigh,'G','M');
+		Integer [][] matrizBandaConRuidoBLUE = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoRayleigh,'B','M');
+		
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				color= new Color(matrizBandaConRuidoRED[i][j],matrizBandaConRuidoGREN[i][j],matrizBandaConRuidoBLUE[i][j]);
+				salida.setRGB(i,j,color.getRGB());
 			}
 		}
-	return salida;
+		
+		return salida;
 	}
 	
-	public Imagen agregarRuidoGauss(Imagen buff, double media, double desvio) {
-		Imagen salida = new Imagen(buff.getWidth(),buff.getHeight());
-		GeneradorDeNumeros gen = new GeneradorDeNumeros();
-		int ruido=0;
-		for (int i=0; i < buff.getWidth(); i++){
-			for(int j =0; j < buff.getHeight(); j++){
-				ruido=gen.generadorAleatorioGaussiano(media,desvio);
-				salida.setRGB(i, j,colorRGBconRuidoAditivo(buff.getRGB(i,j),ruido));
+	public Imagen agregarRuidoGauss(Imagen entrada, double media, double desvio) {
+		Imagen salida = new Imagen(entrada.getWidth(),entrada.getHeight());
+		Color color=null;
+		Integer [][] matrizRuidoGauss = calcularMatrizRuidoGauss(entrada,media,desvio);
+		Integer [][] matrizBandaConRuidoRED = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoGauss,'R','A');
+		Integer [][] matrizBandaConRuidoGREN = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoGauss,'G','A');
+		Integer [][] matrizBandaConRuidoBLUE = obtenerMatrizBandaConRuidoTransformado(entrada,matrizRuidoGauss,'B','A');
+		
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				color= new Color(matrizBandaConRuidoRED[i][j],matrizBandaConRuidoGREN[i][j],matrizBandaConRuidoBLUE[i][j]);
+				salida.setRGB(i,j,color.getRGB());
 			}
 		}
+		
 	return salida;
 	}
+		
+	private Integer [][] calcularMatrizRuidoExponencial(Imagen entrada, double lambda){
 	
-	private int colorRGBconRuidoMultiplicativo(int rgb,int ruido){
-		int salida=0;
-		Color colorIN=null;
-		Color colorOUT=null;
-		int red=0;
-		int green=0;
-		int blue=0;	
-		colorIN=new Color(rgb);
-		red=validarColor(colorIN.getRed()*ruido);
-		green=validarColor(colorIN.getGreen()*ruido);
-		blue=validarColor(colorIN.getBlue()*ruido);
-		colorOUT=new Color(red,green,blue);
-		salida=colorOUT.getRGB();
-		return salida;
-	}
-	
-	private int colorRGBconRuidoAditivo(int rgb,int ruido){
-		int salida=0;
-		Color colorIN=null;
-		Color colorOUT=null;
-		int red=0;
-		int green=0;
-		int blue=0;
-		colorIN=new Color(rgb);
-		red=validarColor(colorIN.getRed()+ruido);
-		green=validarColor(colorIN.getGreen()+ruido);
-		blue=validarColor(colorIN.getBlue()+ruido);
-		colorOUT=new Color(red,green,blue);
-		salida=colorOUT.getRGB();
-		return salida;
-	}
-	
-	private int validarColor(int valor){
-		int salida=valor;
-		if (valor<0){
-			salida=0;
-		} else if (valor>255){
-			salida=255;
+		Integer [][] matrizRuido= new Integer [entrada.getWidth()][entrada.getHeight()];
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				matrizRuido[i][j]=gen.generadorAleatorioExponencial(lambda);
+			}
 		}
-		return salida;
+		
+		return matrizRuido;
+	}
+	
+	private Integer [][] calcularMatrizRuidoRayleigh(Imagen entrada, double fi){
+		
+		Integer [][] matrizRuido= new Integer [entrada.getWidth()][entrada.getHeight()];
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				matrizRuido[i][j]=gen.generadorAleatorioRayleigh(fi);
+			}
+		}
+		
+		return matrizRuido;
+	}
+	
+	private Integer [][] calcularMatrizRuidoGauss(Imagen entrada, double media, double desvio){
+		
+		Integer [][] matrizRuido= new Integer [entrada.getWidth()][entrada.getHeight()];
+		GeneradorDeNumeros gen = new GeneradorDeNumeros();
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				matrizRuido[i][j]=gen.generadorAleatorioGaussiano(media,desvio);
+			}
+		}
+		
+		return matrizRuido;
+	}
+		
+	public Integer [][] obtenerMatrizBandaConRuidoTransformado(Imagen entrada,Integer [][] matrizRuido,char banda,char tipoRuido){
+		
+		Integer [][] bandaConRuido= new Integer [entrada.getWidth()][entrada.getHeight()];
+		int valorRGB=0;
+		int minValor=0;
+		int maxValor=0;
+		
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				switch (banda){
+					case 'R': { valorRGB=entrada.getRed(i,j); };
+						break;
+					case 'G': { valorRGB=entrada.getGreen(i,j); };
+						break;
+					case 'B': { valorRGB=entrada.getBlue(i,j); };
+						break;
+				}
+				
+				switch (tipoRuido){
+					case 'A': { bandaConRuido[i][j]=valorRGB+matrizRuido[i][j]; };
+						break;
+					case 'M': { bandaConRuido[i][j]=valorRGB*matrizRuido[i][j]; };
+						break;
+				}
+			}
+		}
+		
+		maxValor=buscarMaximoBandaConRuido(bandaConRuido,entrada.getWidth(),entrada.getHeight());
+		minValor=buscarMinimoBandaConRuido(bandaConRuido,entrada.getWidth(),entrada.getHeight());
+
+		for (int i=0; i < entrada.getWidth(); i++){
+			for(int j =0; j < entrada.getHeight(); j++){
+				bandaConRuido[i][j] = (int) transformacionLineal(bandaConRuido[i][j], maxValor, minValor);
+			}
+		}
+		return bandaConRuido;
+	}
+	
+	public int buscarMaximoBandaConRuido(Integer [][] matrizRuido,int ancho,int alto) {
+		int max = 0;
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				if (max < matrizRuido[i][j]) {
+					max = matrizRuido[i][j];
+				}
+			}
+		}
+		return max;
+	}
+	
+	public int buscarMinimoBandaConRuido(Integer [][] matrizRuido,int ancho,int alto) {
+		int min = 0;
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				if (min > matrizRuido[i][j]) {
+					min = matrizRuido[i][j];
+				}
+			}
+		}
+		return min;
 	}
 	
 	public Imagen agregarRuidoSalYPimienta(Imagen buff, double p0, double p1, int porcentaje) {

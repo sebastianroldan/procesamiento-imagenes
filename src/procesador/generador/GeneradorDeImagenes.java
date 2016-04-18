@@ -3,6 +3,7 @@ package procesador.generador;
 import java.awt.Color;
 
 import procesador.domain.Imagen;
+import procesador.domain.ProcesadorDeImagenes;
 
 
 public class GeneradorDeImagenes {
@@ -74,48 +75,91 @@ public class GeneradorDeImagenes {
 	}
 	
 	public Imagen ruidoAleatorioExponencial(double valor) {
-		Imagen buff = new Imagen(100, 100);
+		int ancho=100;
+		int alto=100;
+		Imagen buff = new Imagen(ancho,alto);
 		Color color;
+		Color colorNegro=new Color(0,0,0);
+		Integer [][] matrizRuido = new Integer[ancho][alto];
+		ProcesadorDeImagenes proc = new ProcesadorDeImagenes();
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
-		for (int i=0; i < 100; i++){
-			for (int j=0; j < 100; j++){
-					r = gen.generadorAleatorioExponencial(valor);
-					color = new Color(r,r,r);
-					buff.setRGB(j, i, color.getRGB());
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				matrizRuido[i][j] = gen.generadorAleatorioExponencial(valor);
+				buff.setRGB(i,j,colorNegro.getRGB());
 			}
-		}		
+		}
+		
+		matrizRuido=proc.obtenerMatrizBandaConRuidoTransformado(buff, matrizRuido,'R','A');
+		
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				r=matrizRuido[i][j];
+				color = new Color(r,r,r);
+				buff.setRGB(i,j, color.getRGB());
+			}
+		}
 		return buff;
 	}
 	
 	public Imagen ruidoAleatorioGauss(double media, double desvio) {
-		Imagen buff = new Imagen(100, 100);
+		
+		int ancho=100;
+		int alto=100;
+		Imagen buff = new Imagen(ancho,alto);
 		Color color;
+		Color colorNegro=new Color(0,0,0);
+		Integer [][] matrizRuido = new Integer[ancho][alto];
+		ProcesadorDeImagenes proc = new ProcesadorDeImagenes();
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
-		for (int i=0; i < 100; i++){
-			for (int j=0; j < 100; j++){
-					r = gen.generadorAleatorioGaussiano(media,desvio);
-					System.out.println(r);
-					color = new Color(0,0,0);
-					buff.setRGB(j, i, color.getRGB());
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				matrizRuido[i][j] = gen.generadorAleatorioGaussiano(media,desvio);
+				buff.setRGB(i,j,colorNegro.getRGB());
 			}
-		}		
+		}
+		
+		matrizRuido=proc.obtenerMatrizBandaConRuidoTransformado(buff, matrizRuido,'R','A');
+		
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				r=matrizRuido[i][j];
+				color = new Color(r,r,r);
+				buff.setRGB(i,j, color.getRGB());
+			}
+		}
 		return buff;
 	}
 	
 	public Imagen ruidoAleatorioRayleigh(double valor) {
-		Imagen buff = new Imagen(100, 100);
+		
+		int ancho=100;
+		int alto=100;
+		Imagen buff = new Imagen(ancho,alto);
 		Color color;
+		Color colorNegro=new Color(0,0,0);
+		Integer [][] matrizRuido = new Integer[ancho][alto];
+		ProcesadorDeImagenes proc = new ProcesadorDeImagenes();
 		GeneradorDeNumeros gen = new GeneradorDeNumeros();
 		int r = 0;
-		for (int i=0; i < 100; i++){
-			for (int j=0; j < 100; j++){
-					r = gen.generadorAleatorioRayleigh(valor);
-					color = new Color(r,r,r);
-					buff.setRGB(j, i, color.getRGB());
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				matrizRuido[i][j] = gen.generadorAleatorioRayleigh(valor);
+				buff.setRGB(i,j,colorNegro.getRGB());
 			}
-		}		
+		}
+		
+		matrizRuido=proc.obtenerMatrizBandaConRuidoTransformado(buff, matrizRuido,'R','A');
+		
+		for (int i=0; i < ancho; i++){
+			for (int j=0; j < alto; j++){
+				r=matrizRuido[i][j];
+				color = new Color(r,r,r);
+				buff.setRGB(i,j, color.getRGB());
+			}
+		}
 		return buff;
 	}
 
