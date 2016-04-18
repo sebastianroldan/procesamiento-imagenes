@@ -916,22 +916,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuGaussiano() {
 		itemGaussiano.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField mascara = new JTextField();
 				JTextField desvio = new JTextField();
 				Object[] message = {
-				    "Tamaño de mascara", mascara,
 				    "Desvio (gamma)", desvio
 				};
-				int tamañoMascara = 0;
 				double tamañoDesvio =0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores del filtro", JOptionPane.OK_CANCEL_OPTION);
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el desvio del filtro", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
-					tamañoMascara = Integer.valueOf(mascara.getText());
 					tamañoDesvio = Double.valueOf(desvio.getText());
 				}
 				
-				aplicarOperacion(ObjProcesamiento.pasarFiltroGaussiano(buffer1,tamañoMascara, tamañoDesvio));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroGaussiano(buffer1, tamañoDesvio));
 			}
 		});
 	}

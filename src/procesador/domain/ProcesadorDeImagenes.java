@@ -744,20 +744,49 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}	
 	
-	public Imagen pasarFiltroGaussiano(Imagen buff, int mascara, double desvio) {
+	public Imagen pasarFiltroGaussiano(Imagen buff, double desvio) {
 		Imagen salida=null;
-		int divisor=0;
-		if (buff!=null){
-			int[][] matrizMascara= crearMascaraGaussiana(mascara, desvio);
+		double divisor=0;
+		double resultado=Math.sqrt(2)*desvio;
+		int mascara =  (int) (2*resultado);
+		if (buff!=null && mascara>1){
+			double[][] matrizMascara= crearMascaraGaussiana(mascara, desvio);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
 			divisor =sumaMascara(mascara,matrizMascara);
-			salida =pasarMascara(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, divisor);	
+			salida =pasarMascaraGaussiano(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, divisor);	
 		}
 		return salida;
 	}
 	
-	private int sumaMascara(int mascara, int[][] matrizMascara) {
-		int suma=0;
+	private Imagen pasarMascaraGaussiano(Imagen buff, Imagen salida, int ancho, int alto, double[][] matrizMascara,
+			int mascara, double divisor) {
+		double red=0;
+		double green=0;
+		double blue=0;
+		for (int i=0; i <= ancho-mascara; i++){
+			for(int j =0; j <= alto-mascara; j++){
+				for (int k=0; k < mascara; k++){
+					for(int m =0; m < mascara; m++){
+						red = red + (new Color(buff.getRGB(i+k, j+m)).getRed())*matrizMascara[k][m]; 
+						green = green + (new Color(buff.getRGB(i+k, j+m)).getGreen())*matrizMascara[k][m]; 
+						blue = blue + (new Color(buff.getRGB(i+k, j+m)).getBlue())*matrizMascara[k][m]; 
+					}
+				}
+				red=  (red/divisor);
+				green= (green/divisor);
+				blue=  (blue/divisor);
+				Color color= new Color((int)red,(int)green,(int) blue);
+				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
+				red=0;
+				green=0;
+				blue=0;
+			}
+		}
+		return salida;
+	}
+
+	private double sumaMascara(int mascara, double[][] matrizMascara) {
+		double suma=0;
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
 				suma+=matrizMascara[i][j];
@@ -766,45 +795,20 @@ public class ProcesadorDeImagenes {
 		return suma;
 	}
 
-	private int[][] crearMascaraGaussiana(int mascara, double desvio) {
-		double[][] matrizMascaraAux = new double[mascara][mascara];
-		int[][] matrizMascara = null;
+	private double[][] crearMascaraGaussiana(int mascara, double desvio) {
+		double[][] matrizMascara = new double[mascara][mascara];
 		double valor=0;
 		double exponencial=0;
-		double minimo=0;
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
 				exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/(Math.pow(desvio,2)*2));
 				valor =(1.0/(2.0*Math.pow(desvio,2)*Math.PI))*(exponencial);
-				matrizMascaraAux[i][j]= valor;
+				matrizMascara[i][j]= valor;
 			}
 		}
-		minimo = minimo(mascara,  matrizMascaraAux);
-		matrizMascara = convertirMatizAInt(mascara,  matrizMascaraAux, minimo);
 		return matrizMascara;
 	}
 	
-	private int[][] convertirMatizAInt(int mascara, double[][] matrizMascaraAux, double minimo) {
-		int[][] matrizMascara = new int[mascara][mascara];
-		for (int i=0; i < mascara; i++){
-			for(int j =0; j < mascara; j++){
-				matrizMascara[i][j]=(int) (matrizMascaraAux[i][j]/minimo);
-			}
-		}		
-		return matrizMascara;
-	}
-
-	private double minimo(int mascara, double[][] matrizMascara){
-		double minimo=matrizMascara[0][0];
-		for (int i=0; i < mascara; i++){
-			for(int j =0; j < mascara; j++){
-				if(minimo > matrizMascara[i][j]){
-					minimo=matrizMascara[i][j];
-				}
-			}
-		}
-		return minimo;
-	}
 
 	private int[][] crearMascaraBorde(int mascara) {
 		int[][] matrizMascara = new int[mascara][mascara];
