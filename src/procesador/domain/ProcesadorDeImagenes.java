@@ -281,8 +281,7 @@ public class ProcesadorDeImagenes {
 	}
 	
 	private int contrastarBanda(int banda,int contraste,int delta){
-		int salida=0;
-		
+		int salida=0;	
 		if (banda<=(contraste-delta)){
 			salida=(int)Math.round(0.75*banda);
 		}else if (banda>=(contraste+delta)){
@@ -290,13 +289,11 @@ public class ProcesadorDeImagenes {
 		}else{
 			salida=(int)Math.round(1.12*banda);
 		}
-		
 		if (salida<0){
 			salida=0;
 		}else if (salida>255){
 			salida=255;
 		}
-
 		return salida;
 	}
 	
@@ -504,7 +501,6 @@ public class ProcesadorDeImagenes {
 			for(int j=0;j<image.getHeight();j++) {
 				division= (double) calcularPromedio(image.getRGB(i, j))/255;
 				resultado = (int) (255*Math.pow(division, potencia));
-				//ver potencia..
 				color =new Color(resultado,resultado,resultado);
 				salida.setRGB(i, j, color.getRGB());
 			}
@@ -654,8 +650,8 @@ public class ProcesadorDeImagenes {
 			}
 		}
 		
-		maxValor=buscarMaximoBandaConRuido(bandaConRuido,entrada.getWidth(),entrada.getHeight());
-		minValor=buscarMinimoBandaConRuido(bandaConRuido,entrada.getWidth(),entrada.getHeight());
+		maxValor=buscarMaximo(bandaConRuido,entrada.getWidth(),entrada.getHeight());
+		minValor=buscarMinimo(bandaConRuido,entrada.getWidth(),entrada.getHeight());
 
 		for (int i=0; i < entrada.getWidth(); i++){
 			for(int j =0; j < entrada.getHeight(); j++){
@@ -665,24 +661,24 @@ public class ProcesadorDeImagenes {
 		return bandaConRuido;
 	}
 	
-	public int buscarMaximoBandaConRuido(Integer [][] matrizRuido,int ancho,int alto) {
-		int max = 0;
+	public int buscarMaximo(Integer [][] matriz,int ancho,int alto) {
+		int max = matriz[0][0];
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				if (max < matrizRuido[i][j]) {
-					max = matrizRuido[i][j];
+				if (max < matriz[i][j]) {
+					max = matriz[i][j];
 				}
 			}
 		}
 		return max;
 	}
 	
-	public int buscarMinimoBandaConRuido(Integer [][] matrizRuido,int ancho,int alto) {
-		int min = 0;
+	public int buscarMinimo(Integer [][] matriz,int ancho,int alto) {
+		int min = matriz[0][0];
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				if (min > matrizRuido[i][j]) {
-					min = matrizRuido[i][j];
+				if (min > matriz[i][j]) {
+					min = matriz[i][j];
 				}
 			}
 		}
@@ -738,7 +734,7 @@ public class ProcesadorDeImagenes {
 		if (buff!=null){
 			int[][] matrizMascara= crearMascaraBorde(mascara);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			salida =pasarMascara(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
+			salida =pasarMascaraBorde(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascara, mascara, (int)Math.pow(mascara, 2) );	
 		}
 		return salida;
 	}
@@ -839,7 +835,41 @@ public class ProcesadorDeImagenes {
 		}
 		return matrizMascara;
 	}
-
+	
+	private Imagen pasarMascaraBorde(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascara, int mascara, int divisor) {
+		int gris=0;
+		int min;
+		int max;
+		Color color= new Color(gris,gris, gris);
+		Integer[][] matrizAux=new Integer[ancho][alto];
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				matrizAux[i][j]=calcularPromedio(color.getRGB());
+			}
+		}
+		for (int i=0; i <= ancho-mascara; i++){
+			for(int j =0; j <= alto-mascara; j++){
+				for (int k=0; k < mascara; k++){
+					for(int m =0; m < mascara; m++){
+						gris = gris + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascara[k][m];  
+					}
+				}
+				matrizAux[i+ mascara/2][j+ mascara/2]=gris;
+				gris=0;	
+			}
+		}
+		min=buscarMinimo(matrizAux,ancho,alto);
+		max=buscarMaximo(matrizAux,ancho,alto);
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				gris= (int) transformacionLineal(matrizAux[i][j], max, min);
+				color=new Color(gris,gris,gris);
+				salida.setRGB(i,j, color.getRGB());
+			}
+		}
+		return salida;
+	}
+	
 	private Imagen pasarMascara(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascara, int mascara, int divisor) {
 		int red=0;
 		int green=0;
@@ -853,9 +883,9 @@ public class ProcesadorDeImagenes {
 						blue = blue + (new Color(buff.getRGB(i+k, j+m)).getBlue())*matrizMascara[k][m]; 
 					}
 				}
-				red= Math.abs((int) (red/divisor));
-				green=Math.abs((int) (green/divisor));
-				blue= Math.abs((int) (blue/divisor));
+				red= (int) (red/divisor);
+				green=(int) (green/divisor);
+				blue= (int) (blue/divisor);
 				Color color= new Color(red,green, blue);
 				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
 				red=0;
