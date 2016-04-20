@@ -9,11 +9,13 @@ public int generadorAleatorioExponencial(double lambda){
 		
 		if (u==0){
 			valor = 0;
+			
 		}else{
-			valor = (int)Math.round((-1*(Math.log(u))/lambda));
+			valor = (int) Math.round((-1*(Math.log(u))/lambda));			
+
 		}
 		return valor;
-	}
+}
 	
 	public int generadorAleatorioGaussiano(double media, double desvio){
 		int valor = 0;

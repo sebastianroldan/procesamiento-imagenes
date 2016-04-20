@@ -629,7 +629,6 @@ public class ProcesadorDeImagenes {
 		int valorRGB=0;
 		int minValor=0;
 		int maxValor=0;
-		
 		for (int i=0; i < entrada.getWidth(); i++){
 			for(int j =0; j < entrada.getHeight(); j++){
 				switch (banda){
@@ -644,7 +643,9 @@ public class ProcesadorDeImagenes {
 				switch (tipoRuido){
 					case 'A': { bandaConRuido[i][j]=valorRGB+matrizRuido[i][j]; };
 						break;
-					case 'M': { bandaConRuido[i][j]=valorRGB*matrizRuido[i][j]; };
+					case 'M': { 
+								bandaConRuido[i][j]=valorRGB*matrizRuido[i][j];
+							};
 						break;
 				}
 			}
@@ -655,7 +656,11 @@ public class ProcesadorDeImagenes {
 
 		for (int i=0; i < entrada.getWidth(); i++){
 			for(int j =0; j < entrada.getHeight(); j++){
-				bandaConRuido[i][j] = (int) transformacionLineal(bandaConRuido[i][j], maxValor, minValor);
+				if(tipoRuido=='A'){
+						bandaConRuido[i][j] = (int) transformacionLineal(bandaConRuido[i][j], maxValor, minValor);
+					}else{
+						bandaConRuido[i][j] = comprimirRango(bandaConRuido[i][j], maxValor);
+					}
 			}
 		}
 		return bandaConRuido;
