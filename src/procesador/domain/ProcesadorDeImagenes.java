@@ -369,14 +369,14 @@ public class ProcesadorDeImagenes {
 		return min;
 	}
 	
-	private double transformacionLineal(double suma, double max, int min) {
+	private double transformacionLineal(double suma, double max, double min) {
 		double salida = suma*(255/(max-min))+(255-((255*max)/(max-min)));
 		return salida;
 	}
 
 	private int comprimirRango(int r, int max) {
-		int um = (int) (Math.log(max+1));
-		int c = (255/um)*  (int) (Math.log(r+1));
+		double um = (Math.log(max+1));
+		int c = (int) ((255/um)*   (Math.log(r+1)));
 		return c;
 	}
 	

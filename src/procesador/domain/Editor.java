@@ -564,7 +564,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				if (buffer1!= null){
 					Imagen resultado = ObjProcesamiento.compresionRangoDinamico(buffer1);
 					if (resultado != null){
-						new Editor(resultado);						
+						aplicarOperacion(resultado);						
 					}else{
 						JOptionPane.showMessageDialog(null, "Error al calcular la compresión de rango dinámico sobre la imagen.");
 					}
@@ -582,8 +582,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1!= null){
 					int valor = ingresarValorEscalar();
-					Imagen resultado = ObjProcesamiento.producto(buffer1, valor);
-					new Editor(resultado);
+					aplicarOperacion(ObjProcesamiento.producto(buffer1, valor));
 				}
 			}		
 		});
