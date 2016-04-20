@@ -64,6 +64,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemMediana = new JMenuItem("Mediana");
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
 	private JMenuItem itemBorde = new JMenuItem("Borde");
+	private JMenuItem itemPrewitt = new JMenuItem("Prewitt");
+	private JMenuItem itemSobel = new JMenuItem("Sobel");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -254,6 +256,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemMediana);
 		menuFiltros.add(itemGaussiano);
 		menuFiltros.add(itemBorde);
+		menuFiltros.add(itemPrewitt);
+		menuFiltros.add(itemSobel);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -334,6 +338,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuMediana();
 		agregarMenuGaussiano();
 		agregarMenuBorde();
+		agregarMenuPrewitt();
+		agregarMenuSobel();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -890,6 +896,22 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					tamañoMascara = Integer.valueOf(mascara.getText());
 				}
 				aplicarOperacion(ObjProcesamiento.pasarFiltroDeBorde(buffer1,tamañoMascara));
+			}
+		});
+	}
+	
+	private void agregarMenuPrewitt() {
+		itemPrewitt.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewitt(buffer1));
+			}
+		});
+	}
+	
+	private void agregarMenuSobel() {
+		itemSobel.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobel(buffer1));
 			}
 		});
 	}
