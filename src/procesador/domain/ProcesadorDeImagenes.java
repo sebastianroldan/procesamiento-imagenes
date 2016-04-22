@@ -744,30 +744,42 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDePrewitt(Imagen buff) {
+	public Imagen pasarFiltroDePrewitt(Imagen buff,int porcentaje) {
 		Imagen salida=null;
 		if (buff!=null){
 			int[][] matrizMascaraY= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-1,0,1},{-1,0,1}};
-			salida = new Imagen(buff.getWidth(),buff.getHeight());		
-			salida =pasarMascaraGradiente(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			salida = new Imagen(buff.getWidth(),buff.getHeight());	
+			salida =pasarMascaraGradiente(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY,porcentaje);	
 		}
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDeSobel(Imagen buff) {
+	public Imagen pasarFiltroDeSobel(Imagen buff,int porcentaje) {
 		Imagen salida=null;
 		if (buff!=null){
 			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
-			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			salida =pasarMascaraGradiente(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			salida = new Imagen(buff.getWidth(),buff.getHeight());
+			salida =pasarMascaraGradiente(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY,porcentaje);	
 		}
 		return salida;
 	}
 	
 	private Imagen pasarMascaraGradiente(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascaraX,
-			int[][] matrizMascaraY) {
+			int[][] matrizMascaraY,int porcentaje) {
+		for (int i=0; i <3; i++){
+			for(int j =0; j <3; j++){
+				System.out.print("y"+"("+i+","+j+") "+matrizMascaraY[i][j] + " " );
+			}
+			System.out.println("");
+		}	
+		for (int i=0; i <3; i++){
+			for(int j =0; j <3; j++){
+				System.out.print("x"+"("+i+","+j+") "+matrizMascaraX[i][j] );
+			}
+			System.out.println("");
+		}	
 		int[][] matriX =new int[ancho][alto];
 		int[][] matriY =new int[ancho][alto];
 		Integer[][] matriResultado =new Integer[ancho][alto];
@@ -788,25 +800,24 @@ public class ProcesadorDeImagenes {
 					}
 				}
 				
-				matriX[i+ 3/2][ j+3/2]=grisX;
-				matriY[i+ 3/2][ j+3/2]=grisY;
+				matriX[i+ 1][j+1]=grisX ;
+				matriY[i+ 1][j+1]=grisY;
 				grisX=0;
 				grisY=0;
 			}
 		}
-		
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				matriResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j], 2) + Math.pow(matriY[i][j],2));
-				}
+				matriResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
 			}
+		}
 		int max=buscarMaximo(matriResultado,ancho,alto);
-		double maxMatriz=  max*0.20;
+		double maxMatriz= max*((double) porcentaje/100);			
 		Color negro=new Color(0,0,0);
 		Color blanco=new Color(255,255,255);
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				if(maxMatriz<matriResultado[i][j]){
+				if(maxMatriz < matriResultado[i][j]){
 					salida.setRGB(i, j, blanco.getRGB());
 				}else{
 					salida.setRGB(i, j, negro.getRGB());

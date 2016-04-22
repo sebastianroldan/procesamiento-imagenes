@@ -903,7 +903,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuPrewitt() {
 		itemPrewitt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewitt(buffer1));
+				JTextField porcen = new JTextField();;
+				Object[] message = {
+				    "Porcentaje del maximo:", porcen
+				};
+				int porcentaje = 0;
+
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese porcentaje", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 porcentaje = Integer.valueOf(porcen.getText());
+				}
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewitt(buffer1,porcentaje));
 			}
 		});
 	}
@@ -911,7 +922,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuSobel() {
 		itemSobel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobel(buffer1));
+				JTextField porcen = new JTextField();;
+				Object[] message = {
+				    "Porcentaje del maximo:", porcen
+				};
+				int porcentaje = 0;
+
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese porcentaje", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 porcentaje = Integer.valueOf(porcen.getText());
+				}
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobel(buffer1,porcentaje));
 			}
 		});
 	}
@@ -947,7 +969,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				{
 					tamañoDesvio = Double.valueOf(desvio.getText());
 				}
-				
 				aplicarOperacion(ObjProcesamiento.pasarFiltroGaussiano(buffer1, tamañoDesvio));
 			}
 		});
