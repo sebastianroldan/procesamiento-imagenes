@@ -496,10 +496,25 @@ public class ProcesadorDeImagenes {
 		Color color;
 		double division=0;
 		int resultado=0;
-		Imagen salida = new Imagen(image.getWidth(),image.getHeight());
-		for(int i=0;i<image.getWidth();i++ ){
-			for(int j=0;j<image.getHeight();j++) {
-				division= (double) calcularPromedio(image.getRGB(i, j))/255;
+		int ancho=image.getWidth();
+		int alto=image.getHeight();
+		
+		Imagen salida = new Imagen(ancho,alto);
+		Integer [][] matrizEntrada = new Integer[ancho][alto];
+		
+		// convierto la imagen a matriz de integers
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				matrizEntrada[i][j]= image.getValorGrisPixel(i,j);
+			}
+		}
+		
+		int maxGris=buscarMaximo(matrizEntrada,ancho,alto);
+		
+		// ahora calculo la potencia
+		for(int i=0;i<ancho;i++ ){
+			for(int j=0;j<alto;j++) {
+				division= (double) matrizEntrada[i][j]/ maxGris;
 				resultado = (int) (255*Math.pow(division, potencia));
 				color =new Color(resultado,resultado,resultado);
 				salida.setRGB(i, j, color.getRGB());
@@ -857,20 +872,23 @@ public class ProcesadorDeImagenes {
 		double red=0;
 		double green=0;
 		double blue=0;
+		Color colorSalida=null;
+		Color color=null;
 		for (int i=0; i <= ancho-mascara; i++){
 			for(int j =0; j <= alto-mascara; j++){
 				for (int k=0; k < mascara; k++){
 					for(int m =0; m < mascara; m++){
-						red = red + (new Color(buff.getRGB(i+k, j+m)).getRed())*matrizMascara[k][m]; 
-						green = green + (new Color(buff.getRGB(i+k, j+m)).getGreen())*matrizMascara[k][m]; 
-						blue = blue + (new Color(buff.getRGB(i+k, j+m)).getBlue())*matrizMascara[k][m]; 
+						color=new Color(buff.getRGB(i+k, j+m));
+						red = red + (color.getRed())*matrizMascara[k][m]; 
+						green = green + (color.getGreen())*matrizMascara[k][m]; 
+						blue = blue + (color.getBlue())*matrizMascara[k][m]; 
 					}
 				}
 				red=  (red/divisor);
 				green= (green/divisor);
 				blue=  (blue/divisor);
-				Color color= new Color((int)red,(int)green,(int) blue);
-				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
+				colorSalida= new Color((int)red,(int)green,(int) blue);
+				salida.setRGB(i+ mascara/2, j+mascara/2, colorSalida.getRGB());
 				red=0;
 				green=0;
 				blue=0;
@@ -963,20 +981,23 @@ public class ProcesadorDeImagenes {
 		int red=0;
 		int green=0;
 		int blue=0;
+		Color color=null;
+		Color colorFinal=null;
 		for (int i=0; i <= ancho-mascara; i++){
 			for(int j =0; j <= alto-mascara; j++){
 				for (int k=0; k < mascara; k++){
 					for(int m =0; m < mascara; m++){
-						red = red + (new Color(buff.getRGB(i+k, j+m)).getRed())*matrizMascara[k][m]; 
-						green = green + (new Color(buff.getRGB(i+k, j+m)).getGreen())*matrizMascara[k][m]; 
-						blue = blue + (new Color(buff.getRGB(i+k, j+m)).getBlue())*matrizMascara[k][m]; 
+						color=new Color(buff.getRGB(i+k, j+m));
+						red = red + (color.getRed())*matrizMascara[k][m]; 
+						green = green + (color.getGreen())*matrizMascara[k][m]; 
+						blue = blue + (color.getBlue())*matrizMascara[k][m]; 
 					}
 				}
 				red= (int) (red/divisor);
 				green=(int) (green/divisor);
 				blue= (int) (blue/divisor);
-				Color color= new Color(red,green, blue);
-				salida.setRGB(i+ mascara/2, j+mascara/2, color.getRGB());
+				colorFinal= new Color(red,green, blue);
+				salida.setRGB(i+ mascara/2, j+mascara/2, colorFinal.getRGB());
 				red=0;
 				green=0;
 				blue=0;
