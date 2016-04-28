@@ -762,10 +762,13 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroDePrewitt(Imagen buff,int porcentaje) {
 		Imagen salida=null;
 		if (buff!=null){
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraY= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-1,0,1},{-1,0,1}};
-			salida = new Imagen(buff.getWidth(),buff.getHeight());	
-			salida =pasarMascaraGradiente(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY,porcentaje);	
+			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			int max=buscarMaximo(matrizResultado,buff.getWidth(),buff.getHeight());
+			double maxMatriz= max*((double) porcentaje/100);	
+			salida =obtenerImagenConBordePoS( matrizResultado, buff.getWidth(),buff.getHeight(), maxMatriz);
 		}
 		return salida;
 	}
@@ -773,31 +776,22 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroDeSobel(Imagen buff,int porcentaje) {
 		Imagen salida=null;
 		if (buff!=null){
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
-			salida = new Imagen(buff.getWidth(),buff.getHeight());
-			salida =pasarMascaraGradiente(buff, salida,buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY,porcentaje);	
+			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
+			int max=buscarMaximo(matrizResultado,buff.getWidth(),buff.getHeight());
+			double maxMatriz= max*((double) porcentaje/100);
+			salida =obtenerImagenConBordePoS( matrizResultado, buff.getWidth(),buff.getHeight(), maxMatriz);
 		}
 		return salida;
 	}
 	
-	private Imagen pasarMascaraGradiente(Imagen buff, Imagen salida, int ancho, int alto, int[][] matrizMascaraX,
-			int[][] matrizMascaraY,int porcentaje) {
-		for (int i=0; i <3; i++){
-			for(int j =0; j <3; j++){
-				System.out.print("y"+"("+i+","+j+") "+matrizMascaraY[i][j] + " " );
-			}
-			System.out.println("");
-		}	
-		for (int i=0; i <3; i++){
-			for(int j =0; j <3; j++){
-				System.out.print("x"+"("+i+","+j+") "+matrizMascaraX[i][j] );
-			}
-			System.out.println("");
-		}	
+	private Integer[][] obtenerMatrizPyS(Imagen buff, int ancho, int alto, int[][] matrizMascaraX,
+			int[][] matrizMascaraY) {
 		int[][] matriX =new int[ancho][alto];
 		int[][] matriY =new int[ancho][alto];
-		Integer[][] matriResultado =new Integer[ancho][alto];
+		Integer[][] matrizResultado =new Integer[ancho][alto];
 		int grisX =0;
 		int grisY =0;
 		for (int i=0; i <= ancho-3; i++){
@@ -805,7 +799,7 @@ public class ProcesadorDeImagenes {
 				matriX[i][j]=0;
 				matriY[i][j]=0;
 			}
-			}
+		}
 		for (int i=0; i <= ancho-3; i++){
 			for(int j =0; j <= alto-3; j++){
 				for (int k=0; k < 3; k++){
@@ -823,26 +817,45 @@ public class ProcesadorDeImagenes {
 		}
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				matriResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
+				matrizResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
 			}
 		}
-		int max=buscarMaximo(matriResultado,ancho,alto);
-		double maxMatriz= max*((double) porcentaje/100);			
-		Color negro=new Color(0,0,0);
-		Color blanco=new Color(255,255,255);
-		for (int i=0; i < ancho; i++){
-			for(int j =0; j < alto; j++){
-				if(maxMatriz < matriResultado[i][j]){
-					salida.setRGB(i, j, blanco.getRGB());
-				}else{
-					salida.setRGB(i, j, negro.getRGB());
-				}
-			}
-		}
-		
-		return salida;
+		return matrizResultado;
 	}
+private Imagen obtenerImagenConBordePoS(Integer[][] matrizResultado, int ancho, int alto, double maxMatriz){
+	Color negro=new Color(0,0,0);
+	Color blanco=new Color(255,255,255);
+	Imagen salida = new Imagen(ancho,alto);
+	for (int i=0; i < ancho; i++){
+		for(int j =0; j < alto; j++){
+			if(maxMatriz < matrizResultado[i][j]){
+				salida.setRGB(i, j, blanco.getRGB());
+			}else{
+				salida.setRGB(i, j, negro.getRGB());
+			}
+		}
+	}
+	return salida;	
+}
 
+public void compararPyS(Imagen buff, int porcentaje) {
+	if (buff!=null){
+		Integer[][] matrizResultadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
+		int[][] matrizMascaraYPrewiit= {{-1,-1,-1},{0,0,0},{1,1,1}};
+		int[][] matrizMascaraXPrewiit={{-1,0,1},{-1,0,1},{-1,0,1}};
+		Integer[][] matrizResultadoSobel =new Integer[buff.getWidth()][buff.getHeight()];
+		int[][] matrizMascaraYSobel= {{-1,-2,-1},{0,0,0},{1,2,1}};
+		int[][] matrizMascaraXSobel={{-1,0,1},{-2,0,2},{-1,0,1}};
+		matrizResultadoPrewitt =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXPrewiit, matrizMascaraYPrewiit);	
+		int max=buscarMaximo(matrizResultadoPrewitt,buff.getWidth(),buff.getHeight());
+		double maxMatriz= max*((double) porcentaje/100);	
+		Imagen salidaPrewiit =obtenerImagenConBordePoS( matrizResultadoPrewitt, buff.getWidth(),buff.getHeight(), maxMatriz);
+		matrizResultadoSobel =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXSobel, matrizMascaraYSobel);	
+		Imagen salidaSobel =obtenerImagenConBordePoS( matrizResultadoSobel, buff.getWidth(),buff.getHeight(), maxMatriz);
+		new Editor(salidaPrewiit,salidaSobel);
+	}
+	
+}
 	public Imagen pasarFiltroMediana(Imagen buff, int mascara) {
 		Imagen salida=null;
 		if (buff!=null){
@@ -961,7 +974,7 @@ public class ProcesadorDeImagenes {
 						gris = gris + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascara[k][m];  
 					}
 				}
-				matrizAux[i+ mascara/2][j+ mascara/2]=gris;
+				matrizAux[i+ mascara/2][j+ mascara/2]=gris/divisor;
 				gris=0;	
 			}
 		}

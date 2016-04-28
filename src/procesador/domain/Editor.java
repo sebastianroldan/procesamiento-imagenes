@@ -66,6 +66,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemBorde = new JMenuItem("Borde");
 	private JMenuItem itemPrewitt = new JMenuItem("Prewitt");
 	private JMenuItem itemSobel = new JMenuItem("Sobel");
+	private JMenuItem itemCompararPyS = new JMenuItem("Comparar Prewitt y Sobel");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -124,6 +125,18 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			cargarImagen(resultado);
 		}
 		this.setBounds(150, 50, 600, 600);
+	}
+	
+	public Editor(Imagen imagenIzquierda, Imagen imagenDerecha ) {
+		initComponents();
+		if(imagenIzquierda!=null && imagenDerecha!=null){
+			buffer1 = imagenIzquierda;
+			ObjProcesamiento.setImagen(buffer1);
+			contenedorDeImagen.setIcon(new ImageIcon(buffer1));
+			buffer2 = imagenDerecha;
+			ObjProcesamiento2.setImagen(buffer2);
+			contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+		}
 	}
 	
 	private void initComponents() {
@@ -258,6 +271,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemBorde);
 		menuFiltros.add(itemPrewitt);
 		menuFiltros.add(itemSobel);
+		menuFiltros.add(itemCompararPyS);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -316,7 +330,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemSal.setMnemonic(KeyEvent.VK_S);
 		menuBar.add(menuContraste);
 		menuContraste.setMnemonic(KeyEvent.VK_C);
-		
 		return menuBar;
 	}
 
@@ -340,6 +353,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuBorde();
 		agregarMenuPrewitt();
 		agregarMenuSobel();
+		agregarMenuCompararPyS();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -867,17 +881,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuMedia() {
 		itemMedia.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField mascara = new JTextField();
-				Object[] message = {
-				    "Tamaño de mascara", mascara
-				};
-				int tamañoMascara = 0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION)
-				{
-					tamañoMascara = Integer.valueOf(mascara.getText());
-				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltreDeLaMedia(buffer1,tamañoMascara));
+				aplicarOperacion(ObjProcesamiento.pasarFiltreDeLaMedia(buffer1,obtenerMascara()));
 			}
 		});
 	}
@@ -885,17 +889,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuBorde() {
 		itemBorde.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField mascara = new JTextField();
-				Object[] message = {
-				    "Tamaño de mascara", mascara
-				};
-				int tamañoMascara = 0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION)
-				{
-					tamañoMascara = Integer.valueOf(mascara.getText());
-				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltroDeBorde(buffer1,tamañoMascara));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDeBorde(buffer1,obtenerMascara()));
 			}
 		});
 	}
@@ -903,18 +897,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuPrewitt() {
 		itemPrewitt.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField porcen = new JTextField();;
-				Object[] message = {
-				    "Porcentaje del maximo:", porcen
-				};
-				int porcentaje = 0;
-
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese porcentaje", JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION)
-				{
-					 porcentaje = Integer.valueOf(porcen.getText());
-				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewitt(buffer1,porcentaje));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewitt(buffer1,obtenerPorcentaje()));
 			}
 		});
 	}
@@ -922,18 +905,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuSobel() {
 		itemSobel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField porcen = new JTextField();;
-				Object[] message = {
-				    "Porcentaje del maximo:", porcen
-				};
-				int porcentaje = 0;
-
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese porcentaje", JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION)
-				{
-					 porcentaje = Integer.valueOf(porcen.getText());
-				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobel(buffer1,porcentaje));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobel(buffer1,obtenerPorcentaje()));
+			}
+		});
+	}
+	
+	private void agregarMenuCompararPyS() {
+		itemCompararPyS.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				ObjProcesamiento.compararPyS(buffer1,obtenerPorcentaje());
 			}
 		});
 	}
@@ -941,17 +921,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuMediana() {
 		itemMediana.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField mascara = new JTextField();
-				Object[] message = {
-				    "Tamaño de mascara", mascara
-				};
-				int tamañoMascara = 0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION)
-				{
-					tamañoMascara = Integer.valueOf(mascara.getText());
-				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltroMediana(buffer1,tamañoMascara));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroMediana(buffer1,obtenerMascara()));
 			}
 		});
 	}
@@ -1265,4 +1235,34 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			contenedorDeImagen2.validate();
 		}	
 	}
+	
+	private int obtenerPorcentaje(){
+		JTextField porcen = new JTextField();;
+		Object[] message = {
+		    "Porcentaje del maximo:", porcen
+		};
+		int porcentaje = 0;
+
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese porcentaje", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			 porcentaje = Integer.valueOf(porcen.getText());
+		}
+		return porcentaje;
+	}
+	
+	private int obtenerMascara(){
+	JTextField mascara = new JTextField();
+	Object[] message = {
+	    "Tamaño de mascara", mascara
+	};
+	int tamañoMascara = 0;
+	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+	if (option == JOptionPane.OK_OPTION)
+	{
+		tamañoMascara = Integer.valueOf(mascara.getText());
+	}
+	return tamañoMascara;
+	}
+	
 }
