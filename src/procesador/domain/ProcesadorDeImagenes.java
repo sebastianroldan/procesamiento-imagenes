@@ -794,8 +794,8 @@ public class ProcesadorDeImagenes {
 		Integer[][] matrizResultado =new Integer[ancho][alto];
 		int grisX =0;
 		int grisY =0;
-		for (int i=0; i <= ancho-3; i++){
-			for(int j =0; j <= alto-3; j++){
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
 				matriX[i][j]=0;
 				matriY[i][j]=0;
 			}
@@ -1068,7 +1068,7 @@ public void compararPyS(Imagen buff, int porcentaje) {
 	}
 
 	private Imagen rellenarImagen( int ancho, int alto){
-		Color color = new Color(255,255,255);
+		Color color = new Color(0,0,0);
 		Imagen salida;
 		salida = new Imagen(ancho,alto);		
 		for (int i=0; i < ancho; i++){
@@ -1077,6 +1077,63 @@ public void compararPyS(Imagen buff, int porcentaje) {
 			}
 		}
 		return salida;
+	}
+
+	public Imagen pasarFiltroLaplasiano(Imagen buff) {
+		Imagen salida=null;
+		if (buff!=null){
+			Color blanco=new Color(255,255,255);
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			int[][] matrizMascara= {{0,-1,0},{-1,4,-1},{0,-1,0}};
+			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
+			matrizResultado =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara);
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight()-1; j++){
+					if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0)||
+					   (matrizResultado[i][j] ==0 && matrizResultado[i][j+1] !=0)||
+					   (matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
+					   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
+					salida.setRGB(i, j, blanco.getRGB());						
+					}
+				}
+			}
+			for (int j=0; j < buff.getHeight(); j++){
+				for(int i =0; i < buff.getWidth()-1; i++){
+					if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0)||
+					   (matrizResultado[i][j] ==0 && matrizResultado[i+1][j] !=0)||
+					   (matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
+					   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
+					salida.setRGB(i, j, blanco.getRGB());						
+					}
+				}
+			}
+		}
+		return salida;
+		
+	}
+
+	private Integer[][] obtenerMatrizLaplaciano(Imagen buff, int ancho, int alto, int[][] matrizMascara) {
+		Integer[][] matrizResultado =new Integer[ancho][alto];
+		int gris=0;
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				matrizResultado[i][j]=0;
+			}
+		}
+		
+		for (int i=0; i <= ancho-3; i++){
+			for(int j =0; j <= alto-3; j++){
+				for (int k=0; k < 3; k++){
+					for(int m =0; m < 3; m++){		
+						gris = gris + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascara[k][m]; 
+						
+					}
+				}	
+				matrizResultado[i+ 1][j+1]=gris;
+				gris=0;
+			}
+		}
+		return matrizResultado;
 	}
 
 }
