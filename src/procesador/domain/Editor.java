@@ -68,6 +68,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemSobel = new JMenuItem("Sobel");
 	private JMenuItem itemCompararPyS = new JMenuItem("Comparar Prewitt y Sobel");
 	private JMenuItem itemLaplaciano = new JMenuItem("Laplaciano");
+	private JMenuItem itemLaplacianoPendiente = new JMenuItem("Laplaciano con pendiente");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -274,6 +275,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemSobel);
 		menuFiltros.add(itemCompararPyS);
 		menuFiltros.add(itemLaplaciano);
+		menuFiltros.add(itemLaplacianoPendiente);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -357,6 +359,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuSobel();
 		agregarMenuCompararPyS();
 		agregarMenuLaplaciano();
+		agregarMenuLaplacianoPendiente();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -925,6 +928,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemLaplaciano.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasiano(buffer1));
+			}
+		});
+	}
+	
+	private void agregarMenuLaplacianoPendiente() {
+		itemLaplacianoPendiente.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoPendiente(buffer1, obtenerPorcentaje()));
 			}
 		});
 	}

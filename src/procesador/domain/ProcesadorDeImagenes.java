@@ -828,7 +828,7 @@ private Imagen obtenerImagenConBordePoS(Integer[][] matrizResultado, int ancho, 
 	Imagen salida = new Imagen(ancho,alto);
 	for (int i=0; i < ancho; i++){
 		for(int j =0; j < alto; j++){
-			if(maxMatriz < matrizResultado[i][j]){
+			if(maxMatriz <= matrizResultado[i][j]){
 				salida.setRGB(i, j, blanco.getRGB());
 			}else{
 				salida.setRGB(i, j, negro.getRGB());
@@ -1134,6 +1134,78 @@ public void compararPyS(Imagen buff, int porcentaje) {
 			}
 		}
 		return matrizResultado;
+	}
+
+	public Imagen pasarFiltroLaplasianoPendiente(Imagen buff, int porcentaje) {
+		Imagen salida=null;
+		if (buff!=null){
+			Color blanco=new Color(255,255,255);
+			int suma=0;;
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			int[][] matrizMascara= {{0,-1,0},{-1,4,-1},{0,-1,0}};
+			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
+			matrizResultado =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara);
+			double max= maximoLaplaciano( matrizResultado, buff.getWidth(), buff.getHeight());
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight()-1; j++){
+					if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0)||
+					   (matrizResultado[i][j] ==0 && matrizResultado[i][j+1] !=0)||
+					   (matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
+					   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
+						suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+1]);
+						if(suma>=(max/((double)porcentaje/100))){
+							salida.setRGB(i, j, blanco.getRGB());	
+						}				
+					}
+				}
+			}
+			for (int j=0; j < buff.getHeight(); j++){
+				for(int i =0; i < buff.getWidth()-1; i++){
+					if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0)||
+					   (matrizResultado[i][j] ==0 && matrizResultado[i+1][j] !=0)||
+					   (matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
+					   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
+					   suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+1][j]);
+						if(suma>=(max*((double)porcentaje/100))){
+							salida.setRGB(i, j, blanco.getRGB());	
+						}						
+					}
+				}
+			}
+		}
+		return salida;
+	}
+	
+	private int maximoLaplaciano(Integer[][] matriz, int ancho, int alto){
+		int max=Math.abs(matriz[0][0]) + Math.abs(matriz[0][1]);
+		int suma=0;
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto-1; j++){
+				if((matriz[i][j] !=0 && matriz[i][j+1] ==0)||
+				   (matriz[i][j] ==0 && matriz[i][j+1] !=0)||
+				   (matriz[i][j] >0 && matriz[i][j+1]<0)||
+				   (matriz[i][j] <0 && matriz[i][j+1]>0)) {
+				   suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+1]);
+				   if(max<suma){
+						max=suma;	
+				   }
+				}
+			}
+		}
+		for (int j=0; j < alto; j++){
+			for(int i =0; i < ancho-1; i++){
+				if((matriz[i][j] !=0 && matriz[i+1][j] ==0)||
+				   (matriz[i][j] ==0 && matriz[i+1][j] !=0)||
+				   (matriz[i][j] >0 && matriz[i+1][j+1]<0)||
+				   (matriz[i][j] <0 && matriz[i+1][j]>0)) {
+				   suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+1][j]);
+				   if(max<suma){
+						max=suma;	
+				   }						
+				}
+			}
+		}
+		return max;
 	}
 
 }
