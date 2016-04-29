@@ -460,19 +460,23 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				JTextField campo1 = new JTextField();
 				JTextField campo2 = new JTextField();
+				JTextField porcen = new JTextField();
 				Object[] message = {
+					"Porcentaje afectado:", porcen,	
 					"Media (mu):" , campo1,
 				    "Desvío (gamma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
+				int porcentaje = 0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores de ruido", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
+					porcentaje = Integer.valueOf(porcen.getText());
 					media = Double.valueOf(campo1.getText());
 					desvio = Double.valueOf(campo2.getText()); 
 				}
-				aplicarOperacion(ObjProcesamiento.agregarRuidoGauss(buffer1,media,desvio));
+				aplicarOperacion(ObjProcesamiento.agregarRuidoGauss(buffer1,media,desvio,porcentaje));
 			}
 		});
 	}
@@ -481,17 +485,21 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemExponencial.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				JTextField campo = new JTextField();
+				JTextField porcen = new JTextField();
 				Object[] message = {
+					"Porcentaje afectado:", porcen,	
 				    "Lambda:", campo
 				};
 				double lambda = 0;
+				int porcentaje = 0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores de ruido", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
 					 lambda = Double.valueOf(campo.getText());
+					 porcentaje = Integer.valueOf(porcen.getText());
 					 
 				}
-				aplicarOperacion(ObjProcesamiento.agregarRuidoExponencial(buffer1,lambda));
+				aplicarOperacion(ObjProcesamiento.agregarRuidoExponencial(buffer1,lambda,porcentaje));
 			}
 		});
 	}
@@ -500,17 +508,21 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemRayleigh.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				JTextField campo = new JTextField();
+				JTextField porcen = new JTextField();
 				Object[] message = {
+					"Porcentaje afectado:", porcen,	
 				    "Fi:", campo
 				};
 				double fi = 0;
+				int porcentaje = 0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores de ruido", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
 					fi = Double.valueOf(campo.getText());
+					porcentaje = Integer.valueOf(porcen.getText());
 					 
 				}
-				aplicarOperacion(ObjProcesamiento.agregarRuidoRayleigh(buffer1,fi));
+				aplicarOperacion(ObjProcesamiento.agregarRuidoRayleigh(buffer1,fi,porcentaje));
 			}
 		});
 	}
