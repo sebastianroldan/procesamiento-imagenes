@@ -69,6 +69,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemCompararPyS = new JMenuItem("Comparar Prewitt y Sobel");
 	private JMenuItem itemLaplaciano = new JMenuItem("Laplaciano");
 	private JMenuItem itemLaplacianoPendiente = new JMenuItem("Laplaciano con pendiente");
+	private JMenuItem itemLaplacianoGaussiano = new JMenuItem("Laplaciano Gaussiano");
+	private JMenuItem itemLaplacianoGaussianoPendiente = new JMenuItem("Laplaciano Gaussiano con pendiente");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -276,6 +278,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemCompararPyS);
 		menuFiltros.add(itemLaplaciano);
 		menuFiltros.add(itemLaplacianoPendiente);
+		menuFiltros.add(itemLaplacianoGaussiano);
+		menuFiltros.add(itemLaplacianoGaussianoPendiente);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -360,6 +364,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuCompararPyS();
 		agregarMenuLaplaciano();
 		agregarMenuLaplacianoPendiente();
+		agregarMenuLaplacianoGaussiano();
+		agregarMenuLaplacianoGaussianoPendiente();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -940,6 +946,37 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
+	private void agregarMenuLaplacianoGaussiano() {
+		itemLaplacianoGaussiano.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoGaussiano(buffer1, obtenerDesvio()));
+			}
+		});
+	}
+	
+	private void agregarMenuLaplacianoGaussianoPendiente() {
+		itemLaplacianoGaussianoPendiente.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField desvio = new JTextField();
+				JTextField porcentaje = new JTextField();
+				Object[] message = {
+				    "Desvio (gamma)", desvio,
+				    "Porcentaje", porcentaje
+				};
+				double tamañoDesvio = 0;
+				int tamañoPorcentaje= 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					tamañoDesvio = Double.valueOf(desvio.getText());
+					tamañoPorcentaje = Integer.valueOf(porcentaje.getText());
+
+				}
+				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoGaussianoPendiente(buffer1,tamañoDesvio,tamañoPorcentaje));
+			}
+		});
+	}
+	
 	private void agregarMenuMediana() {
 		itemMediana.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -951,17 +988,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuGaussiano() {
 		itemGaussiano.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				JTextField desvio = new JTextField();
-				Object[] message = {
-				    "Desvio (gamma)", desvio
-				};
-				double tamañoDesvio =0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el desvio del filtro", JOptionPane.OK_CANCEL_OPTION);
-				if (option == JOptionPane.OK_OPTION)
-				{
-					tamañoDesvio = Double.valueOf(desvio.getText());
-				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltroGaussiano(buffer1, tamañoDesvio));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroGaussiano(buffer1, obtenerDesvio()));
 			}
 		});
 	}
@@ -1285,6 +1312,20 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		tamañoMascara = Integer.valueOf(mascara.getText());
 	}
 	return tamañoMascara;
+	}
+	
+	private double obtenerDesvio(){
+	JTextField desvio = new JTextField();
+	Object[] message = {
+	    "Desvio (gamma)", desvio
+	};
+	double tamañoDesvio =0;
+	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el desvio del filtro", JOptionPane.OK_CANCEL_OPTION);
+	if (option == JOptionPane.OK_OPTION)
+	{
+		tamañoDesvio = Double.valueOf(desvio.getText());
+	}
+	return tamañoDesvio;
 	}
 	
 }
