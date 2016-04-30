@@ -1301,4 +1301,45 @@ public void compararPyS(Imagen buff, int porcentaje) {
 		return mascara;
 	}
 
+	public Imagen umbralGlobal(Imagen buff, int umbral, int delta) {
+		Imagen salida=null;
+		int umbralInicial=umbral;
+		int umbralFinal=umbral;
+		int cantBlancos=0;
+		int cantNegros=0;
+		int sumaBlancos=0;
+		int sumaNegros=0;
+		Color blanco=new Color(255,255,255);
+		Color negro=new Color(0,0,0);
+		if (buff!=null){
+			salida= new Imagen(buff.getWidth(), buff.getHeight());	
+			do{
+				umbralInicial=umbralFinal;
+				for (int i=0; i < buff.getWidth(); i++){
+					for(int j =0; j < buff.getHeight(); j++){
+						if(calcularPromedio(buff.getRGB(i, j)) > umbralInicial){
+							cantBlancos++;
+							sumaBlancos+=calcularPromedio(buff.getRGB(i, j));
+						}else{
+							cantNegros++;
+							sumaNegros+=calcularPromedio(buff.getRGB(i, j));
+						}
+					}
+				}
+				umbralFinal=((sumaBlancos/cantBlancos)+(sumaNegros/cantNegros))/2;
+			}while(Math.abs(umbralFinal-umbralInicial)>delta);
+			System.out.println(umbralFinal);
+			for (int i=0; i < buff.getWidth(); i++){
+				for(int j =0; j < buff.getHeight(); j++){
+					if(calcularPromedio(buff.getRGB(i, j)) > umbralFinal){
+						salida.setRGB(i, j, blanco.getRGB());
+					}else{
+						salida.setRGB(i, j, negro.getRGB());
+					}
+				}
+			}
+		}
+		return salida;
+	}
+
 }

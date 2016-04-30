@@ -90,6 +90,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemEcualizarHistograma = new JMenuItem("Ecualizar");
 	private JMenu menuUmbral = new JMenu("Umbral");
 	private JMenuItem itemUmbralizar = new JMenuItem("Umbralizar");
+	private JMenuItem itemUmbralGlobal = new JMenuItem("Global");
 	private JMenu menuOperaciones = new JMenu("Operaciones");
 	private JMenuItem itemSumar = new JMenuItem("Sumar");	
 	private JMenuItem itemRestar = new JMenuItem("Restar");
@@ -308,6 +309,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuHistograma.setMnemonic(KeyEvent.VK_H);
 		menuUmbral.add(itemUmbralizar);
 		itemUmbralizar.setMnemonic(KeyEvent.VK_U);
+		menuUmbral.add(itemUmbralGlobal);
 		menuBar.add(menuUmbral);
 		menuUmbral.setMnemonic(KeyEvent.VK_U);
 		menuBar.add(menuOperaciones);
@@ -380,6 +382,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuHistograma();
 		agregarMenuEcualizarHistograma();
 		agregarMenuUmbralizar();
+		agregarMenuUmbralGlobal();
 		agregarMenuSumar();
 		agregarMenuRestar();
 		agregarMenuProducto();
@@ -745,6 +748,29 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});		
 	}
 
+	private void agregarMenuUmbralGlobal() {
+		itemUmbralGlobal.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField umbral = new JTextField();
+				JTextField delta = new JTextField();
+				Object[] message = {
+				    "Umbral:", umbral,
+				    "Delta:", delta,
+				};
+				int tamañoUmbral=0;
+				int tamañoDelta=0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					tamañoUmbral = Integer.valueOf(umbral.getText());
+				    tamañoDelta = Integer.valueOf(delta.getText());
+					
+				}
+				aplicarOperacion(ObjProcesamiento.umbralGlobal(buffer1,tamañoUmbral,tamañoDelta));
+			}
+		});		
+	}
+	
 	private void agregarMenuContrastar() {
 		itemContraste.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
