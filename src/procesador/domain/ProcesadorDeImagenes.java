@@ -1328,7 +1328,6 @@ public void compararPyS(Imagen buff, int porcentaje) {
 				}
 				umbralFinal=((sumaBlancos/cantBlancos)+(sumaNegros/cantNegros))/2;
 			}while(Math.abs(umbralFinal-umbralInicial)>delta);
-			System.out.println(umbralFinal);
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					if(calcularPromedio(buff.getRGB(i, j)) > umbralFinal){
@@ -1340,6 +1339,21 @@ public void compararPyS(Imagen buff, int porcentaje) {
 			}
 		}
 		return salida;
+	}
+
+	public void compararLoG(Imagen buff, double desvio, int porcentaje) {
+		double[][] matrizLoG =new double[buff.getWidth()][buff.getHeight()];
+		if (buff!=null){
+		int mascara=calcularTamañoMascaraGaussiana(desvio);
+		double[][] matrizMascara= obtenerMascaraLaplacianoGausiano(mascara, desvio);
+		Imagen salidaLoGPendiente =rellenarImagen(buff.getWidth(), buff.getHeight());
+		Imagen salidaLoG =rellenarImagen(buff.getWidth(), buff.getHeight());
+		matrizLoG =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
+		double max= maximoLaplaciano(matrizLoG, buff.getWidth(), buff.getHeight());
+		salidaLoG=crearImagenLaplaciano(matrizLoG,buff.getWidth(), buff.getHeight());
+		salidaLoGPendiente =crearImagenLaplacianoPendiente(matrizLoG,buff.getWidth(), buff.getHeight(),max,porcentaje);		
+		new Editor(salidaLoG,salidaLoGPendiente);
+		}
 	}
 
 }

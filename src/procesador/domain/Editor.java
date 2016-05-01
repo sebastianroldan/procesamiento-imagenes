@@ -69,8 +69,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemCompararPyS = new JMenuItem("Comparar Prewitt y Sobel");
 	private JMenuItem itemLaplaciano = new JMenuItem("Laplaciano");
 	private JMenuItem itemLaplacianoPendiente = new JMenuItem("Laplaciano con pendiente");
-	private JMenuItem itemLaplacianoGaussiano = new JMenuItem("Laplaciano Gaussiano");
-	private JMenuItem itemLaplacianoGaussianoPendiente = new JMenuItem("Laplaciano Gaussiano con pendiente");
+	private JMenuItem itemLaplacianoLoG = new JMenuItem("LoG");
+	private JMenuItem itemLaplacianoLoGPendiente = new JMenuItem("LoG con pendiente");
+	private JMenuItem itemCompararLoG = new JMenuItem("Comparar LoG y LoG con pendiente");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -279,8 +280,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemCompararPyS);
 		menuFiltros.add(itemLaplaciano);
 		menuFiltros.add(itemLaplacianoPendiente);
-		menuFiltros.add(itemLaplacianoGaussiano);
-		menuFiltros.add(itemLaplacianoGaussianoPendiente);
+		menuFiltros.add(itemLaplacianoLoG);
+		menuFiltros.add(itemLaplacianoLoGPendiente);
+		menuFiltros.add(itemCompararLoG);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -368,6 +370,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuLaplacianoPendiente();
 		agregarMenuLaplacianoGaussiano();
 		agregarMenuLaplacianoGaussianoPendiente();
+		agregarMenuCompararLoG();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -985,7 +988,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 	
 	private void agregarMenuLaplacianoGaussiano() {
-		itemLaplacianoGaussiano.addActionListener(new java.awt.event.ActionListener() {
+		itemLaplacianoLoG.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoGaussiano(buffer1, obtenerDesvio()));
 			}
@@ -993,7 +996,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 	
 	private void agregarMenuLaplacianoGaussianoPendiente() {
-		itemLaplacianoGaussianoPendiente.addActionListener(new java.awt.event.ActionListener() {
+		itemLaplacianoLoGPendiente.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				JTextField desvio = new JTextField();
 				JTextField porcentaje = new JTextField();
@@ -1011,6 +1014,29 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 
 				}
 				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoGaussianoPendiente(buffer1,tamañoDesvio,tamañoPorcentaje));
+			}
+		});
+	}
+	
+	private void agregarMenuCompararLoG() {
+		itemCompararLoG.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				JTextField desvio = new JTextField();
+				JTextField porcentaje = new JTextField();
+				Object[] message = {
+				    "Desvio (gamma)", desvio,
+				    "Porcentaje", porcentaje
+				};
+				double tamañoDesvio = 0;
+				int tamañoPorcentaje= 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					tamañoDesvio = Double.valueOf(desvio.getText());
+					tamañoPorcentaje = Integer.valueOf(porcentaje.getText());
+
+				}
+				ObjProcesamiento.compararLoG(buffer1,tamañoDesvio,tamañoPorcentaje);
 			}
 		});
 	}
