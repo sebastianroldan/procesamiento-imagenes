@@ -92,6 +92,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenu menuUmbral = new JMenu("Umbral");
 	private JMenuItem itemUmbralizar = new JMenuItem("Umbralizar");
 	private JMenuItem itemUmbralGlobal = new JMenuItem("Global");
+	private JMenuItem itemUmbralOtsu = new JMenuItem("Otsu");
 	private JMenu menuOperaciones = new JMenu("Operaciones");
 	private JMenuItem itemSumar = new JMenuItem("Sumar");	
 	private JMenuItem itemRestar = new JMenuItem("Restar");
@@ -312,6 +313,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuUmbral.add(itemUmbralizar);
 		itemUmbralizar.setMnemonic(KeyEvent.VK_U);
 		menuUmbral.add(itemUmbralGlobal);
+		menuUmbral.add(itemUmbralOtsu);
 		menuBar.add(menuUmbral);
 		menuUmbral.setMnemonic(KeyEvent.VK_U);
 		menuBar.add(menuOperaciones);
@@ -386,6 +388,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuEcualizarHistograma();
 		agregarMenuUmbralizar();
 		agregarMenuUmbralGlobal();
+		agregarMenuUmbralOtsu();
 		agregarMenuSumar();
 		agregarMenuRestar();
 		agregarMenuProducto();
@@ -770,6 +773,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					
 				}
 				aplicarOperacion(ObjProcesamiento.umbralGlobal(buffer1,tamañoUmbral,tamañoDelta));
+			}
+		});		
+	}
+	
+	private void agregarMenuUmbralOtsu() {
+		itemUmbralOtsu.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aplicarOperacion(ObjProcesamiento.umbralOtsu(buffer1));
 			}
 		});		
 	}
