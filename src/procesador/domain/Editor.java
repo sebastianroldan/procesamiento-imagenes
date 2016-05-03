@@ -1006,7 +1006,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				};
 				double tamañoDesvio = 0;
 				int tamañoPorcentaje= 0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
 					tamañoDesvio = Double.valueOf(desvio.getText());
@@ -1029,7 +1029,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				};
 				double tamañoDesvio = 0;
 				int tamañoPorcentaje= 0;
-				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
 					tamañoDesvio = Double.valueOf(desvio.getText());
