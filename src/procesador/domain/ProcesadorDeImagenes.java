@@ -1326,7 +1326,15 @@ public void compararPyS(Imagen buff, int porcentaje) {
 						}
 					}
 				}
-				umbralFinal=((sumaBlancos/cantBlancos)+(sumaNegros/cantNegros))/2;
+				if(cantBlancos>0 && cantNegros>0){
+					umbralFinal=((sumaBlancos/cantBlancos)+(sumaNegros/cantNegros))/2;
+				}else{
+					if(cantBlancos>0){
+						umbralFinal=((sumaBlancos/cantBlancos))/2;
+					}else{
+						umbralFinal=((sumaNegros/cantNegros))/2;
+					}
+				}			
 			}while(Math.abs(umbralFinal-umbralInicial)>delta);
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
@@ -1360,7 +1368,7 @@ public void compararPyS(Imagen buff, int porcentaje) {
 		Imagen salida=null;
 		int umbralOptimo=0;
 		double gw=0;
-		double gwMinimo=0;
+		double gwMaximo=0;
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		if (buff!=null){
@@ -1371,12 +1379,11 @@ public void compararPyS(Imagen buff, int porcentaje) {
 			for (int i=0; i < 256; i++){
 				ocurrencia[i]=(double) histograma[i]/pixeles;		
 			}
-			gwMinimo=calculoVariaza(0,ocurrencia);
+			gwMaximo=calculoVariaza(0,ocurrencia);
 			for(int umbral =1; umbral < 256; umbral++){
 				gw=calculoVariaza(umbral,ocurrencia);
-
-				if(gw < gwMinimo){
-					gwMinimo=gw;
+				if(gw > gwMaximo){
+					gwMaximo=gw;
 					umbralOptimo=umbral;
 				}	
 			}
@@ -1394,18 +1401,17 @@ public void compararPyS(Imagen buff, int porcentaje) {
 	}
 	
 	private double calculoVariaza(int umbral, double[] ocurrencia){
-		double q1=0;
-		double q2=0;
+		double w1=0;
+		double w2=0;
 		double u1=0;
 		double u2=0;
-		double g1=0;
-		double g2=0;
-		double gw=0;
+		double ut=0;
+		double gb=0;
 		for(int i =0; i < 256; i++){
 			if(i<umbral){
-				q1+=ocurrencia[i];
+				w1+=ocurrencia[i];
 			}else{
-				q2+=ocurrencia[i];
+				w2+=ocurrencia[i];
 			}
 		}
 		for(int i =0; i < 256; i++){
@@ -1415,29 +1421,15 @@ public void compararPyS(Imagen buff, int porcentaje) {
 				u2+=i*ocurrencia[i];
 			}
 		}
-		if(q1!=0){
-			u1=(double) u1/q1;
+		if(w1!=0){
+			u1=(double) u1/w1;
 		}
-		if(q1!=0){
-			u2=(double) u2/q2;
+		if(w2!=0){
+			u2=(double) u2/w2;
 		}
-		
-		for(int i =0; i < 256; i++){
-			if(i<umbral){
-				g1+=Math.pow(i+-u1,2)*ocurrencia[i];
-			}else{
-				g2+=Math.pow(i-u2,2)*ocurrencia[i];
-			}
-		}
-		if(q1!=0){
-			g1=(double)g1/q1;
-			g2=(double)g2/q2;
-		}
-		if(q2!=0){
-			g2=(double)g2/q2;
-		}
-		gw=g1*q1 + g2*q2;
-		return gw;
+		ut=w1*u1 + w2*u2;
+		gb=w1*Math.pow(u1-ut,2) + w2*Math.pow(u2-ut,2);	
+		return gb;
 	}
 	
 }
