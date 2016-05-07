@@ -67,11 +67,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemPrewitt = new JMenuItem("Prewitt");
 	private JMenuItem itemSobel = new JMenuItem("Sobel");
 	private JMenuItem itemCompararPyS = new JMenuItem("Comparar Prewitt y Sobel");
+	private JMenu menuLaplaciano = new JMenu("Laplaciano");
 	private JMenuItem itemLaplaciano = new JMenuItem("Laplaciano");
 	private JMenuItem itemLaplacianoPendiente = new JMenuItem("Laplaciano con pendiente");
 	private JMenuItem itemLaplacianoLoG = new JMenuItem("LoG");
 	private JMenuItem itemLaplacianoLoGPendiente = new JMenuItem("LoG con pendiente");
 	private JMenuItem itemCompararLoG = new JMenuItem("Comparar LoG y LoG con pendiente");
+	private JMenu menuBordes = new JMenu("Bordes");
+	private JMenuItem itemBordesSobel = new JMenuItem("Sobel");
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
@@ -99,7 +102,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemProducto = new JMenuItem("Producto por escalar");
 	private JMenuItem itemProductoMatriz = new JMenuItem("Producto de imagenes");
 	private JMenuItem itemPotencia = new JMenuItem("Potencia");
-	private JMenuItem itemCompRangoDinamico = new JMenuItem("Comp Rango Dinámico");
+	private JMenuItem itemCompRangoDinamico = new JMenuItem("Comp Rango Dinamico");
 	private JMenu menuContraste = new JMenu("Contraste");
 	private JMenuItem itemContraste = new JMenuItem("Contrastar");
 	private JMenu menuRuidos = new JMenu("Ruido");
@@ -279,11 +282,14 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemPrewitt);
 		menuFiltros.add(itemSobel);
 		menuFiltros.add(itemCompararPyS);
-		menuFiltros.add(itemLaplaciano);
-		menuFiltros.add(itemLaplacianoPendiente);
-		menuFiltros.add(itemLaplacianoLoG);
-		menuFiltros.add(itemLaplacianoLoGPendiente);
-		menuFiltros.add(itemCompararLoG);
+		menuLaplaciano.add(itemLaplaciano);
+		menuLaplaciano.add(itemLaplacianoPendiente);
+		menuLaplaciano.add(itemLaplacianoLoG);
+		menuLaplaciano.add(itemLaplacianoLoGPendiente);
+		menuLaplaciano.add(itemCompararLoG);
+		menuFiltros.add(menuLaplaciano);
+		menuBordes.add(itemBordesSobel);
+		menuFiltros.add(menuBordes);
 		menuBar.add(menuFiltros);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
@@ -373,6 +379,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuLaplacianoGaussiano();
 		agregarMenuLaplacianoGaussianoPendiente();
 		agregarMenuCompararLoG();
+		agregarMenuBordesSobel();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
 		agregarMenuSeleccionar();
@@ -473,7 +480,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				Object[] message = {
 					"Porcentaje afectado:", porcen,	
 					"Media (mu):" , campo1,
-				    "Desvío (gamma):" , campo2
+				    "Desvï¿½o (gamma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
@@ -562,7 +569,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField campo2 = new JTextField();
 				Object[] message = {
 					"Media (mu):" , campo1,
-				    "Desvío (gamma):" , campo2
+				    "Desvï¿½o (gamma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
@@ -619,10 +626,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					if (resultado != null){
 						aplicarOperacion(resultado);						
 					}else{
-						JOptionPane.showMessageDialog(null, "Error al calcular la compresión de rango dinámico sobre la imagen.");
+						JOptionPane.showMessageDialog(null, "Error al calcular la compresion de rango dinamico sobre la imagen.");
 					}
 				}else{
-					JOptionPane.showMessageDialog(null, "Debe abrir una imagen primero sobre el panel izquierdo para procesar la operación.");
+					JOptionPane.showMessageDialog(null, "Debe abrir una imagen primero sobre el panel izquierdo para procesar la operaciï¿½n.");
 				}
 			}
 		});
@@ -763,16 +770,16 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				    "Umbral:", umbral,
 				    "Delta:", delta,
 				};
-				int tamañoUmbral=0;
-				int tamañoDelta=0;
+				int tamanioUmbral=0;
+				int tamanioDelta=0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
-					tamañoUmbral = Integer.valueOf(umbral.getText());
-				    tamañoDelta = Integer.valueOf(delta.getText());
+					tamanioUmbral = Integer.valueOf(umbral.getText());
+					tamanioDelta = Integer.valueOf(delta.getText());
 					
 				}
-				aplicarOperacion(ObjProcesamiento.umbralGlobal(buffer1,tamañoUmbral,tamañoDelta));
+				aplicarOperacion(ObjProcesamiento.umbralGlobal(buffer1,tamanioUmbral,tamanioDelta));
 			}
 		});		
 	}
@@ -1015,16 +1022,16 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				    "Desvio (gamma)", desvio,
 				    "Porcentaje", porcentaje
 				};
-				double tamañoDesvio = 0;
-				int tamañoPorcentaje= 0;
+				double tamanioDesvio = 0;
+				int tamanioPorcentaje= 0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
-					tamañoDesvio = Double.valueOf(desvio.getText());
-					tamañoPorcentaje = Integer.valueOf(porcentaje.getText());
+					tamanioDesvio = Double.valueOf(desvio.getText());
+					tamanioPorcentaje = Integer.valueOf(porcentaje.getText());
 
 				}
-				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoGaussianoPendiente(buffer1,tamañoDesvio,tamañoPorcentaje));
+				aplicarOperacion(ObjProcesamiento.pasarFiltroLaplasianoGaussianoPendiente(buffer1,tamanioDesvio,tamanioPorcentaje));
 			}
 		});
 	}
@@ -1038,16 +1045,24 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				    "Desvio (gamma)", desvio,
 				    "Porcentaje", porcentaje
 				};
-				double tamañoDesvio = 0;
-				int tamañoPorcentaje= 0;
+				double tamanioDesvio = 0;
+				int tamanioPorcentaje= 0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
-					tamañoDesvio = Double.valueOf(desvio.getText());
-					tamañoPorcentaje = Integer.valueOf(porcentaje.getText());
+					tamanioDesvio = Double.valueOf(desvio.getText());
+					tamanioPorcentaje = Integer.valueOf(porcentaje.getText());
 
 				}
-				ObjProcesamiento.compararLoG(buffer1,tamañoDesvio,tamañoPorcentaje);
+				ObjProcesamiento.compararLoG(buffer1,tamanioDesvio,tamanioPorcentaje);
+			}
+		});
+	}
+	
+	private void agregarMenuBordesSobel() {
+		itemBordesSobel.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				ObjProcesamiento.bordesSobel(buffer1, obtenerPorcentaje());
 			}
 		});
 	}
@@ -1332,7 +1347,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void crearHistograma(int[] histograma,JLabel jLabelHistograma,Color colorBarras) {
  
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        String serie = "Number of píxels";
+        String serie = "Number of pï¿½xels";
         for (int i = 0; i < histograma.length; i++){
             dataset.addValue(histograma[i], serie, "" + i);
         }
@@ -1378,15 +1393,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private int obtenerMascara(){
 	JTextField mascara = new JTextField();
 	Object[] message = {
-	    "Tamaño de mascara", mascara
+	    "Tamanio de mascara", mascara
 	};
-	int tamañoMascara = 0;
-	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamaño de la mascara", JOptionPane.OK_CANCEL_OPTION);
+	int tamanioMascara = 0;
+	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el tamanio de la mascara", JOptionPane.OK_CANCEL_OPTION);
 	if (option == JOptionPane.OK_OPTION)
 	{
-		tamañoMascara = Integer.valueOf(mascara.getText());
+		tamanioMascara = Integer.valueOf(mascara.getText());
 	}
-	return tamañoMascara;
+	return tamanioMascara;
 	}
 	
 	private double obtenerDesvio(){
@@ -1394,13 +1409,13 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	Object[] message = {
 	    "Desvio (gamma)", desvio
 	};
-	double tamañoDesvio =0;
+	double tamanioDesvio =0;
 	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el desvio del filtro", JOptionPane.OK_CANCEL_OPTION);
 	if (option == JOptionPane.OK_OPTION)
 	{
-		tamañoDesvio = Double.valueOf(desvio.getText());
+		tamanioDesvio = Double.valueOf(desvio.getText());
 	}
-	return tamañoDesvio;
+	return tamanioDesvio;
 	}
 	
 }

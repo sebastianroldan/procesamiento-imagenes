@@ -79,7 +79,7 @@ public class ProcesadorDeImagenes {
 							}
 						}
 					} else {
-						System.out.println(tipoImagen+" no es un formato soportado por la aplicación.");
+						System.out.println(tipoImagen+" no es un formato soportado por la aplicaciï¿½n.");
 					}
 					
 				}
@@ -893,7 +893,7 @@ public void compararPyS(Imagen buff, int porcentaje) {
 	public Imagen pasarFiltroGaussiano(Imagen buff, double desvio) {
 		Imagen salida=null;
 		double divisor=0;
-		int mascara=calcularTamañoMascaraGaussiana(desvio);
+		int mascara=calcularTamanioMascaraGaussiana(desvio);
 		if (buff!=null && mascara>1){
 			double[][] matrizMascara= crearMascaraGaussiana(mascara, desvio);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
@@ -1108,14 +1108,14 @@ public void compararPyS(Imagen buff, int porcentaje) {
 			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizMascara= {{0,-1,0},{-1,4,-1},{0,-1,0}};
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			matrizResultado =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara,3);
+			matrizResultado =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,3);
 			salida =crearImagenLaplaciano(matrizResultado,buff.getWidth(), buff.getHeight());
 		}
 		return salida;
 		
 	}
 
-	private double[][] obtenerMatrizLaplaciano(Imagen buff, int ancho, int alto, double[][] matrizMascara,int mascara) {
+	private double[][] obtenerMatriz(Imagen buff, int ancho, int alto, double[][] matrizMascara,int mascara) {
 		double[][] matrizResultado =new double[ancho][alto];
 		double gris=0;
 		for (int i=0; i < ancho; i++){
@@ -1144,14 +1144,14 @@ public void compararPyS(Imagen buff, int porcentaje) {
 			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizMascara= {{0,-1,0},{-1,4,-1},{0,-1,0}};
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			matrizResultado =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara,3);
-			double max= maximoLaplaciano( matrizResultado, buff.getWidth(), buff.getHeight());
+			matrizResultado =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,3);
+			double max= maximo( matrizResultado, buff.getWidth(), buff.getHeight());
 			salida =crearImagenLaplacianoPendiente(matrizResultado, buff.getWidth(), buff.getHeight(), max, porcentaje);
 		}
 		return salida;
 	}
 	
-	private double maximoLaplaciano(double[][] matriz, int ancho, int alto){
+	private double maximo(double[][] matriz, int ancho, int alto){
 		double max=Math.abs(matriz[0][0]) + Math.abs(matriz[0][1]);
 		double suma=0;
 		for (int i=0; i < ancho; i++){
@@ -1184,13 +1184,13 @@ public void compararPyS(Imagen buff, int porcentaje) {
 	}
 
 	public Imagen pasarFiltroLaplasianoGaussiano(Imagen buff, double desvio) {
-		int mascara=calcularTamañoMascaraGaussiana(desvio);
+		int mascara=calcularTamanioMascaraGaussiana(desvio);
 		Imagen salida=null;
 		if (buff!=null){
 			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizMascara= obtenerMascaraLaplacianoGausiano(mascara, desvio);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			matrizResultado =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
+			matrizResultado =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
 			salida =crearImagenLaplaciano(matrizResultado,buff.getWidth(), buff.getHeight());
 		}
 		return salida;
@@ -1280,20 +1280,20 @@ public void compararPyS(Imagen buff, int porcentaje) {
 	}
 
 	public Imagen pasarFiltroLaplasianoGaussianoPendiente(Imagen buff, double desvio,int porcentaje) {
-		int mascara=calcularTamañoMascaraGaussiana(desvio);
+		int mascara=calcularTamanioMascaraGaussiana(desvio);
 		Imagen salida=null;
 		if (buff!=null){
 			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizMascara= obtenerMascaraLaplacianoGausiano(mascara, desvio);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
-			matrizResultado =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
-			double max= maximoLaplaciano( matrizResultado, buff.getWidth(), buff.getHeight());
+			matrizResultado =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
+			double max= maximo( matrizResultado, buff.getWidth(), buff.getHeight());
 			salida =crearImagenLaplacianoPendiente(matrizResultado,buff.getWidth(), buff.getHeight(),max,porcentaje);
 		}
 		return salida;
 	}
 	
-	private int calcularTamañoMascaraGaussiana(double desvio){
+	private int calcularTamanioMascaraGaussiana(double desvio){
 		int mascara=  (int) (2*Math.sqrt(2)*desvio);
 		if(mascara%2==0){
 			mascara++;
@@ -1352,12 +1352,12 @@ public void compararPyS(Imagen buff, int porcentaje) {
 	public void compararLoG(Imagen buff, double desvio, int porcentaje) {
 		double[][] matrizLoG =new double[buff.getWidth()][buff.getHeight()];
 		if (buff!=null){
-		int mascara=calcularTamañoMascaraGaussiana(desvio);
+		int mascara=calcularTamanioMascaraGaussiana(desvio);
 		double[][] matrizMascara= obtenerMascaraLaplacianoGausiano(mascara, desvio);
 		Imagen salidaLoGPendiente =rellenarImagen(buff.getWidth(), buff.getHeight());
 		Imagen salidaLoG =rellenarImagen(buff.getWidth(), buff.getHeight());
-		matrizLoG =obtenerMatrizLaplaciano(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
-		double max= maximoLaplaciano(matrizLoG, buff.getWidth(), buff.getHeight());
+		matrizLoG =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
+		double max= maximo(matrizLoG, buff.getWidth(), buff.getHeight());
 		salidaLoG=crearImagenLaplaciano(matrizLoG,buff.getWidth(), buff.getHeight());
 		salidaLoGPendiente =crearImagenLaplacianoPendiente(matrizLoG,buff.getWidth(), buff.getHeight(),max,porcentaje);		
 		new Editor(salidaLoG,salidaLoGPendiente);
@@ -1430,6 +1430,80 @@ public void compararPyS(Imagen buff, int porcentaje) {
 		ut=w1*u1 + w2*u2;
 		gb=w1*Math.pow(u1-ut,2) + w2*Math.pow(u2-ut,2);	
 		return gb;
+	}
+
+	public void bordesSobel(Imagen buff, int porcentaje) {
+		Imagen salidaVertical=null;
+		Imagen salidaHorizontal=null;
+		Imagen salida45=null;
+		Imagen salida135=null;
+		Imagen salidaTotal=null;
+		if (buff!=null){
+			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
+			double[][] matrizVertical =new double[buff.getWidth()][buff.getHeight()];
+			double[][] matrizHorizontal =new double[buff.getWidth()][buff.getHeight()];
+			double[][] matriz45 =new double[buff.getWidth()][buff.getHeight()];
+			double[][] matriz135 =new double[buff.getWidth()][buff.getHeight()];
+			double[][] matrizMascaraVertical= {{1,2,1},{0,0,0},{-1,-2,-1}};
+			double[][] matrizMascaraHorizontal= {{2,1,0},{1,0,-1},{0,-1,-2}};
+			double[][] matrizMascara45= {{1,0,-1},{2,0,-2},{1,0,-1}};
+			double[][] matrizMascara135= {{0,-1,-2},{1,0,-1},{2,1,0}};
+			salidaHorizontal=salidaVertical;
+			salida45=salidaVertical;
+			salida135=salidaVertical;
+			matrizVertical =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascaraVertical,3);
+			salidaVertical=umbralizarBordes(matrizVertical, buff.getWidth(),buff.getHeight(), porcentaje);
+			matrizHorizontal =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascaraHorizontal,3);
+			salidaHorizontal=umbralizarBordes(matrizHorizontal, buff.getWidth(),buff.getHeight(), porcentaje);
+			matriz45 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara45,3);
+			salida45=umbralizarBordes(matriz45, buff.getWidth(),buff.getHeight(), porcentaje);
+			matriz135 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara135,3);
+			salida135=umbralizarBordes(matriz135, buff.getWidth(),buff.getHeight(), porcentaje);
+			matrizResultado=calcularSumaBordes(matrizVertical, matrizHorizontal, matriz45, matriz135, buff.getWidth(),buff.getHeight());
+			salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), porcentaje);
+			new VentanaBordes(salidaHorizontal, salidaVertical, salida45, salida135, salidaTotal);
+		}
+	}
+	
+	private double[][] calcularSumaBordes(double[][] matrizVertical, double[][] matrizHorizontal, double[][] matriz45,
+			double[][] matriz135, int ancho, int alto) {
+		double [][] resultado = new double[ancho][alto];
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				if((matrizVertical[i][j]> matrizHorizontal[i][j])&&(matrizVertical[i][j]> matriz45[i][j])&&(matrizVertical[i][j]> matriz135[i][j])){
+					resultado[i][j] = matrizVertical[i][j];
+				}else{
+					if((matrizHorizontal[i][j]> matriz45[i][j])&&(matrizHorizontal[i][j]> matriz135[i][j])){
+						resultado[i][j] = matrizHorizontal[i][j];
+					}else{
+						if((matriz45[i][j]> matriz135[i][j])){
+							resultado[i][j] = matriz45[i][j];
+						}else{
+							resultado[i][j] = matriz135[i][j];
+						}
+
+					}
+				}
+			}
+		}
+		return resultado;
+	}
+
+	private Imagen umbralizarBordes(double[][] matrizResultado, int ancho,int alto, int porcentaje){
+		double max= maximo( matrizResultado, ancho, alto);
+		Color blanco=new Color(255,255,255);
+		Color negro=new Color(0,0,0);
+		Imagen salida =new Imagen(ancho, alto);
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				if(matrizResultado[i][j]>=max*((double)porcentaje/100)){
+					salida.setRGB(i, j, blanco.getRGB());
+				}else{
+					salida.setRGB(i, j, negro.getRGB());
+				}
+			}
+		}
+		return salida;
 	}
 	
 }

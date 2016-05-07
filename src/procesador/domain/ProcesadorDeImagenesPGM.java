@@ -28,7 +28,7 @@ public class ProcesadorDeImagenesPGM extends Procesador {
 	}
 
 	public void cargarImagen(File file) throws IOException{
-		int tamCabecera = tamañoDeEncabezado(file);
+		int tamCabecera = tamanioDeEncabezado(file);
 		FileInputStream is = new FileInputStream(file);
 		for (int i=0; i< tamCabecera; i++){
 			is.read();
@@ -42,7 +42,7 @@ public class ProcesadorDeImagenesPGM extends Procesador {
 		is.close();
 	}
 	
-	private int tamañoDeEncabezado(File fl) throws IOException {
+	private int tamanioDeEncabezado(File fl) throws IOException {
 		FileReader fr = new FileReader(fl);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
