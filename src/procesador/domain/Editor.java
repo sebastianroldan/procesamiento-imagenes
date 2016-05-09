@@ -525,7 +525,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				Object[] message = {
 					"Porcentaje afectado:", porcen,	
 					"Media (mu):" , campo1,
-				    "Desvï¿½o (gamma):" , campo2
+				    "Desvío(sigma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
@@ -614,7 +614,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField campo2 = new JTextField();
 				Object[] message = {
 					"Media (mu):" , campo1,
-				    "Desvï¿½o (gamma):" , campo2
+				    "Desvío (sigma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
@@ -1087,7 +1087,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField desvio = new JTextField();
 				JTextField porcentaje = new JTextField();
 				Object[] message = {
-				    "Desvio (gamma)", desvio,
+				    "Desvío (sigma)", desvio,
 				    "Porcentaje", porcentaje
 				};
 				double tamanioDesvio = 0;
@@ -1110,7 +1110,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField desvio = new JTextField();
 				JTextField porcentaje = new JTextField();
 				Object[] message = {
-				    "Desvio (gamma)", desvio,
+				    "Desvío (sigma)", desvio,
 				    "Porcentaje", porcentaje
 				};
 				double tamanioDesvio = 0;
@@ -1475,7 +1475,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private double obtenerDesvio(){
 	JTextField desvio = new JTextField();
 	Object[] message = {
-	    "Desvio (gamma)", desvio
+	    "Desvío (sigma)", desvio
 	};
 	double tamanioDesvio =0;
 	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el desvio del filtro", JOptionPane.OK_CANCEL_OPTION);
