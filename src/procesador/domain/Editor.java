@@ -46,8 +46,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JSlider slider = new JSlider(0,255,127);
 	private JSlider sliderContraste = new JSlider(30,225,127);
 	private JSlider sliderPotencia = new JSlider(0,200,100);
-	private JSlider sliderPrewitt =  new JSlider(0,100,50);
-	private JSlider sliderSobel =  new JSlider(0,100,50);
 	private JMenuBar menuBar = new JMenuBar();	
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
@@ -128,8 +126,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private JLabel valorUmbral = new JLabel();
     private JLabel valorContraste = new JLabel();
     private JLabel valorPotencia = new JLabel();
-    private JLabel valorUmbralPrewitt = new JLabel();
-    private JLabel valorUmbralSobel = new JLabel();
     private boolean seleccionando = false;
     
 	public Editor() {
@@ -228,43 +224,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				}
 			}
 		});
-		
-		valorUmbralPrewitt = new JLabel("% del Máximo: ");
-		valorUmbralPrewitt.setBounds(1200,30,100,20);
-		valorUmbralPrewitt.setVisible(false);
-		sliderPrewitt.setVisible(false);
-		sliderPrewitt.setBounds(1225, 50, 60, 100);
-		sliderPrewitt.setOrientation(SwingConstants.VERTICAL);
-		valorUmbralPrewitt.setText("% Máximo: "+sliderPrewitt.getValue());
-		sliderPrewitt.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (buffer1 != null){
-					borrarHistograma();
-					buffer2 = ObjProcesamiento.pasarFiltroDePrewitt(buffer1, sliderPrewitt.getValue());
-					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
-					valorUmbralPrewitt.setText("% Máximo: "+sliderPrewitt.getValue());
-				}
-			}
-		});		
-		
-		valorUmbralSobel = new JLabel("% del Máximo: ");
-		valorUmbralSobel.setBounds(1200,30,100,20);
-		valorUmbralSobel.setVisible(false);
-		sliderSobel.setVisible(false);
-		sliderSobel.setBounds(1225, 50, 60, 100);
-		sliderSobel.setOrientation(SwingConstants.VERTICAL);
-		valorUmbralSobel.setText("% Máximo: "+sliderSobel.getValue());
-		sliderSobel.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (buffer1 != null){
-					borrarHistograma();
-					buffer2 = ObjProcesamiento.pasarFiltroDePrewitt(buffer1, sliderSobel.getValue());
-					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
-					valorUmbralSobel.setText("% Máximo: "+sliderSobel.getValue());
-				}
-			}
-		});	
-		
 		this.setLayout(null);
 		this.add(jScrollPane1);
 		this.add(jScrollPane2);
@@ -274,10 +233,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		this.add(valorContraste);
 		this.add(sliderPotencia);
 		this.add(valorPotencia);
-		this.add(sliderPrewitt);
-		this.add(valorUmbralPrewitt);
-		this.add(sliderSobel);
-		this.add(valorUmbralSobel);
 		mensaje.setBounds(10, 655, 500, 20);
 		this.add(mensaje);
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -1058,16 +1013,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1 != null){
 					borrarHistograma();
-					buffer2 = ObjProcesamiento.pasarFiltroDePrewitt(buffer1, sliderPrewitt.getValue());
+					buffer2 = ObjProcesamiento.pasarFiltroDePrewitt(buffer1);
 					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
-				}
-				if (!sliderPrewitt.isVisible()){
-					valorUmbralPrewitt.setText("% Máximo: "+sliderPrewitt.getValue());
-					valorUmbralPrewitt.setVisible(true);
-					sliderPrewitt.setVisible(true);
-				}else{
-					valorUmbralPrewitt.setVisible(false);
-					sliderPrewitt.setVisible(false);
 				}
 			}
 		});
@@ -1077,16 +1024,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemSobel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1 != null){
-					buffer2 = ObjProcesamiento.pasarFiltroDeSobel(buffer1, sliderSobel.getValue());
+					buffer2 = ObjProcesamiento.pasarFiltroDeSobel(buffer1);
 					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
-				}
-				if (!sliderSobel.isVisible()){
-					valorUmbralSobel.setText("% Máximo: "+sliderSobel.getValue());
-					valorUmbralSobel.setVisible(true);
-					sliderSobel.setVisible(true);
-				}else{
-					valorUmbralSobel.setVisible(false);
-					sliderSobel.setVisible(false);
 				}
 			}
 		});
@@ -1095,7 +1034,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuCompararPyS() {
 		itemCompararPyS.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				ObjProcesamiento.compararPyS(buffer1,obtenerPorcentaje());
+				ObjProcesamiento.compararPyS(buffer1);
 			}
 		});
 	}
