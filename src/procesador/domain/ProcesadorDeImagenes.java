@@ -783,7 +783,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDePrewitt(Imagen buff,int porcentaje) {
+	public Imagen pasarFiltroDePrewitt(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
@@ -794,15 +794,12 @@ public class ProcesadorDeImagenes {
 			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformada=obtenerMatrizTransformada(matrizResultado, buff.getWidth(), buff.getHeight());
-			//Luego comienzo el proceso para umbralizar la imagen
-			int max=buscarMaximo(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
-			double maxMatriz= max*((double) porcentaje/100);	
-			salida =obtenerImagenConBordePoS( matrizResultadoTransformada, buff.getWidth(),buff.getHeight(), maxMatriz);
+			salida = obtenerImagenDesdeMatrizDeGrises(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
 		}
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDeSobel(Imagen buff,int porcentaje) {
+	public Imagen pasarFiltroDeSobel(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
@@ -813,10 +810,7 @@ public class ProcesadorDeImagenes {
 			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformada=obtenerMatrizTransformada(matrizResultado, buff.getWidth(), buff.getHeight());
-			//Luego comienzo el proceso para umbralizar la imagen
-			int max=buscarMaximo(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
-			double maxMatriz= max*((double) porcentaje/100);
-			salida =obtenerImagenConBordePoS( matrizResultadoTransformada, buff.getWidth(),buff.getHeight(), maxMatriz);
+			salida = obtenerImagenDesdeMatrizDeGrises(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
 		}
 		return salida;
 	}
@@ -871,23 +865,19 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	private Imagen obtenerImagenConBordePoS(Integer[][] matrizResultado, int ancho, int alto, double maxMatriz){
-		Color negro=new Color(0,0,0);
-		Color blanco=new Color(255,255,255);
+	private Imagen obtenerImagenDesdeMatrizDeGrises(Integer[][] matriz, int ancho, int alto){
+		Color color=null;
 		Imagen salida = new Imagen(ancho,alto);
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				if(maxMatriz <= matrizResultado[i][j]){
-					salida.setRGB(i, j, blanco.getRGB());
-				}else{
-					salida.setRGB(i, j, negro.getRGB());
-				}
+				color=new Color(matriz[i][j],matriz[i][j],matriz[i][j]);
+				salida.setRGB(i, j, color.getRGB());
 			}
 		}
 		return salida;	
 	}
 
-	public void compararPyS(Imagen buff, int porcentaje) {
+	public void compararPyS(Imagen buff) {
 		if (buff!=null){
 			Integer[][] matrizResultadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultadoTransformadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
@@ -904,13 +894,8 @@ public class ProcesadorDeImagenes {
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformadoPrewitt=obtenerMatrizTransformada(matrizResultadoPrewitt, buff.getWidth(), buff.getHeight());
 			matrizResultadoTransformadoSobel=obtenerMatrizTransformada(matrizResultadoSobel, buff.getWidth(), buff.getHeight());
-			//Luego comienzo el proceso para umbralizar la imagen
-			int maxPrewit=buscarMaximo(matrizResultadoTransformadoPrewitt,buff.getWidth(),buff.getHeight());
-			int maxSobel=buscarMaximo(matrizResultadoTransformadoSobel,buff.getWidth(),buff.getHeight());
-			double maxMatrizPrewit= maxPrewit*((double) porcentaje/100);	
-			double maxMatrizSobel= maxSobel*((double) porcentaje/100);	
-			Imagen salidaPrewiit =obtenerImagenConBordePoS( matrizResultadoTransformadoPrewitt, buff.getWidth(),buff.getHeight(), maxMatrizPrewit);
-			Imagen salidaSobel =obtenerImagenConBordePoS( matrizResultadoTransformadoSobel, buff.getWidth(),buff.getHeight(), maxMatrizSobel);
+			Imagen salidaPrewiit =obtenerImagenDesdeMatrizDeGrises( matrizResultadoTransformadoPrewitt, buff.getWidth(),buff.getHeight());
+			Imagen salidaSobel =obtenerImagenDesdeMatrizDeGrises( matrizResultadoTransformadoSobel, buff.getWidth(),buff.getHeight());
 			// genero una nueva ventana para comparar
 			new Editor(salidaPrewiit,salidaSobel);
 		}
