@@ -52,6 +52,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenu menuArchivo = new JMenu("Archivo");
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
 	private JMenuItem itemGuardar = new JMenuItem("Guardar Imagen");
+	private JMenu menuDifusion = new JMenu("Difusion");
+	private JMenuItem itemIsotropica = new JMenuItem("Isotropica");
+	private JMenuItem itemAnisotropica = new JMenuItem("Anisotropica");
 	private JMenuItem itemCerrar = new JMenuItem("Cerrar");
 	private JMenu menuFiguras = new JMenu("Figuras");
 	private JMenu menuFiltros = new JMenu("Filtros");
@@ -286,6 +289,13 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	private JMenuBar crearMenu() {
+		
+		menuDifusion.setMnemonic(KeyEvent.VK_F);
+		menuDifusion.add(itemIsotropica);
+		itemIsotropica.setMnemonic(KeyEvent.VK_I);
+		menuDifusion.add(itemAnisotropica);
+		itemAnisotropica.setMnemonic(KeyEvent.VK_A);
+		menuArchivo.add(itemCerrar);
 		menuArchivo.setMnemonic(KeyEvent.VK_A);
 		menuArchivo.add(itemCargar);
 		itemCargar.setMnemonic(KeyEvent.VK_A);
@@ -395,6 +405,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemSal.setMnemonic(KeyEvent.VK_S);
 		menuBar.add(menuContraste);
 		menuContraste.setMnemonic(KeyEvent.VK_C);
+		menuBar.add(menuDifusion);
 		return menuBar;
 	}
 
@@ -455,8 +466,40 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuDibujoGauss();
 		agregarMenuDibujoRayleigh();
 		agregarMenuSal();
+		agregarIsotropica();
+		agregarAnisotropica();
 	}
 
+	private void agregarIsotropica() {
+		itemIsotropica.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				Imagen imagen;
+				if (buffer2 == null){
+					imagen = buffer1;
+				}else{
+					imagen = buffer2;
+				}
+				Imagen difusion = ObjProcesamiento.difusionIsotropica(imagen);
+				aplicarOperacion(difusion);
+			}
+		});
+	}
+
+	private void agregarAnisotropica() {
+		itemAnisotropica.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				Imagen imagen;
+				if (buffer2 == null){
+					imagen = buffer1;
+				}else{
+					imagen = buffer2;
+				}
+				Imagen difusion = ObjProcesamiento.difusionAnisotropica(imagen);
+				aplicarOperacion(difusion);
+			}
+		});
+	}
+		
 	private void agregarBotonCambiar() {
 		cambiar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1275,6 +1318,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				String eleccion = (String)lado.getSelectedItem();
 				if (eleccion == "Izquierdo" ){
 					cargarImagen(ObjProcesamiento.abrirImagen());
+					this.borrarHistograma();
+					contenedorDeImagen2.setIcon(null);
+					buffer2 = null;
 				}else{
 					this.aplicarOperacion(ObjProcesamiento2.abrirImagen());					
 				}			
