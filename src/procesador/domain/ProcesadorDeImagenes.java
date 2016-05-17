@@ -1177,28 +1177,52 @@ public class ProcesadorDeImagenes {
 		double suma=0;
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto-1; j++){
-				if((matriz[i][j] !=0 && matriz[i][j+1] ==0)||
-				   (matriz[i][j] ==0 && matriz[i][j+1] !=0)||
-				   (matriz[i][j] >0 && matriz[i][j+1]<0)||
-				   (matriz[i][j] <0 && matriz[i][j+1]>0)) {
-				   suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+1]);
-				   if(max<suma){
-						max=suma;	
-				   }
-				}
+				if((matriz[i][j] >0 && matriz[i][j+1]<0)||
+						   (matriz[i][j] <0 && matriz[i][j+1]>0)) {
+					suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+1]);
+					   if(max<suma){
+							max=suma;	
+					   }						
+						}else if((matriz[i][j] !=0 && matriz[i][j+1] ==0) && j+2<alto){
+							if(matriz[i][j] >0 && matriz[i][j+2]<0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								j++;
+							}else if(matriz[i][j] <0 && matriz[i][j+2]>0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								j++;
+							}
+						}
 			}
 		}
 		for (int j=0; j < alto; j++){
 			for(int i =0; i < ancho-1; i++){
-				if((matriz[i][j] !=0 && matriz[i+1][j] ==0)||
-				   (matriz[i][j] ==0 && matriz[i+1][j] !=0)||
-				   (matriz[i][j] >0 && matriz[i+1][j+1]<0)||
-				   (matriz[i][j] <0 && matriz[i+1][j]>0)) {
-				   suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+1][j]);
-				   if(max<suma){
-						max=suma;	
-				   }						
-				}
+				if((matriz[i][j] >0 && matriz[i+1][j+1]<0)||
+						   (matriz[i][j] <0 && matriz[i+1][j]>0)) {
+					suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+1][j]);
+					   if(max<suma){
+							max=suma;	
+					   }						
+						}else if((matriz[i][j] !=0 && matriz[i+1][j] ==0) && i+2<ancho){
+							if(matriz[i][j] >0 && matriz[i+2][j]<0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+2][j]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								i++;
+							}else if(matriz[i][j] <0 && matriz[i+2][j]>0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+2][j]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								i++;
+							}
+						}
 			}
 		}
 		return max;
@@ -1225,12 +1249,9 @@ public class ProcesadorDeImagenes {
 		double valorAux=0;
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
-				/*exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/(Math.pow(desvio,2)*2));
-				valorAux=(2 -((Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/Math.pow(desvio,2)));
-				resultado =(1.0/( Math.sqrt(2.0*Math.PI)*Math.pow(desvio,3)))*exponencial*valorAux;*/
 				exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/(Math.pow(desvio,2)*2));
 				valorAux=((Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2) -Math.pow(desvio,2))/Math.pow(desvio,4));
-				resultado =(1.0/( 2.0*Math.PI*Math.pow(desvio,3)))*exponencial*valorAux;
+				resultado =(1.0/( 2.0*Math.PI*Math.pow(desvio,2)))*exponencial*valorAux;
 				matrizMascara[i][j]= resultado;
 			}
 		}
@@ -1243,22 +1264,34 @@ public class ProcesadorDeImagenes {
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto-1; j++){
 				
-				if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i][j+1] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
+				if((matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
 				   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
 				salida.setRGB(i, j, blanco.getRGB());						
+				}else if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0) && j+2<alto){
+					if(matrizResultado[i][j] >0 && matrizResultado[i][j+2]<0){
+						salida.setRGB(i, j+1, blanco.getRGB());
+						j++;
+					}else if(matrizResultado[i][j] <0 && matrizResultado[i][j+2]>0){
+						salida.setRGB(i, j+1, blanco.getRGB());
+						j++;
+					}
 				}
 			}
 		}
 		
 		for (int j=0; j < alto; j++){
 			for(int i =0; i < ancho-1; i++){
-				if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i+1][j] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
+				if((matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
 				   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
 				salida.setRGB(i, j, blanco.getRGB());						
+				}else if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0) && i+2<ancho){
+					if(matrizResultado[i][j] >0 && matrizResultado[i+2][j]<0){
+						salida.setRGB(i+1, j, blanco.getRGB());
+						i++;
+					}else if(matrizResultado[i][j] <0 && matrizResultado[i+2][j]>0){
+						salida.setRGB(i+1, j, blanco.getRGB());
+						i++;
+					}
 				}
 			}
 		}
@@ -1272,29 +1305,53 @@ public class ProcesadorDeImagenes {
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto-1; j++){
 				
-				if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i][j+1] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
-				   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
+				if((matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
+						   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
 					suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+1]));
 					if(suma>=(max*((double)porcentaje/100))){
 						salida.setRGB(i, j, blanco.getRGB());	
-					}							
-				}
+					}						
+						}else if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0) && j+2<alto){
+							if(matrizResultado[i][j] >0 && matrizResultado[i][j+2]<0){
+								suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i, j+1, blanco.getRGB());	
+								}
+								j++;
+							}else if(matrizResultado[i][j] <0 && matrizResultado[i][j+2]>0){
+								suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i, j+1, blanco.getRGB());	
+								}
+								j++;
+							}
+						}
 			}
 		}
 		
 		for (int j=0; j < alto; j++){
 			for(int i =0; i < ancho-1; i++){
-				if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i+1][j] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
-				   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
+				if((matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
+						   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
 					suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+1][j]);
 					if(suma>=(max*((double)porcentaje/100))){
 						salida.setRGB(i, j, blanco.getRGB());	
-					}						
-				}
+					}							
+						}else if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0) && i+2<ancho){
+							if(matrizResultado[i][j] >0 && matrizResultado[i+2][j]<0){
+								suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+2][j]);
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i+1, j, blanco.getRGB());	
+								}	
+								i++;
+							}else if(matrizResultado[i][j] <0 && matrizResultado[i+2][j]>0){
+								suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+2][j]);
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i+1, j, blanco.getRGB());	
+								}	
+								i++;
+							}
+						}
 			}
 		}
 		return salida;
