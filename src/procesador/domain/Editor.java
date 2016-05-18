@@ -78,6 +78,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemLaplacianoLoGPendiente = new JMenuItem("LoG con pendiente");
 	private JMenuItem itemCompararLoG = new JMenuItem("Comparar LoG y LoG con pendiente");
 	private JMenu menuBordes = new JMenu("Bordes");
+	private JMenuItem itemBordesDesconocido = new JMenuItem("Desconocido");
+	private JMenuItem itemBordesKirsh = new JMenuItem("Kirsh");
+	private JMenuItem itemBordesPrewitt = new JMenuItem("Prewitt");
 	private JMenuItem itemBordesSobel = new JMenuItem("Sobel");
 	private Imagen buffer1;
 	private Imagen buffer2;
@@ -296,6 +299,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuLaplaciano.add(itemLaplacianoLoGPendiente);
 		menuLaplaciano.add(itemCompararLoG);
 		menuFiltros.add(menuLaplaciano);
+		menuBordes.add(itemBordesDesconocido);
+		menuBordes.add(itemBordesKirsh);
+		menuBordes.add(itemBordesPrewitt);
 		menuBordes.add(itemBordesSobel);
 		menuFiltros.add(menuBordes);
 		menuBar.add(menuFiltros);
@@ -389,6 +395,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuLaplacianoGaussiano();
 		agregarMenuLaplacianoGaussianoPendiente();
 		agregarMenuCompararLoG();
+		agregarMenuBordesDesconocido();
+		agregarMenuBordesKirsh();
+		agregarMenuBordesPrewitt();
 		agregarMenuBordesSobel();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
@@ -1093,10 +1102,50 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
+	private void agregarMenuBordesDesconocido() {
+		itemBordesDesconocido.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				double[][] matrizMascaraHorizontal= {{1,1,-1},{1,-2,-1},{1,1,-1}};
+				double[][] matrizMascaraVertical={{1,1,1},{1,-2,1},{-1,-1,-1}}; 
+				double[][] matrizMascara45= {{1,1,1},{1,-2,-1},{1,-1,-1}};
+				double[][] matrizMascara135= {{1,-1,-1},{1,-2,-1},{1,1,1}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
+			}
+		});
+	}
+	
+	private void agregarMenuBordesKirsh() {
+		itemBordesKirsh.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				double[][] matrizMascaraHorizontal= {{5,-3,-3},{5,0,-3},{5,-3,-3}};
+				double[][] matrizMascaraVertical= {{5,5,5},{-3,0,-3},{-3,-3,-3}};
+				double[][] matrizMascara45= {{5,5,-3},{5,0,-3},{-3,-3,-3}};
+				double[][] matrizMascara135= {{-3,-3,-3},{5,0,-3},{5,5,-3}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
+			}
+		});
+	}
+	
+	private void agregarMenuBordesPrewitt() {
+		itemBordesPrewitt.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				double[][] matrizMascaraHorizontal= {{1,0,-1},{1,0,-1},{1,0,-1}};
+				double[][] matrizMascaraVertical= {{1,1,1},{0,0,0},{-1,-1,-1}};
+				double[][] matrizMascara45= {{1,1,0},{1,0,-1},{0,-1,-1}};
+				double[][] matrizMascara135= {{0,-1,-1},{1,0,-1},{1,1,0}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
+			}
+		});
+	}
+	
 	private void agregarMenuBordesSobel() {
 		itemBordesSobel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//ObjProcesamiento.bordesSobel(buffer1, obtenerPorcentaje());
+				double[][] matrizMascaraHorizontal= {{1,0,-1},{2,0,-2},{1,0,-1}};
+				double[][] matrizMascaraVertical= {{1,2,1},{0,0,0},{-1,-2,-1}};
+				double[][] matrizMascara45= {{2,1,0},{1,0,-1},{0,-1,-2}};
+				double[][] matrizMascara135= {{0,-1,-2},{1,0,-1},{2,1,0}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
 			}
 		});
 	}

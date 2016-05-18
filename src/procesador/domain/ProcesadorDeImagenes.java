@@ -808,7 +808,7 @@ public class ProcesadorDeImagenes {
 			// Obtengo la matriz de magnitud de borde
 			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
 			// Aplico la TL a la matriz de borde
-			salida = umbralizarBordes(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
+			salida = umbralizarPyS(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
 		}
 		return salida;
 	}
@@ -838,7 +838,7 @@ public class ProcesadorDeImagenes {
 			// Obtengo la matriz de magnitud de borde
 			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
 			// Aplico la TL a la matriz de borde
-			salida = umbralizarBordes(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
+			salida = umbralizarPyS(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
 		}
 		return salida;
 	}
@@ -918,8 +918,8 @@ public class ProcesadorDeImagenes {
 			matrizResultadoPrewitt =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXPrewiit, matrizMascaraYPrewiit);	
 			matrizResultadoSobel =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXSobel, matrizMascaraYSobel);
 			// Aplico la TL a la matriz de borde
-			Imagen salidaPrewiit =umbralizarBordes(matrizResultadoPrewitt,buff.getWidth(),buff.getHeight(), umbral);
-			Imagen salidaSobel =umbralizarBordes(matrizResultadoSobel,buff.getWidth(),buff.getHeight(), umbral);
+			Imagen salidaPrewiit =umbralizarPyS(matrizResultadoPrewitt,buff.getWidth(),buff.getHeight(), umbral);
+			Imagen salidaSobel =umbralizarPyS(matrizResultadoSobel,buff.getWidth(),buff.getHeight(), umbral);
 			// genero una nueva ventana para comparar
 			new Editor(salidaPrewiit,salidaSobel);
 		}
@@ -1534,40 +1534,37 @@ public class ProcesadorDeImagenes {
 		return gb;
 	}
 
-/*	public void bordesSobel(Imagen buff, int porcentaje) {
+   public void bordes(Imagen buff, double[][] matrizMascaraVertical,double[][] matrizMascaraHorizontal,double[][] matrizMascara45,double[][] matrizMascara135,  int umbral) {
 		Imagen salidaVertical=null;
 		Imagen salidaHorizontal=null;
 		Imagen salida45=null;
 		Imagen salida135=null;
 		Imagen salidaTotal=null;
 		if (buff!=null){
-			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizVertical =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizHorizontal =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matriz45 =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matriz135 =new double[buff.getWidth()][buff.getHeight()];
-			double[][] matrizMascaraVertical= {{1,2,1},{0,0,0},{-1,-2,-1}};
-			double[][] matrizMascaraHorizontal= {{2,1,0},{1,0,-1},{0,-1,-2}};
-			double[][] matrizMascara45= {{1,0,-1},{2,0,-2},{1,0,-1}};
-			double[][] matrizMascara135= {{0,-1,-2},{1,0,-1},{2,1,0}};
+			
 			salidaHorizontal=salidaVertical;
 			salida45=salidaVertical;
 			salida135=salidaVertical;
 			matrizVertical =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascaraVertical,3);
-			salidaVertical=umbralizarBordes(matrizVertical, buff.getWidth(),buff.getHeight(), porcentaje);
+			salidaVertical=umbralizarBordes(matrizVertical, buff.getWidth(),buff.getHeight(), umbral);
 			matrizHorizontal =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascaraHorizontal,3);
-			salidaHorizontal=umbralizarBordes(matrizHorizontal, buff.getWidth(),buff.getHeight(), porcentaje);
+			salidaHorizontal=umbralizarBordes(matrizHorizontal, buff.getWidth(),buff.getHeight(), umbral);
 			matriz45 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara45,3);
-			salida45=umbralizarBordes(matriz45, buff.getWidth(),buff.getHeight(), porcentaje);
+			salida45=umbralizarBordes(matriz45, buff.getWidth(),buff.getHeight(), umbral);
 			matriz135 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara135,3);
-			salida135=umbralizarBordes(matriz135, buff.getWidth(),buff.getHeight(), porcentaje);
-			//matrizResultado=calcularSumaBordes(matrizVertical, matrizHorizontal, matriz45, matriz135, buff.getWidth(),buff.getHeight());
-			//salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), porcentaje);
-			new VentanaBordes(salidaHorizontal, salidaVertical, salida45, salida135, salidaTotal);
+			salida135=umbralizarBordes(matriz135, buff.getWidth(),buff.getHeight(), umbral);
+			matrizResultado=calcularSumaBordes(matrizVertical, matrizHorizontal, matriz45, matriz135, buff.getWidth(),buff.getHeight());
+			salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), umbral);
+			new VentanaBordes(salidaVertical, salidaHorizontal,  salida45, salida135, salidaTotal);
 		}
 	}
-	*/
-	private double[][] calcularSumaBordes(Integer[][] matrizVertical, double[][] matrizHorizontal, double[][] matriz45,
+	
+	private double[][] calcularSumaBordes(double[][] matrizVertical, double[][] matrizHorizontal, double[][] matriz45,
 			double[][] matriz135, int ancho, int alto) {
 		double [][] resultado = new double[ancho][alto];
 		for (int i=0; i < ancho; i++){
@@ -1591,7 +1588,7 @@ public class ProcesadorDeImagenes {
 		return resultado;
 	}
 
-	private Imagen umbralizarBordes(Integer[][] matrizResultado, int ancho,int alto, int umbral){
+	private Imagen umbralizarBordes(double[][] matrizResultado, int ancho,int alto, int umbral){
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		Imagen salida =new Imagen(ancho, alto);
@@ -1606,5 +1603,23 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;
 	}
+	
+	private Imagen umbralizarPyS(Integer[][] matrizResultado, int ancho,int alto, int umbral){
+		Color blanco=new Color(255,255,255);
+		Color negro=new Color(0,0,0);
+		Imagen salida =new Imagen(ancho, alto);
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				if(matrizResultado[i][j]>=umbral){
+					salida.setRGB(i, j, blanco.getRGB());
+				}else{
+					salida.setRGB(i, j, negro.getRGB());
+				}
+			}
+		}
+		return salida;
+	}
+	
+	
 	
 }
