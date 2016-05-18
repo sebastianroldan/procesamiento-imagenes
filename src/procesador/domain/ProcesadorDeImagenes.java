@@ -783,7 +783,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDePrewitt(Imagen buff) {
+	public Imagen pasarFiltroDePrewittTL(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
@@ -799,7 +799,21 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDeSobel(Imagen buff) {
+	public Imagen pasarFiltroDePrewittUmbral(Imagen buff, int umbral) {
+		Imagen salida=null;
+		if (buff!=null){
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			int[][] matrizMascaraY= {{-1,-1,-1},{0,0,0},{1,1,1}};
+			int[][] matrizMascaraX={{-1,0,1},{-1,0,1},{-1,0,1}};
+			// Obtengo la matriz de magnitud de borde
+			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			// Aplico la TL a la matriz de borde
+			salida = umbralizarBordes(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
+		}
+		return salida;
+	}
+	
+	public Imagen pasarFiltroDeSobelTL(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
@@ -811,6 +825,20 @@ public class ProcesadorDeImagenes {
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformada=obtenerMatrizTransformada(matrizResultado, buff.getWidth(), buff.getHeight());
 			salida = obtenerImagenDesdeMatrizDeGrises(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
+		}
+		return salida;
+	}
+	
+	public Imagen pasarFiltroDeSobelUmbral(Imagen buff, int umbral) {
+		Imagen salida=null;
+		if (buff!=null){
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
+			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
+			// Obtengo la matriz de magnitud de borde
+			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
+			// Aplico la TL a la matriz de borde
+			salida = umbralizarBordes(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
 		}
 		return salida;
 	}
@@ -877,14 +905,12 @@ public class ProcesadorDeImagenes {
 		return salida;	
 	}
 
-	public void compararPyS(Imagen buff) {
+	public void compararPyS(Imagen buff, int umbral) {
 		if (buff!=null){
 			Integer[][] matrizResultadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
-			Integer[][] matrizResultadoTransformadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraYPrewiit= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraXPrewiit={{-1,0,1},{-1,0,1},{-1,0,1}};
 			Integer[][] matrizResultadoSobel =new Integer[buff.getWidth()][buff.getHeight()];
-			Integer[][] matrizResultadoTransformadoSobel =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraYSobel= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraXSobel={{-1,0,1},{-2,0,2},{-1,0,1}};
 			
@@ -892,10 +918,8 @@ public class ProcesadorDeImagenes {
 			matrizResultadoPrewitt =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXPrewiit, matrizMascaraYPrewiit);	
 			matrizResultadoSobel =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXSobel, matrizMascaraYSobel);
 			// Aplico la TL a la matriz de borde
-			matrizResultadoTransformadoPrewitt=obtenerMatrizTransformada(matrizResultadoPrewitt, buff.getWidth(), buff.getHeight());
-			matrizResultadoTransformadoSobel=obtenerMatrizTransformada(matrizResultadoSobel, buff.getWidth(), buff.getHeight());
-			Imagen salidaPrewiit =obtenerImagenDesdeMatrizDeGrises( matrizResultadoTransformadoPrewitt, buff.getWidth(),buff.getHeight());
-			Imagen salidaSobel =obtenerImagenDesdeMatrizDeGrises( matrizResultadoTransformadoSobel, buff.getWidth(),buff.getHeight());
+			Imagen salidaPrewiit =umbralizarBordes(matrizResultadoPrewitt,buff.getWidth(),buff.getHeight(), umbral);
+			Imagen salidaSobel =umbralizarBordes(matrizResultadoSobel,buff.getWidth(),buff.getHeight(), umbral);
 			// genero una nueva ventana para comparar
 			new Editor(salidaPrewiit,salidaSobel);
 		}
@@ -1510,14 +1534,14 @@ public class ProcesadorDeImagenes {
 		return gb;
 	}
 
-	public void bordesSobel(Imagen buff, int porcentaje) {
+/*	public void bordesSobel(Imagen buff, int porcentaje) {
 		Imagen salidaVertical=null;
 		Imagen salidaHorizontal=null;
 		Imagen salida45=null;
 		Imagen salida135=null;
 		Imagen salidaTotal=null;
 		if (buff!=null){
-			double[][] matrizResultado =new double[buff.getWidth()][buff.getHeight()];
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			double[][] matrizVertical =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matrizHorizontal =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matriz45 =new double[buff.getWidth()][buff.getHeight()];
@@ -1537,13 +1561,13 @@ public class ProcesadorDeImagenes {
 			salida45=umbralizarBordes(matriz45, buff.getWidth(),buff.getHeight(), porcentaje);
 			matriz135 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara135,3);
 			salida135=umbralizarBordes(matriz135, buff.getWidth(),buff.getHeight(), porcentaje);
-			matrizResultado=calcularSumaBordes(matrizVertical, matrizHorizontal, matriz45, matriz135, buff.getWidth(),buff.getHeight());
-			salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), porcentaje);
+			//matrizResultado=calcularSumaBordes(matrizVertical, matrizHorizontal, matriz45, matriz135, buff.getWidth(),buff.getHeight());
+			//salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), porcentaje);
 			new VentanaBordes(salidaHorizontal, salidaVertical, salida45, salida135, salidaTotal);
 		}
 	}
-	
-	private double[][] calcularSumaBordes(double[][] matrizVertical, double[][] matrizHorizontal, double[][] matriz45,
+	*/
+	private double[][] calcularSumaBordes(Integer[][] matrizVertical, double[][] matrizHorizontal, double[][] matriz45,
 			double[][] matriz135, int ancho, int alto) {
 		double [][] resultado = new double[ancho][alto];
 		for (int i=0; i < ancho; i++){
@@ -1567,14 +1591,13 @@ public class ProcesadorDeImagenes {
 		return resultado;
 	}
 
-	private Imagen umbralizarBordes(double[][] matrizResultado, int ancho,int alto, int porcentaje){
-		double max= maximo( matrizResultado, ancho, alto);
+	private Imagen umbralizarBordes(Integer[][] matrizResultado, int ancho,int alto, int umbral){
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		Imagen salida =new Imagen(ancho, alto);
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				if(matrizResultado[i][j]>=max*((double)porcentaje/100)){
+				if(matrizResultado[i][j]>=umbral){
 					salida.setRGB(i, j, blanco.getRGB());
 				}else{
 					salida.setRGB(i, j, negro.getRGB());
