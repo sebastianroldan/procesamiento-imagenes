@@ -865,7 +865,7 @@ public class ProcesadorDeImagenes {
 					}
 				}
 				
-				matriX[i+1][j+1]=grisX ;
+				matriX[i+1][j+1]=grisX;
 				matriY[i+1][j+1]=grisY;
 				grisX=0;
 				grisY=0;
@@ -1403,14 +1403,14 @@ public class ProcesadorDeImagenes {
 		return mascara;
 	}
 
-	public Imagen umbralGlobal(Imagen buff, int umbral, int delta) {
+	public Imagen umbralGlobal(Imagen buff, int umbral, double delta) {
 		Imagen salida=null;
-		int umbralInicial=umbral;
-		int umbralFinal=umbral;
+		double umbralInicial=umbral;
+		double umbralFinal=umbral;
 		int cantBlancos=0;
 		int cantNegros=0;
-		int sumaBlancos=0;
-		int sumaNegros=0;
+		double sumaBlancos=0;
+		double sumaNegros=0;
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		if (buff!=null){
@@ -1419,7 +1419,7 @@ public class ProcesadorDeImagenes {
 				umbralInicial=umbralFinal;
 				for (int i=0; i < buff.getWidth(); i++){
 					for(int j =0; j < buff.getHeight(); j++){
-						if(calcularPromedio(buff.getRGB(i, j)) >= umbralInicial){
+						if(calcularPromedio(buff.getRGB(i, j)) > umbralInicial){
 							cantBlancos++;
 							sumaBlancos+=calcularPromedio(buff.getRGB(i, j));
 						}else{
@@ -1437,7 +1437,8 @@ public class ProcesadorDeImagenes {
 						umbralFinal=((sumaNegros/cantNegros))/2;
 					}
 				}			
-			}while(Math.abs(umbralFinal-umbralInicial)>delta);
+			}while(Math.abs(umbralFinal-umbralInicial)>=delta);
+			JOptionPane.showMessageDialog(null, "Umbral Global: " + (int)umbralFinal);
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					if(calcularPromedio(buff.getRGB(i, j)) >= umbralFinal){
@@ -1489,6 +1490,7 @@ public class ProcesadorDeImagenes {
 					umbralOptimo=umbral;
 				}	
 			}
+			JOptionPane.showMessageDialog(null, "Umbral Optimo: " + umbralOptimo);
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					if(calcularPromedio(buff.getRGB(i, j)) >= umbralOptimo){

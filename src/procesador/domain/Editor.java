@@ -790,12 +790,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				    "Delta:", delta,
 				};
 				int tamanioUmbral=0;
-				int tamanioDelta=0;
+				double tamanioDelta=0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
 					tamanioUmbral = Integer.valueOf(umbral.getText());
-					tamanioDelta = Integer.valueOf(delta.getText());
+					tamanioDelta = Double.valueOf(delta.getText());
 					
 				}
 				aplicarOperacion(ObjProcesamiento.umbralGlobal(buffer1,tamanioUmbral,tamanioDelta));
