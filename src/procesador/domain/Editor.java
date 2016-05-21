@@ -52,6 +52,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemGuardar = new JMenuItem("Guardar Imagen");
 	private JMenu menuDifusion = new JMenu("Difusion");
 	private JMenuItem itemIsotropica = new JMenuItem("Isotropica");
+	private JMenuItem itemBorrar = new JMenuItem("Borrar");
 	private JMenuItem itemAnisotropica = new JMenuItem("Anisotropica");
 	private JMenuItem itemCerrar = new JMenuItem("Cerrar");
 	private JMenu menuFiguras = new JMenu("Figuras");
@@ -250,6 +251,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemIsotropica.setMnemonic(KeyEvent.VK_I);
 		menuDifusion.add(itemAnisotropica);
 		itemAnisotropica.setMnemonic(KeyEvent.VK_A);
+		menuDifusion.add(itemBorrar);
+		itemBorrar.setMnemonic(KeyEvent.VK_B);
 		menuArchivo.add(itemCerrar);
 		menuArchivo.setMnemonic(KeyEvent.VK_A);
 		menuArchivo.add(itemCargar);
@@ -423,6 +426,17 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuSal();
 		agregarIsotropica();
 		agregarAnisotropica();
+		agregarBorrar();
+	}
+
+	private void agregarBorrar() {
+		itemBorrar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				buffer2 = null;
+				contenedorDeImagen2.setIcon(null);
+			}
+		});
+		
 	}
 
 	private void agregarIsotropica() {

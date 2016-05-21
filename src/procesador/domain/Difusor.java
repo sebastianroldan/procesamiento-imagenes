@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 public class Difusor {
 
-	public Imagen aplicarDifusion(Imagen imagenResultado, int repeticiones, boolean esIsotropica, double sigma) {
+	public Imagen aplicarDifusion(Imagen imagenResultado, Imagen original, int repeticiones, boolean esIsotropica, double sigma) {
 
 		int ancho = imagenResultado.getWidth();
 		int alto = imagenResultado.getHeight();
@@ -13,7 +13,7 @@ public class Difusor {
 		
 		for (int i = 0; i < ancho; i++) {
 			for (int j = 0; j < alto; j++) {
-				grises[i][j] = imagenResultado.getValorGrisPixel(i, j); 
+				grises[i][j] = original.getValorGrisPixel(i, j); 
 			}
 		}
 		

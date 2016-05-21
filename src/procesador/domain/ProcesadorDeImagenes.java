@@ -1530,14 +1530,14 @@ public class ProcesadorDeImagenes {
 	public Imagen difusionIsotropica(Imagen imagen) {
 		Imagen resultado = new Imagen(imagen.getWidth(), imagen.getHeight());
 		Difusor difusor = new Difusor();
-		resultado = difusor.aplicarDifusion(imagen, 1, true, 2);
+		difusor.aplicarDifusion(resultado, imagen, 5, true, 2);
 		return resultado;
 	}
 
 	public Imagen difusionAnisotropica(Imagen imagen) {
 		Imagen resultado = new Imagen(imagen.getWidth(), imagen.getHeight());
 		Difusor difusor = new Difusor();
-		resultado = difusor.aplicarDifusion(imagen, 1, false, 2);
+		difusor.aplicarDifusion(resultado,imagen, 5, false, 2);
 		return resultado;
 	}
 	
