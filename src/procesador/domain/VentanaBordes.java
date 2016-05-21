@@ -24,7 +24,7 @@ public class VentanaBordes extends javax.swing.JFrame{
 	private Imagen imagenObtuzo = null;
 	private Imagen imagenTotal = null;
 	
-	public VentanaBordes(Imagen salidaHorizontal, Imagen salidaVertical, Imagen salida45, Imagen salida135, Imagen salidaTotal) {
+	public VentanaBordes(Imagen salidaVertical, Imagen salidaHorizontal, Imagen salida45, Imagen salida135, Imagen salidaTotal) {
 		horizontal = salidaHorizontal;
 		vertical = salidaVertical;
 		imagenAgudo = salida45;
@@ -47,16 +47,14 @@ public class VentanaBordes extends javax.swing.JFrame{
 		contenedorDeImagen = new javax.swing.JLabel();
 		
 		this.setJMenuBar(crearMenu());
-				
-		//agregarBotones();		
-		this.setBounds(0, 0, 512, 512);
 		jScrollPane1.setBounds(0, 0, 512, 512);
 		jScrollPane1.setViewportView(contenedorDeImagen);;
 		contenedorDeImagen.setVerticalAlignment(SwingConstants.TOP);
 		this.setLayout(null);
 		this.add(jScrollPane1);
-		this.setExtendedState(MAXIMIZED_BOTH);
-		this.setVisible(true);
+		this.setVisible(true);		
+		this.setBounds(150, 50, 512, 512);
+		setTitle("Bordes");
 	}
 	private JMenuBar crearMenu() {
 		menuBordes.add(item45);

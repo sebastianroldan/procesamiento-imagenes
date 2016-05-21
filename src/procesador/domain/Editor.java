@@ -67,9 +67,13 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemMedia = new JMenuItem("Media");
 	private JMenuItem itemMediana = new JMenuItem("Mediana");
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
-	private JMenuItem itemBorde = new JMenuItem("Borde");
-	private JMenuItem itemPrewitt = new JMenuItem("Prewitt");
-	private JMenuItem itemSobel = new JMenuItem("Sobel");
+	private JMenuItem itemBorde = new JMenuItem("Pasa Alto");
+	private JMenu menuSobel = new JMenu("Sobel");
+	private JMenu menuPrewitt = new JMenu("Prewitt");
+	private JMenuItem itemPrewittTL= new JMenuItem("Transformacion Lineal");
+	private JMenuItem itemPrewittUmbral= new JMenuItem("Umbralizar");
+	private JMenuItem itemSobelTL = new JMenuItem("Transformacion Lineal");
+	private JMenuItem itemSobelUmbral = new JMenuItem("Umbralizar");
 	private JMenuItem itemCompararPyS = new JMenuItem("Comparar Prewitt y Sobel");
 	private JMenu menuLaplaciano = new JMenu("Laplaciano");
 	private JMenuItem itemLaplaciano = new JMenuItem("Laplaciano");
@@ -78,6 +82,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemLaplacianoLoGPendiente = new JMenuItem("LoG con pendiente");
 	private JMenuItem itemCompararLoG = new JMenuItem("Comparar LoG y LoG con pendiente");
 	private JMenu menuBordes = new JMenu("Bordes");
+	private JMenuItem itemBordesDesconocido = new JMenuItem("Desconocido");
+	private JMenuItem itemBordesKirsh = new JMenuItem("Kirsh");
+	private JMenuItem itemBordesPrewitt = new JMenuItem("Prewitt");
 	private JMenuItem itemBordesSobel = new JMenuItem("Sobel");
 	private Imagen buffer1;
 	private Imagen buffer2;
@@ -292,8 +299,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemMediana);
 		menuFiltros.add(itemGaussiano);
 		menuFiltros.add(itemBorde);
-		menuFiltros.add(itemPrewitt);
-		menuFiltros.add(itemSobel);
+		menuPrewitt.add(itemPrewittTL);
+		menuPrewitt.add(itemPrewittUmbral);
+		menuFiltros.add(menuPrewitt);
+		menuSobel.add(itemSobelTL);
+		menuSobel.add(itemSobelUmbral);
+		menuFiltros.add(menuSobel);
 		menuFiltros.add(itemCompararPyS);
 		menuLaplaciano.add(itemLaplaciano);
 		menuLaplaciano.add(itemLaplacianoPendiente);
@@ -301,6 +312,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuLaplaciano.add(itemLaplacianoLoGPendiente);
 		menuLaplaciano.add(itemCompararLoG);
 		menuFiltros.add(menuLaplaciano);
+		menuBordes.add(itemBordesDesconocido);
+		menuBordes.add(itemBordesKirsh);
+		menuBordes.add(itemBordesPrewitt);
 		menuBordes.add(itemBordesSobel);
 		menuFiltros.add(menuBordes);
 		menuBar.add(menuFiltros);
@@ -385,14 +399,19 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarMenuMediana();
 		agregarMenuGaussiano();
 		agregarMenuBorde();
-		agregarMenuPrewitt();
-		agregarMenuSobel();
+		agregarMenuPrewittTL();
+		agregarMenuSobelTL();
+		agregarMenuPrewittUmbral();
+		agregarMenuSobelUmbral();
 		agregarMenuCompararPyS();
 		agregarMenuLaplaciano();
 		agregarMenuLaplacianoPendiente();
 		agregarMenuLaplacianoGaussiano();
 		agregarMenuLaplacianoGaussianoPendiente();
 		agregarMenuCompararLoG();
+		agregarMenuBordesDesconocido();
+		agregarMenuBordesKirsh();
+		agregarMenuBordesPrewitt();
 		agregarMenuBordesSobel();
 		agregarMenuDegradeGris();
 		agregarMenuDegradeColor();
@@ -828,12 +847,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				    "Delta:", delta,
 				};
 				int tamanioUmbral=0;
-				int tamanioDelta=0;
+				double tamanioDelta=0;
 				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los datos", JOptionPane.OK_CANCEL_OPTION);
 				if (option == JOptionPane.OK_OPTION)
 				{
 					tamanioUmbral = Integer.valueOf(umbral.getText());
-					tamanioDelta = Integer.valueOf(delta.getText());
+					tamanioDelta = Double.valueOf(delta.getText());
 					
 				}
 				aplicarOperacion(ObjProcesamiento.umbralGlobal(buffer1,tamanioUmbral,tamanioDelta));
@@ -1022,24 +1041,41 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
-	private void agregarMenuPrewitt() {
-		itemPrewitt.addActionListener(new java.awt.event.ActionListener() {
+	private void agregarMenuPrewittTL() {
+		itemPrewittTL.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1 != null){
-					borrarHistograma();
-					buffer2 = ObjProcesamiento.pasarFiltroDePrewitt(buffer1);
-					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+					aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewittTL(buffer1));
 				}
 			}
 		});
 	}
 	
-	private void agregarMenuSobel() {
-		itemSobel.addActionListener(new java.awt.event.ActionListener() {
+	private void agregarMenuSobelTL() {
+		itemSobelTL.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				if (buffer1 != null){
-					buffer2 = ObjProcesamiento.pasarFiltroDeSobel(buffer1);
-					contenedorDeImagen2.setIcon(new ImageIcon(buffer2));
+					aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobelTL(buffer1));
+				}
+			}
+		});
+	}
+	
+	private void agregarMenuPrewittUmbral() {
+		itemPrewittUmbral.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1 != null){
+					aplicarOperacion(ObjProcesamiento.pasarFiltroDePrewittUmbral(buffer1, obtenerUmbral()));
+				}
+			}
+		});
+	}
+	
+	private void agregarMenuSobelUmbral() {
+		itemSobelUmbral.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (buffer1 != null){
+					aplicarOperacion(ObjProcesamiento.pasarFiltroDeSobelUmbral(buffer1,obtenerUmbral()));
 				}
 			}
 		});
@@ -1048,7 +1084,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuCompararPyS() {
 		itemCompararPyS.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				ObjProcesamiento.compararPyS(buffer1);
+				ObjProcesamiento.compararPyS(buffer1,obtenerUmbral());
 			}
 		});
 	}
@@ -1123,10 +1159,50 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 	
+	private void agregarMenuBordesDesconocido() {
+		itemBordesDesconocido.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				double[][] matrizMascaraHorizontal= {{1,1,-1},{1,-2,-1},{1,1,-1}};
+				double[][] matrizMascaraVertical={{1,1,1},{1,-2,1},{-1,-1,-1}}; 
+				double[][] matrizMascara45= {{1,1,1},{1,-2,-1},{1,-1,-1}};
+				double[][] matrizMascara135= {{1,-1,-1},{1,-2,-1},{1,1,1}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
+			}
+		});
+	}
+	
+	private void agregarMenuBordesKirsh() {
+		itemBordesKirsh.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				double[][] matrizMascaraHorizontal= {{5,-3,-3},{5,0,-3},{5,-3,-3}};
+				double[][] matrizMascaraVertical= {{5,5,5},{-3,0,-3},{-3,-3,-3}};
+				double[][] matrizMascara45= {{5,5,-3},{5,0,-3},{-3,-3,-3}};
+				double[][] matrizMascara135= {{-3,-3,-3},{5,0,-3},{5,5,-3}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
+			}
+		});
+	}
+	
+	private void agregarMenuBordesPrewitt() {
+		itemBordesPrewitt.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				double[][] matrizMascaraHorizontal= {{1,0,-1},{1,0,-1},{1,0,-1}};
+				double[][] matrizMascaraVertical= {{1,1,1},{0,0,0},{-1,-1,-1}};
+				double[][] matrizMascara45= {{1,1,0},{1,0,-1},{0,-1,-1}};
+				double[][] matrizMascara135= {{0,-1,-1},{1,0,-1},{1,1,0}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
+			}
+		});
+	}
+	
 	private void agregarMenuBordesSobel() {
 		itemBordesSobel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				ObjProcesamiento.bordesSobel(buffer1, obtenerPorcentaje());
+				double[][] matrizMascaraHorizontal= {{1,0,-1},{2,0,-2},{1,0,-1}};
+				double[][] matrizMascaraVertical= {{1,2,1},{0,0,0},{-1,-2,-1}};
+				double[][] matrizMascara45= {{2,1,0},{1,0,-1},{0,-1,-2}};
+				double[][] matrizMascara135= {{0,-1,-2},{1,0,-1},{2,1,0}};
+				ObjProcesamiento.bordes(buffer1, matrizMascaraVertical,matrizMascaraHorizontal,matrizMascara45,matrizMascara135, obtenerUmbral());
 			}
 		});
 	}
@@ -1442,19 +1518,34 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		}	
 	}
 	
-	private int obtenerPorcentaje(){
-		JTextField porcen = new JTextField();;
+	private int obtenerUmbral(){
+		JTextField umb = new JTextField();;
 		Object[] message = {
-		    "Porcentaje del maximo:", porcen
+		    "Umbral:", umb
+		};
+		int umbral = 0;
+
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese Umbral", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			 umbral = Integer.valueOf(umb.getText());
+		}
+		return umbral;
+	}
+	
+	private int obtenerPorcentaje(){
+		JTextField porc = new JTextField();;
+		Object[] message = {
+		    "Porcentaje:", porc
 		};
 		int porcentaje = 0;
 
-		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese porcentaje", JOptionPane.OK_CANCEL_OPTION);
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese Porcentaje", JOptionPane.OK_CANCEL_OPTION);
 		if (option == JOptionPane.OK_OPTION)
 		{
-			 porcentaje = Integer.valueOf(porcen.getText());
+			 porcentaje = Integer.valueOf(porc.getText());
 		}
-		return porcentaje;
+		return  porcentaje;
 	}
 	
 	private int obtenerMascara(){
@@ -1476,6 +1567,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	Object[] message = {
 	    "Desvío (sigma)", desvio
 	};
+	
 	double tamanioDesvio =0;
 	int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el desvio del filtro", JOptionPane.OK_CANCEL_OPTION);
 	if (option == JOptionPane.OK_OPTION)

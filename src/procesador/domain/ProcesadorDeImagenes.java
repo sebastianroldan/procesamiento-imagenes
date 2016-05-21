@@ -783,7 +783,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDePrewitt(Imagen buff) {
+	public Imagen pasarFiltroDePrewittTL(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
@@ -799,7 +799,21 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	public Imagen pasarFiltroDeSobel(Imagen buff) {
+	public Imagen pasarFiltroDePrewittUmbral(Imagen buff, int umbral) {
+		Imagen salida=null;
+		if (buff!=null){
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			int[][] matrizMascaraY= {{-1,-1,-1},{0,0,0},{1,1,1}};
+			int[][] matrizMascaraX={{-1,0,1},{-1,0,1},{-1,0,1}};
+			// Obtengo la matriz de magnitud de borde
+			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			// Aplico la TL a la matriz de borde
+			salida = umbralizarPyS(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
+		}
+		return salida;
+	}
+	
+	public Imagen pasarFiltroDeSobelTL(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
@@ -811,6 +825,20 @@ public class ProcesadorDeImagenes {
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformada=obtenerMatrizTransformada(matrizResultado, buff.getWidth(), buff.getHeight());
 			salida = obtenerImagenDesdeMatrizDeGrises(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
+		}
+		return salida;
+	}
+	
+	public Imagen pasarFiltroDeSobelUmbral(Imagen buff, int umbral) {
+		Imagen salida=null;
+		if (buff!=null){
+			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
+			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
+			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
+			// Obtengo la matriz de magnitud de borde
+			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
+			// Aplico la TL a la matriz de borde
+			salida = umbralizarPyS(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
 		}
 		return salida;
 	}
@@ -837,7 +865,7 @@ public class ProcesadorDeImagenes {
 					}
 				}
 				
-				matriX[i+1][j+1]=grisX ;
+				matriX[i+1][j+1]=grisX;
 				matriY[i+1][j+1]=grisY;
 				grisX=0;
 				grisY=0;
@@ -877,14 +905,12 @@ public class ProcesadorDeImagenes {
 		return salida;	
 	}
 
-	public void compararPyS(Imagen buff) {
+	public void compararPyS(Imagen buff, int umbral) {
 		if (buff!=null){
 			Integer[][] matrizResultadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
-			Integer[][] matrizResultadoTransformadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraYPrewiit= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraXPrewiit={{-1,0,1},{-1,0,1},{-1,0,1}};
 			Integer[][] matrizResultadoSobel =new Integer[buff.getWidth()][buff.getHeight()];
-			Integer[][] matrizResultadoTransformadoSobel =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraYSobel= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraXSobel={{-1,0,1},{-2,0,2},{-1,0,1}};
 			
@@ -892,10 +918,8 @@ public class ProcesadorDeImagenes {
 			matrizResultadoPrewitt =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXPrewiit, matrizMascaraYPrewiit);	
 			matrizResultadoSobel =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXSobel, matrizMascaraYSobel);
 			// Aplico la TL a la matriz de borde
-			matrizResultadoTransformadoPrewitt=obtenerMatrizTransformada(matrizResultadoPrewitt, buff.getWidth(), buff.getHeight());
-			matrizResultadoTransformadoSobel=obtenerMatrizTransformada(matrizResultadoSobel, buff.getWidth(), buff.getHeight());
-			Imagen salidaPrewiit =obtenerImagenDesdeMatrizDeGrises( matrizResultadoTransformadoPrewitt, buff.getWidth(),buff.getHeight());
-			Imagen salidaSobel =obtenerImagenDesdeMatrizDeGrises( matrizResultadoTransformadoSobel, buff.getWidth(),buff.getHeight());
+			Imagen salidaPrewiit =umbralizarPyS(matrizResultadoPrewitt,buff.getWidth(),buff.getHeight(), umbral);
+			Imagen salidaSobel =umbralizarPyS(matrizResultadoSobel,buff.getWidth(),buff.getHeight(), umbral);
 			// genero una nueva ventana para comparar
 			new Editor(salidaPrewiit,salidaSobel);
 		}
@@ -1177,28 +1201,52 @@ public class ProcesadorDeImagenes {
 		double suma=0;
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto-1; j++){
-				if((matriz[i][j] !=0 && matriz[i][j+1] ==0)||
-				   (matriz[i][j] ==0 && matriz[i][j+1] !=0)||
-				   (matriz[i][j] >0 && matriz[i][j+1]<0)||
-				   (matriz[i][j] <0 && matriz[i][j+1]>0)) {
-				   suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+1]);
-				   if(max<suma){
-						max=suma;	
-				   }
-				}
+				if((matriz[i][j] >0 && matriz[i][j+1]<0)||
+						   (matriz[i][j] <0 && matriz[i][j+1]>0)) {
+					suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+1]);
+					   if(max<suma){
+							max=suma;	
+					   }						
+						}else if((matriz[i][j] !=0 && matriz[i][j+1] ==0) && j+2<alto){
+							if(matriz[i][j] >0 && matriz[i][j+2]<0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								j++;
+							}else if(matriz[i][j] <0 && matriz[i][j+2]>0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								j++;
+							}
+						}
 			}
 		}
 		for (int j=0; j < alto; j++){
 			for(int i =0; i < ancho-1; i++){
-				if((matriz[i][j] !=0 && matriz[i+1][j] ==0)||
-				   (matriz[i][j] ==0 && matriz[i+1][j] !=0)||
-				   (matriz[i][j] >0 && matriz[i+1][j+1]<0)||
-				   (matriz[i][j] <0 && matriz[i+1][j]>0)) {
-				   suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+1][j]);
-				   if(max<suma){
-						max=suma;	
-				   }						
-				}
+				if((matriz[i][j] >0 && matriz[i+1][j+1]<0)||
+						   (matriz[i][j] <0 && matriz[i+1][j]>0)) {
+					suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+1][j]);
+					   if(max<suma){
+							max=suma;	
+					   }						
+						}else if((matriz[i][j] !=0 && matriz[i+1][j] ==0) && i+2<ancho){
+							if(matriz[i][j] >0 && matriz[i+2][j]<0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+2][j]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								i++;
+							}else if(matriz[i][j] <0 && matriz[i+2][j]>0){
+								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i+2][j]);
+								   if(max<suma){
+										max=suma;	
+								   }
+								i++;
+							}
+						}
 			}
 		}
 		return max;
@@ -1225,12 +1273,9 @@ public class ProcesadorDeImagenes {
 		double valorAux=0;
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
-				/*exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/(Math.pow(desvio,2)*2));
-				valorAux=(2 -((Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/Math.pow(desvio,2)));
-				resultado =(1.0/( Math.sqrt(2.0*Math.PI)*Math.pow(desvio,3)))*exponencial*valorAux;*/
 				exponencial= Math.exp(-(Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2))/(Math.pow(desvio,2)*2));
 				valorAux=((Math.pow(i-mascara/2,2)+Math.pow(j-mascara/2,2) -Math.pow(desvio,2))/Math.pow(desvio,4));
-				resultado =(1.0/( 2.0*Math.PI*Math.pow(desvio,3)))*exponencial*valorAux;
+				resultado =(1.0/( 2.0*Math.PI*Math.pow(desvio,2)))*exponencial*valorAux;
 				matrizMascara[i][j]= resultado;
 			}
 		}
@@ -1243,22 +1288,34 @@ public class ProcesadorDeImagenes {
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto-1; j++){
 				
-				if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i][j+1] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
+				if((matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
 				   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
 				salida.setRGB(i, j, blanco.getRGB());						
+				}else if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0) && j+2<alto){
+					if(matrizResultado[i][j] >0 && matrizResultado[i][j+2]<0){
+						salida.setRGB(i, j+1, blanco.getRGB());
+						j++;
+					}else if(matrizResultado[i][j] <0 && matrizResultado[i][j+2]>0){
+						salida.setRGB(i, j+1, blanco.getRGB());
+						j++;
+					}
 				}
 			}
 		}
 		
 		for (int j=0; j < alto; j++){
 			for(int i =0; i < ancho-1; i++){
-				if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i+1][j] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
+				if((matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
 				   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
 				salida.setRGB(i, j, blanco.getRGB());						
+				}else if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0) && i+2<ancho){
+					if(matrizResultado[i][j] >0 && matrizResultado[i+2][j]<0){
+						salida.setRGB(i+1, j, blanco.getRGB());
+						i++;
+					}else if(matrizResultado[i][j] <0 && matrizResultado[i+2][j]>0){
+						salida.setRGB(i+1, j, blanco.getRGB());
+						i++;
+					}
 				}
 			}
 		}
@@ -1272,29 +1329,53 @@ public class ProcesadorDeImagenes {
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto-1; j++){
 				
-				if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i][j+1] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
-				   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
+				if((matrizResultado[i][j] >0 && matrizResultado[i][j+1]<0)||
+						   (matrizResultado[i][j] <0 && matrizResultado[i][j+1]>0)) {
 					suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+1]));
 					if(suma>=(max*((double)porcentaje/100))){
 						salida.setRGB(i, j, blanco.getRGB());	
-					}							
-				}
+					}						
+						}else if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0) && j+2<alto){
+							if(matrizResultado[i][j] >0 && matrizResultado[i][j+2]<0){
+								suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i, j+1, blanco.getRGB());	
+								}
+								j++;
+							}else if(matrizResultado[i][j] <0 && matrizResultado[i][j+2]>0){
+								suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i, j+1, blanco.getRGB());	
+								}
+								j++;
+							}
+						}
 			}
 		}
 		
 		for (int j=0; j < alto; j++){
 			for(int i =0; i < ancho-1; i++){
-				if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0)||
-				   (matrizResultado[i][j] ==0 && matrizResultado[i+1][j] !=0)||
-				   (matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
-				   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
+				if((matrizResultado[i][j] >0 && matrizResultado[i+1][j+1]<0)||
+						   (matrizResultado[i][j] <0 && matrizResultado[i+1][j]>0)) {
 					suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+1][j]);
 					if(suma>=(max*((double)porcentaje/100))){
 						salida.setRGB(i, j, blanco.getRGB());	
-					}						
-				}
+					}							
+						}else if((matrizResultado[i][j] !=0 && matrizResultado[i+1][j] ==0) && i+2<ancho){
+							if(matrizResultado[i][j] >0 && matrizResultado[i+2][j]<0){
+								suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+2][j]);
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i+1, j, blanco.getRGB());	
+								}	
+								i++;
+							}else if(matrizResultado[i][j] <0 && matrizResultado[i+2][j]>0){
+								suma=Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i+2][j]);
+								if(suma>=(max*((double)porcentaje/100))){
+									salida.setRGB(i+1, j, blanco.getRGB());	
+								}	
+								i++;
+							}
+						}
 			}
 		}
 		return salida;
@@ -1322,14 +1403,14 @@ public class ProcesadorDeImagenes {
 		return mascara;
 	}
 
-	public Imagen umbralGlobal(Imagen buff, int umbral, int delta) {
+	public Imagen umbralGlobal(Imagen buff, int umbral, double delta) {
 		Imagen salida=null;
-		int umbralInicial=umbral;
-		int umbralFinal=umbral;
+		double umbralInicial=umbral;
+		double umbralFinal=umbral;
 		int cantBlancos=0;
 		int cantNegros=0;
-		int sumaBlancos=0;
-		int sumaNegros=0;
+		double sumaBlancos=0;
+		double sumaNegros=0;
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		if (buff!=null){
@@ -1338,7 +1419,7 @@ public class ProcesadorDeImagenes {
 				umbralInicial=umbralFinal;
 				for (int i=0; i < buff.getWidth(); i++){
 					for(int j =0; j < buff.getHeight(); j++){
-						if(calcularPromedio(buff.getRGB(i, j)) >= umbralInicial){
+						if(calcularPromedio(buff.getRGB(i, j)) > umbralInicial){
 							cantBlancos++;
 							sumaBlancos+=calcularPromedio(buff.getRGB(i, j));
 						}else{
@@ -1356,7 +1437,8 @@ public class ProcesadorDeImagenes {
 						umbralFinal=((sumaNegros/cantNegros))/2;
 					}
 				}			
-			}while(Math.abs(umbralFinal-umbralInicial)>delta);
+			}while(Math.abs(umbralFinal-umbralInicial)>=delta);
+			JOptionPane.showMessageDialog(null, "Umbral Global: " + (int)umbralFinal);
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					if(calcularPromedio(buff.getRGB(i, j)) >= umbralFinal){
@@ -1408,6 +1490,7 @@ public class ProcesadorDeImagenes {
 					umbralOptimo=umbral;
 				}	
 			}
+			JOptionPane.showMessageDialog(null, "Umbral Optimo: " + umbralOptimo);
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					if(calcularPromedio(buff.getRGB(i, j)) >= umbralOptimo){
@@ -1453,7 +1536,7 @@ public class ProcesadorDeImagenes {
 		return gb;
 	}
 
-	public void bordesSobel(Imagen buff, int porcentaje) {
+   public void bordes(Imagen buff, double[][] matrizMascaraVertical,double[][] matrizMascaraHorizontal,double[][] matrizMascara45,double[][] matrizMascara135,  int umbral) {
 		Imagen salidaVertical=null;
 		Imagen salidaHorizontal=null;
 		Imagen salida45=null;
@@ -1465,24 +1548,21 @@ public class ProcesadorDeImagenes {
 			double[][] matrizHorizontal =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matriz45 =new double[buff.getWidth()][buff.getHeight()];
 			double[][] matriz135 =new double[buff.getWidth()][buff.getHeight()];
-			double[][] matrizMascaraVertical= {{1,2,1},{0,0,0},{-1,-2,-1}};
-			double[][] matrizMascaraHorizontal= {{2,1,0},{1,0,-1},{0,-1,-2}};
-			double[][] matrizMascara45= {{1,0,-1},{2,0,-2},{1,0,-1}};
-			double[][] matrizMascara135= {{0,-1,-2},{1,0,-1},{2,1,0}};
+			
 			salidaHorizontal=salidaVertical;
 			salida45=salidaVertical;
 			salida135=salidaVertical;
 			matrizVertical =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascaraVertical,3);
-			salidaVertical=umbralizarBordes(matrizVertical, buff.getWidth(),buff.getHeight(), porcentaje);
+			salidaVertical=umbralizarBordes(matrizVertical, buff.getWidth(),buff.getHeight(), umbral);
 			matrizHorizontal =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascaraHorizontal,3);
-			salidaHorizontal=umbralizarBordes(matrizHorizontal, buff.getWidth(),buff.getHeight(), porcentaje);
+			salidaHorizontal=umbralizarBordes(matrizHorizontal, buff.getWidth(),buff.getHeight(), umbral);
 			matriz45 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara45,3);
-			salida45=umbralizarBordes(matriz45, buff.getWidth(),buff.getHeight(), porcentaje);
+			salida45=umbralizarBordes(matriz45, buff.getWidth(),buff.getHeight(), umbral);
 			matriz135 =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara135,3);
-			salida135=umbralizarBordes(matriz135, buff.getWidth(),buff.getHeight(), porcentaje);
+			salida135=umbralizarBordes(matriz135, buff.getWidth(),buff.getHeight(), umbral);
 			matrizResultado=calcularSumaBordes(matrizVertical, matrizHorizontal, matriz45, matriz135, buff.getWidth(),buff.getHeight());
-			salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), porcentaje);
-			new VentanaBordes(salidaHorizontal, salidaVertical, salida45, salida135, salidaTotal);
+			salidaTotal = umbralizarBordes(matrizResultado, buff.getWidth(),buff.getHeight(), umbral);
+			new VentanaBordes(salidaVertical, salidaHorizontal,  salida45, salida135, salidaTotal);
 		}
 	}
 	
@@ -1510,14 +1590,29 @@ public class ProcesadorDeImagenes {
 		return resultado;
 	}
 
-	private Imagen umbralizarBordes(double[][] matrizResultado, int ancho,int alto, int porcentaje){
-		double max= maximo( matrizResultado, ancho, alto);
+	private Imagen umbralizarBordes(double[][] matrizResultado, int ancho,int alto, int umbral){
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		Imagen salida =new Imagen(ancho, alto);
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				if(matrizResultado[i][j]>=max*((double)porcentaje/100)){
+				if(matrizResultado[i][j]>=umbral){
+					salida.setRGB(i, j, blanco.getRGB());
+				}else{
+					salida.setRGB(i, j, negro.getRGB());
+				}
+			}
+		}
+		return salida;
+	}
+	
+	private Imagen umbralizarPyS(Integer[][] matrizResultado, int ancho,int alto, int umbral){
+		Color blanco=new Color(255,255,255);
+		Color negro=new Color(0,0,0);
+		Imagen salida =new Imagen(ancho, alto);
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				if(matrizResultado[i][j]>=umbral){
 					salida.setRGB(i, j, blanco.getRGB());
 				}else{
 					salida.setRGB(i, j, negro.getRGB());
@@ -1540,5 +1635,7 @@ public class ProcesadorDeImagenes {
 		difusor.aplicarDifusion(resultado,imagen, 5, false, 2);
 		return resultado;
 	}
+	
+	
 	
 }
