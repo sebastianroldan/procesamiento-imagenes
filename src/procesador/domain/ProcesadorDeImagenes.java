@@ -843,7 +843,30 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	private Integer[][] obtenerMatrizPyS(Imagen buff, int ancho, int alto, int[][] matrizMascaraX,
+	public Integer[][] obtenerGx(Imagen buff, int ancho, int alto, int[][] matrizMascaraX) {
+		Integer[][] matriX =new Integer[ancho][alto];
+		int grisX =0;
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				matriX[i][j]=0;
+			}
+		}
+		for (int i=0; i <= ancho-3; i++){
+			for(int j =0; j <= alto-3; j++){
+				for (int k=0; k < 3; k++){
+					for(int m =0; m < 3; m++){		
+						grisX = grisX + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraX[k][m];  
+					}
+				}
+				
+				matriX[i+1][j+1]=grisX;
+				grisX=0;
+			}
+		}
+		return matriX;
+	}
+	
+	public Integer[][] obtenerMatrizPyS(Imagen buff, int ancho, int alto, int[][] matrizMascaraX,
 			int[][] matrizMascaraY) {
 		int[][] matriX =new int[ancho][alto];
 		int[][] matriY =new int[ancho][alto];
@@ -874,6 +897,42 @@ public class ProcesadorDeImagenes {
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
 				matrizResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
+			}
+		}
+		return matrizResultado;
+	}
+	
+	public double[][] obtenerMatrizPyS2(Imagen buff, int ancho, int alto, int[][] matrizMascaraX,
+			int[][] matrizMascaraY) {
+		int[][] matriX =new int[ancho][alto];
+		int[][] matriY =new int[ancho][alto];
+		double[][] matrizResultado =new double[ancho][alto];
+		int grisX =0;
+		int grisY =0;
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				matriX[i][j]=0;
+				matriY[i][j]=0;
+			}
+		}
+		for (int i=0; i <= ancho-3; i++){
+			for(int j =0; j <= alto-3; j++){
+				for (int k=0; k < 3; k++){
+					for(int m =0; m < 3; m++){		
+						grisX = grisX + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraX[k][m]; 
+						grisY = grisY + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraY[k][m]; 
+					}
+				}
+				
+				matriX[i+1][j+1]=grisX;
+				matriY[i+1][j+1]=grisY;
+				grisX=0;
+				grisY=0;
+			}
+		}
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				matrizResultado[i][j]= Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
 			}
 		}
 		return matrizResultado;
@@ -1606,7 +1665,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	private Imagen umbralizarPyS(Integer[][] matrizResultado, int ancho,int alto, int umbral){
+	public Imagen umbralizarPyS(Integer[][] matrizResultado, int ancho,int alto, int umbral){
 		Color blanco=new Color(255,255,255);
 		Color negro=new Color(0,0,0);
 		Imagen salida =new Imagen(ancho, alto);

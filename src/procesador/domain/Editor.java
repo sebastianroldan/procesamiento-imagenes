@@ -67,6 +67,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemMedia = new JMenuItem("Media");
 	private JMenuItem itemMediana = new JMenuItem("Mediana");
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
+	private JMenu menuDetectorDeBordes = new JMenu("Bordes");
+	private JMenuItem itemCanny = new JMenuItem("Canny");
 	private JMenuItem itemBorde = new JMenuItem("Pasa Alto");
 	private JMenu menuSobel = new JMenu("Sobel");
 	private JMenu menuPrewitt = new JMenu("Prewitt");
@@ -298,26 +300,30 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemMedia);
 		menuFiltros.add(itemMediana);
 		menuFiltros.add(itemGaussiano);
-		menuFiltros.add(itemBorde);
+		
+		menuDetectorDeBordes.add(itemBorde);
+		
 		menuPrewitt.add(itemPrewittTL);
 		menuPrewitt.add(itemPrewittUmbral);
-		menuFiltros.add(menuPrewitt);
+		menuDetectorDeBordes.add(menuPrewitt);
 		menuSobel.add(itemSobelTL);
 		menuSobel.add(itemSobelUmbral);
-		menuFiltros.add(menuSobel);
-		menuFiltros.add(itemCompararPyS);
+		menuDetectorDeBordes.add(menuSobel);
+		menuDetectorDeBordes.add(itemCompararPyS);
 		menuLaplaciano.add(itemLaplaciano);
 		menuLaplaciano.add(itemLaplacianoPendiente);
 		menuLaplaciano.add(itemLaplacianoLoG);
 		menuLaplaciano.add(itemLaplacianoLoGPendiente);
 		menuLaplaciano.add(itemCompararLoG);
-		menuFiltros.add(menuLaplaciano);
+		menuDetectorDeBordes.add(menuLaplaciano);
 		menuBordes.add(itemBordesDesconocido);
 		menuBordes.add(itemBordesKirsh);
 		menuBordes.add(itemBordesPrewitt);
 		menuBordes.add(itemBordesSobel);
-		menuFiltros.add(menuBordes);
+		menuDetectorDeBordes.add(menuBordes);
+		menuDetectorDeBordes.add(itemCanny);
 		menuBar.add(menuFiltros);
+		menuBar.add(menuDetectorDeBordes);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
 		menuBar.add(menuDegrade);
 		menuDegrade.setMnemonic(KeyEvent.VK_D);
@@ -446,8 +452,24 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarIsotropica();
 		agregarAnisotropica();
 		agregarBorrar();
+		agregarCanny();
 	}
 
+	private void agregarCanny() {
+		itemCanny.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarBordesConCanny();
+			}
+
+		});
+	}
+
+	private void detectarBordesConCanny() {
+		DetectorDeCanny detector = new DetectorDeCanny();
+		Imagen borde = detector.deteccionDeBordes(buffer1); 
+		aplicarOperacion(borde);
+	}
+	
 	private void agregarBorrar() {
 		itemBorrar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -455,7 +477,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				contenedorDeImagen2.setIcon(null);
 			}
 		});
-		
 	}
 
 	private void agregarIsotropica() {
@@ -1235,7 +1256,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuCuadrado() {
 		itemCuadrado.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagenEHistograma(new GeneradorDeImagenes().crearImagenBinariaCuadrado(200));			
+				cargarImagenEHistograma(new GeneradorDeImagenes().crearImagenBinariaCuadrado2(200));			
 			}
 		});
 	}

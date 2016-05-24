@@ -25,6 +25,24 @@ public class GeneradorDeImagenes {
 		}
 		return buff;
 	}
+	
+	public Imagen crearImagenBinariaCuadrado2(int lado) {
+		Imagen buff = new Imagen(40, 40);
+		Color colorBlanco;
+		Color colorNegro;
+		colorBlanco = new Color(255,255,255);
+		colorNegro = new Color(0,0,0);
+		for (int i=0; i < 40; i++){
+			for (int j=0; j < 40; j++){
+				if((i>=10 && i<20) &&(j>=10 && j<20)){
+					buff.setRGB(j, i, colorBlanco.getRGB());
+			   }else{
+				   buff.setRGB(j, i, colorNegro.getRGB());
+			   }	
+			 }
+		}
+		return buff;
+	}
 
 	public Imagen crearImagenBinariaCirculo(int radio) {
 		Imagen buff = new Imagen(200, 200);
