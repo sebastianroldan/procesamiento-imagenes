@@ -1249,13 +1249,13 @@ public class ProcesadorDeImagenes {
 			double[][] matrizMascara= {{0,-1,0},{-1,4,-1},{0,-1,0}};
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
 			matrizResultado =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,3);
-			double max= maximo( matrizResultado, buff.getWidth(), buff.getHeight());
+			double max= maximaPendiente( matrizResultado, buff.getWidth(), buff.getHeight());
 			salida =crearImagenLaplacianoPendiente(matrizResultado, buff.getWidth(), buff.getHeight(), max, porcentaje);
 		}
 		return salida;
 	}
 	
-	private double maximo(double[][] matriz, int ancho, int alto){
+	private double maximaPendiente(double[][] matriz, int ancho, int alto){
 		double max=Math.abs(matriz[0][0]) + Math.abs(matriz[0][1]);
 		double suma=0;
 		for (int i=0; i < ancho; i++){
@@ -1263,24 +1263,24 @@ public class ProcesadorDeImagenes {
 				if((matriz[i][j] >0 && matriz[i][j+1]<0)||
 						   (matriz[i][j] <0 && matriz[i][j+1]>0)) {
 					suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+1]);
-					   if(max<suma){
-							max=suma;	
-					   }						
-						}else if((matriz[i][j] !=0 && matriz[i][j+1] ==0) && j+2<alto){
-							if(matriz[i][j] >0 && matriz[i][j+2]<0){
-								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
-								   if(max<suma){
-										max=suma;	
-								   }
-								j++;
-							}else if(matriz[i][j] <0 && matriz[i][j+2]>0){
-								suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
-								   if(max<suma){
-										max=suma;	
-								   }
-								j++;
-							}
-						}
+					if(max<suma){
+						max=suma;	
+					}						
+				}else if((matriz[i][j] !=0 && matriz[i][j+1] ==0) && j+2<alto){
+					if(matriz[i][j] >0 && matriz[i][j+2]<0){
+						suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
+						   if(max<suma){
+								max=suma;	
+						   }
+						j++;
+					}else if(matriz[i][j] <0 && matriz[i][j+2]>0){
+						suma=Math.abs(matriz[i][j]) + Math.abs(matriz[i][j+2]);
+						   if(max<suma){
+								max=suma;	
+						   }
+						j++;
+					}
+				}
 			}
 		}
 		for (int j=0; j < alto; j++){
@@ -1323,7 +1323,6 @@ public class ProcesadorDeImagenes {
 		}
 		return salida;
 	}
-
 
 	private double[][] obtenerMascaraLaplacianoGausiano(int mascara,double desvio) {
 		double[][] matrizMascara = new double[mascara][mascara];
@@ -1394,21 +1393,21 @@ public class ProcesadorDeImagenes {
 					if(suma>=(max*((double)porcentaje/100))){
 						salida.setRGB(i, j, blanco.getRGB());	
 					}						
-						}else if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0) && j+2<alto){
-							if(matrizResultado[i][j] >0 && matrizResultado[i][j+2]<0){
-								suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
-								if(suma>=(max*((double)porcentaje/100))){
-									salida.setRGB(i, j+1, blanco.getRGB());	
-								}
-								j++;
-							}else if(matrizResultado[i][j] <0 && matrizResultado[i][j+2]>0){
-								suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
-								if(suma>=(max*((double)porcentaje/100))){
-									salida.setRGB(i, j+1, blanco.getRGB());	
-								}
-								j++;
-							}
+				}else if((matrizResultado[i][j] !=0 && matrizResultado[i][j+1] ==0) && j+2<alto){
+					if(matrizResultado[i][j] >0 && matrizResultado[i][j+2]<0){
+						suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
+						if(suma>=(max*((double)porcentaje/100))){
+							salida.setRGB(i, j+1, blanco.getRGB());	
 						}
+						j++;
+					}else if(matrizResultado[i][j] <0 && matrizResultado[i][j+2]>0){
+						suma= (Math.abs(matrizResultado[i][j]) + Math.abs(matrizResultado[i][j+2]));
+						if(suma>=(max*((double)porcentaje/100))){
+							salida.setRGB(i, j+1, blanco.getRGB());	
+						}
+						j++;
+					}
+				}
 			}
 		}
 		
@@ -1448,7 +1447,7 @@ public class ProcesadorDeImagenes {
 			double[][] matrizMascara= obtenerMascaraLaplacianoGausiano(mascara, desvio);
 			salida =rellenarImagen(buff.getWidth(), buff.getHeight());
 			matrizResultado =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
-			double max= maximo( matrizResultado, buff.getWidth(), buff.getHeight());
+			double max= maximaPendiente( matrizResultado, buff.getWidth(), buff.getHeight());
 			salida =crearImagenLaplacianoPendiente(matrizResultado,buff.getWidth(), buff.getHeight(),max,porcentaje);
 		}
 		return salida;
@@ -1519,7 +1518,7 @@ public class ProcesadorDeImagenes {
 		Imagen salidaLoGPendiente =rellenarImagen(buff.getWidth(), buff.getHeight());
 		Imagen salidaLoG =rellenarImagen(buff.getWidth(), buff.getHeight());
 		matrizLoG =obtenerMatriz(buff, buff.getWidth(), buff.getHeight(), matrizMascara,mascara);
-		double max= maximo(matrizLoG, buff.getWidth(), buff.getHeight());
+		double max= maximaPendiente(matrizLoG, buff.getWidth(), buff.getHeight());
 		salidaLoG=crearImagenLaplaciano(matrizLoG,buff.getWidth(), buff.getHeight());
 		salidaLoGPendiente =crearImagenLaplacianoPendiente(matrizLoG,buff.getWidth(), buff.getHeight(),max,porcentaje);		
 		new Editor(salidaLoG,salidaLoGPendiente);

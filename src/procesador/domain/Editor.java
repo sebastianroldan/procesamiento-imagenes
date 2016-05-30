@@ -83,7 +83,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemLaplacianoLoG = new JMenuItem("LoG");
 	private JMenuItem itemLaplacianoLoGPendiente = new JMenuItem("LoG con pendiente");
 	private JMenuItem itemCompararLoG = new JMenuItem("Comparar LoG y LoG con pendiente");
-	private JMenu menuBordes = new JMenu("Bordes");
+	private JMenu menuBordes = new JMenu("Op.Direccionales");
 	private JMenuItem itemBordesDesconocido = new JMenuItem("Desconocido");
 	private JMenuItem itemBordesKirsh = new JMenuItem("Kirsh");
 	private JMenuItem itemBordesPrewitt = new JMenuItem("Prewitt");
