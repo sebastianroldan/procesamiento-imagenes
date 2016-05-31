@@ -1540,9 +1540,9 @@ public class ProcesadorDeImagenes {
 			for (int i=0; i < 256; i++){
 				ocurrencia[i]=(double) histograma[i]/pixeles;		
 			}
-			gwMaximo=calculoVariaza(0,ocurrencia);
+			gwMaximo=calculoVarianza(0,ocurrencia);
 			for(int umbral =1; umbral < 256; umbral++){
-				gw=calculoVariaza(umbral,ocurrencia);
+				gw=calculoVarianza(umbral,ocurrencia);
 				if(gw > gwMaximo){
 					gwMaximo=gw;
 					umbralOptimo=umbral;
@@ -1562,7 +1562,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 	
-	private double calculoVariaza(int umbral, double[] ocurrencia){
+	private double calculoVarianza(int umbral, double[] ocurrencia){
 		double w1=0;
 		double w2=0;
 		double u1=0;
