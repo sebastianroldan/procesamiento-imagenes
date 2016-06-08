@@ -57,6 +57,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemCerrar = new JMenuItem("Cerrar");
 	private JMenu menuFiguras = new JMenu("Figuras");
 	private JMenu menuFiltros = new JMenu("Filtros");
+	private JMenu menuCurvas = new JMenu("Curvas");
+	private JMenuItem itemDetectarCirculo = new JMenuItem("Detectar circulos");
+	private JMenuItem itemDetectarRecta = new JMenuItem("Detectar rectas");
 	private JMenuItem itemCirculo = new JMenuItem("Dibujar Circulo");
 	private JMenuItem itemCuadrado = new JMenuItem("Dibujar Cuadrado");
 	private JMenuItem itemGrises = new JMenuItem("Escala de Grises");
@@ -69,6 +72,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
 	private JMenu menuDetectorDeBordes = new JMenu("Bordes");
 	private JMenuItem itemCanny = new JMenuItem("Canny");
+	private JMenu menuSusan = new JMenu("Susan");
+	private JMenuItem itemBordesSusan = new JMenuItem("Bordes");
+	private JMenuItem itemEsquinasSusan = new JMenuItem("Esquinas");
 	private JMenuItem itemBorde = new JMenuItem("Pasa Alto");
 	private JMenu menuSobel = new JMenu("Sobel");
 	private JMenu menuPrewitt = new JMenu("Prewitt");
@@ -302,7 +308,9 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuFiltros.add(itemGaussiano);
 		
 		menuDetectorDeBordes.add(itemBorde);
-		
+		menuDetectorDeBordes.add(menuSusan);
+		menuSusan.add(itemBordesSusan);
+		menuSusan.add(itemEsquinasSusan);
 		menuPrewitt.add(itemPrewittTL);
 		menuPrewitt.add(itemPrewittUmbral);
 		menuDetectorDeBordes.add(menuPrewitt);
@@ -384,6 +392,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuBar.add(menuContraste);
 		menuContraste.setMnemonic(KeyEvent.VK_C);
 		menuBar.add(menuDifusion);
+		menuCurvas.add(itemDetectarRecta);
+		menuCurvas.add(itemDetectarCirculo);
+		menuBar.add(menuCurvas);
+		
 		return menuBar;
 	}
 
@@ -453,14 +465,83 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarAnisotropica();
 		agregarBorrar();
 		agregarCanny();
+		agregarBordesSusan();
+		agregarEsquinasSusan();
+		agregarDetectarRectas();
 	}
 
+	private void agregarDetectarRectas() {
+		itemDetectarRecta.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarRectas();
+			}
+
+		});
+	}
+
+	private void detectarRectas() {
+		DetectorDeHugh detector = new DetectorDeHugh();
+		Imagen borde = detector.deteccionDeRectas(buffer1); 
+		aplicarOperacion(borde);
+	}
+
+	private void agregarBordesSusan() {
+		itemBordesSusan.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarBordesConSusan();
+			}
+		});
+	}
+
+	private void detectarBordesConSusan() {
+		
+		JTextField delta = new JTextField();
+		Object[] message = {
+		    "Delta:", delta,
+		};
+		int deltaInt = 0;
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el valor de delta", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			 deltaInt= Integer.valueOf(delta.getText());
+		}
+		
+		DetectorDeSusan detector = new DetectorDeSusan();
+		Imagen borde = detector.deteccionDeBordes(buffer1, deltaInt); 
+		aplicarOperacion(borde);
+	}
+	
+	private void detectarEsquinasConSusan() {
+		
+		JTextField delta = new JTextField();
+		Object[] message = {
+		    "Delta:", delta,
+		};
+		int deltaInt = 0;
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el valor de delta", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			 deltaInt= Integer.valueOf(delta.getText());
+		}
+		
+		DetectorDeSusan detector = new DetectorDeSusan();
+		Imagen borde = detector.deteccionDeEsquinas(buffer1, deltaInt); 
+		aplicarOperacion(borde);
+	}
+	
+	private void agregarEsquinasSusan() {
+		itemEsquinasSusan.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarEsquinasConSusan();
+			}
+		});
+	}
+	
 	private void agregarCanny() {
 		itemCanny.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				detectarBordesConCanny();
 			}
-
 		});
 	}
 
@@ -469,6 +550,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		Imagen borde = detector.deteccionDeBordes(buffer1); 
 		aplicarOperacion(borde);
 	}
+	
+	
 	
 	private void agregarBorrar() {
 		itemBorrar.addActionListener(new java.awt.event.ActionListener() {
@@ -1256,7 +1339,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarMenuCuadrado() {
 		itemCuadrado.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cargarImagenEHistograma(new GeneradorDeImagenes().crearImagenBinariaCuadrado2(200));			
+				cargarImagenEHistograma(new GeneradorDeImagenes().crearImagenBinariaCuadrado(200));			
 			}
 		});
 	}

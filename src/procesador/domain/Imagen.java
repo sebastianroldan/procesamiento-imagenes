@@ -82,4 +82,16 @@ public class Imagen extends BufferedImage{
 			this.setRGB(x, y, rgb.getRGB());
 		}
 	}
+
+	public int getPixelPromedio() {
+		int suma =0;
+		int c = 0;
+		for (int i=0; i < this.getAncho(); i++){
+			for (int j=0; j < this.getAlto(); j++){
+				c = c +1;
+				suma = suma + this.getValorGrisPixel(i, j);
+			}
+		}
+		return suma/c;
+	}
 }
