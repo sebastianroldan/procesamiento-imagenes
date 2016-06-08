@@ -566,12 +566,26 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemIsotropica.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				Imagen imagen;
+				JTextField rep = new JTextField();
+				JTextField sig = new JTextField();
+				Object[] message = {
+					"Repeticiones:", rep,	
+				    "Desvio:", sig
+				};
+				double sigma= 0;
+				int repeticiones = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 sigma = Double.valueOf(sig.getText());
+					 repeticiones = Integer.valueOf(rep.getText());
+				}
 				if (buffer2 == null){
 					imagen = buffer1;
 				}else{
 					imagen = buffer2;
 				}
-				Imagen difusion = ObjProcesamiento.difusionIsotropica(imagen);
+				Imagen difusion = ObjProcesamiento.difusionIsotropica(imagen,repeticiones,sigma);
 				aplicarOperacion(difusion);
 			}
 		});
@@ -581,12 +595,26 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemAnisotropica.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				Imagen imagen;
+				JTextField rep = new JTextField();
+				JTextField sig = new JTextField();
+				Object[] message = {
+					"Repeticiones:", rep,	
+				    "Desvio:", sig
+				};
+				double sigma= 0;
+				int repeticiones = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 sigma = Double.valueOf(sig.getText());
+					 repeticiones = Integer.valueOf(rep.getText()); 
+				}
 				if (buffer2 == null){
 					imagen = buffer1;
 				}else{
 					imagen = buffer2;
-				}
-				Imagen difusion = ObjProcesamiento.difusionAnisotropica(imagen);
+				}			
+				Imagen difusion = ObjProcesamiento.difusionAnisotropica(imagen,repeticiones,sigma);
 				aplicarOperacion(difusion);
 			}
 		});

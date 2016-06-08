@@ -10,7 +10,7 @@ public class DetectorDeHugh {
 	public Imagen deteccionDeRectas(Imagen buffer1) {
 		ancho = buffer1.getAncho();
 		alto = buffer1.getAlto();
-		acumulador = int[18][];
+		//acumulador = int[18][];
 		resultado = new Imagen(ancho, alto);
 		resultado = detectarBordesUmbralizar(buffer1); //hecho
 		
