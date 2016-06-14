@@ -26,20 +26,20 @@ public class GeneradorDeImagenes {
 		return buff;
 	}
 	
-	public Imagen crearImagenBinariaCuadrado2(int lado) {
-		Imagen buff = new Imagen(40, 40);
+	public Imagen crearImagenBinariaLinea(int lado) {
+		Imagen buff = new Imagen(200, 200);
 		Color colorBlanco;
 		Color colorNegro;
 		colorBlanco = new Color(255,255,255);
 		colorNegro = new Color(0,0,0);
-		for (int i=0; i < 40; i++){
-			for (int j=0; j < 40; j++){
-				if((i>=10 && i<20) &&(j>=10 && j<20)){
-					buff.setRGB(j, i, colorBlanco.getRGB());
+		for (int j=0; j < 200; j++){
+			for (int i=0; i < 200; i++){
+				if((i>=50 && i<150)){
+					buff.setRGB(i, 50, colorBlanco.getRGB());
 			   }else{
 				   buff.setRGB(j, i, colorNegro.getRGB());
 			   }	
-			 }
+			}	
 		}
 		return buff;
 	}
