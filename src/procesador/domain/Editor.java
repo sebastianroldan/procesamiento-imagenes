@@ -72,6 +72,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
 	private JMenu menuDetectorDeBordes = new JMenu("Bordes");
 	private JMenuItem itemCanny = new JMenuItem("Canny");
+	private JMenuItem itemContornosActivos = new JMenuItem("Contornos activos");	
 	private JMenu menuSusan = new JMenu("Susan");
 	private JMenuItem itemBordesSusan = new JMenuItem("Bordes");
 	private JMenuItem itemEsquinasSusan = new JMenuItem("Esquinas");
@@ -143,6 +144,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private JLabel valorContraste = new JLabel();
     private JLabel valorPotencia = new JLabel();
     private boolean seleccionando = false;
+    private boolean seleccionandoContornos = false;
     
 	public Editor() {
 		initComponents();
@@ -330,6 +332,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuBordes.add(itemBordesSobel);
 		menuDetectorDeBordes.add(menuBordes);
 		menuDetectorDeBordes.add(itemCanny);
+		menuDetectorDeBordes.add(itemContornosActivos);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDetectorDeBordes);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
@@ -465,6 +468,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarAnisotropica();
 		agregarBorrar();
 		agregarCanny();
+		agregarContornosActivos();
 		agregarBordesSusan();
 		agregarEsquinasSusan();
 		agregarDetectarRectas();
@@ -544,11 +548,51 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
+	
+	private void agregarContornosActivos() {
+		itemContornosActivos.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				seleccionandoContornos=true;				
+				if(puntoInicial!=null && puntoFinal!=null){
+					
+					Imagen imagen;
+					JTextField epsilon = new JTextField();
+					Object[] message = {
+						"Epsilon:", epsilon
+					};
+					int error = 0;
+					int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese valor", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION)
+					{
+						 error = Integer.valueOf(epsilon.getText());
+					}
+					if (buffer2 == null){
+						imagen = buffer1;
+					}else{
+						imagen = buffer2;
+					}
+					detectarContornosActivosImagenEstatica(imagen,puntoInicial,puntoFinal,error);
+					resetPoints();
+					seleccionando = false;
+					seleccionandoContornos = false;
+				} else {
+					JOptionPane.showMessageDialog(null,"Primero debe seleccionar el area en el menu Seleccion / Seleccionar");
+					resetPoints();
+				}
+			}
+		});
+	}
 
 	private void detectarBordesConCanny() {
 		DetectorDeCanny detector = new DetectorDeCanny();
 		Imagen borde = detector.deteccionDeBordes(buffer1); 
 		aplicarOperacion(borde);
+	}
+	
+	private void detectarContornosActivosImagenEstatica(Imagen original,Point puntoInicial,Point puntoFinal,Integer error) {
+		DetectorDeContornosActivos detector = new DetectorDeContornosActivos();
+		Imagen imagenConContornosActivos = detector.deteccionDeContornosActivos(buffer1,puntoInicial,puntoFinal,error); 
+		aplicarOperacion(imagenConContornosActivos);
 	}
 	
 	
@@ -566,12 +610,26 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemIsotropica.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				Imagen imagen;
+				JTextField rep = new JTextField();
+				JTextField sig = new JTextField();
+				Object[] message = {
+					"Repeticiones:", rep,	
+				    "Desvio:", sig
+				};
+				double sigma= 0;
+				int repeticiones = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 sigma = Double.valueOf(sig.getText());
+					 repeticiones = Integer.valueOf(rep.getText());
+				}
 				if (buffer2 == null){
 					imagen = buffer1;
 				}else{
 					imagen = buffer2;
 				}
-				Imagen difusion = ObjProcesamiento.difusionIsotropica(imagen);
+				Imagen difusion = ObjProcesamiento.difusionIsotropica(imagen,repeticiones,sigma);
 				aplicarOperacion(difusion);
 			}
 		});
@@ -581,12 +639,26 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemAnisotropica.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				Imagen imagen;
+				JTextField rep = new JTextField();
+				JTextField sig = new JTextField();
+				Object[] message = {
+					"Repeticiones:", rep,	
+				    "Desvio:", sig
+				};
+				double sigma= 0;
+				int repeticiones = 0;
+				int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese los valores", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION)
+				{
+					 sigma = Double.valueOf(sig.getText());
+					 repeticiones = Integer.valueOf(rep.getText()); 
+				}
 				if (buffer2 == null){
 					imagen = buffer1;
 				}else{
 					imagen = buffer2;
-				}
-				Imagen difusion = ObjProcesamiento.difusionAnisotropica(imagen);
+				}			
+				Imagen difusion = ObjProcesamiento.difusionAnisotropica(imagen,repeticiones,sigma);
 				aplicarOperacion(difusion);
 			}
 		});
@@ -1527,7 +1599,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				}else{
 					puntoFinal=ev.getPoint();
 					if (clickValidos()){
-						dibujarRectangulo(puntoInicial, puntoFinal);
+						if (!seleccionandoContornos){
+							dibujarRectangulo(puntoInicial, puntoFinal);
+						}else{
+							JOptionPane.showMessageDialog(null, "Region Contorno Inicial Seleccionada, vuelva a Bordes / Contornos Activos");
+						}
 						contenedorDeImagen.setCursor(new Cursor(DEFAULT_CURSOR));
 					}else{
 						resetPoints();

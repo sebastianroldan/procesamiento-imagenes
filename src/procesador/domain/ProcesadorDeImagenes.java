@@ -899,6 +899,12 @@ public class ProcesadorDeImagenes {
 				matrizResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
 			}
 		}
+		for (int i=0; i < ancho; i++){
+			for(int j =0; j < alto; j++){
+				System.out.print(matrizResultado[i][j] + "  " );
+			}
+			System.out.println( "  " );
+		}
 		return matrizResultado;
 	}
 	
@@ -1680,17 +1686,17 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 
-	public Imagen difusionIsotropica(Imagen imagen) {
+	public Imagen difusionIsotropica(Imagen imagen,int repeticiones, double sigma) {
 		Imagen resultado = new Imagen(imagen.getWidth(), imagen.getHeight());
 		Difusor difusor = new Difusor();
-		difusor.aplicarDifusion(resultado, imagen, 5, true, 2);
+		difusor.aplicarDifusion(resultado, imagen, repeticiones, true, sigma);
 		return resultado;
 	}
 
-	public Imagen difusionAnisotropica(Imagen imagen) {
+	public Imagen difusionAnisotropica(Imagen imagen,int repeticiones, double sigma) {
 		Imagen resultado = new Imagen(imagen.getWidth(), imagen.getHeight());
 		Difusor difusor = new Difusor();
-		difusor.aplicarDifusion(resultado,imagen, 5, false, 2);
+		difusor.aplicarDifusion(resultado,imagen, repeticiones, false, sigma);
 		return resultado;
 	}
 	
