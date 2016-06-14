@@ -10,18 +10,15 @@ public class DetectorDeContornosActivos {
 		private Imagen original;
 		private Imagen resultado;
 		private int ancho;
-		private int alto; 
+		private int alto;
+		private Integer colorObjeto=0;
 			
 		public Imagen deteccionDeContornosActivos(Imagen original,Point puntoInicial,Point puntoFinal,Integer error){
 			this.original=original;
 			this.ancho = original.getAncho();
 			this.alto = original.getAlto();
-			this.resultado = original;//new Imagen(ancho, alto);
-			
-			System.out.println("Punto Inicial: X "+puntoInicial.getX()+" Y "+puntoInicial.getY());
-			System.out.println("Punto Final: X "+puntoFinal.getX()+" Y "+puntoFinal.getY());
-			System.out.println("Error: "+error);
-			
+			this.resultado = clonarImagen(original);
+						
 			//busco el valor de iteraciones maximos para expansion y contraccion de los CA
 			int iteraciones=ancho;
 			if (alto>ancho) {
@@ -30,25 +27,45 @@ public class DetectorDeContornosActivos {
 			
 			//Creo la matriz Fi y la inicializo
 			int [][] imagenFi = inicializarMatrizFi();
-			
 			//Creo las listas de puntos bordes externos e internos
 			List Lint = new ArrayList<Point>();
 			List Lext = new ArrayList<Point>();
-			Integer colorObjeto=0;
-			int contadorPixeles=0;
 			
-			//for (){			}
+			aplicarContornoInicial(resultado,imagenFi,Lint,Lext,puntoInicial,puntoFinal,error);
 			
 			
 			
 			
-			
-			
+		
 			
 			
 			
 
 			return resultado;
+		}
+		
+		private void aplicarContornoInicial(Imagen resultado,int [][] imagenFi,List Lint,List Lext,Point puntoInicial,Point puntoFinal,Integer error){
+			int contadorPixeles=0;
+			int p1X=(int) puntoInicial.getX();
+			int p1Y=(int) puntoInicial.getY();
+			int p2X=(int) puntoFinal.getX();
+			int p2Y=(int) puntoFinal.getY();
+			
+			// muestro por consola los puntos y el error seleccionados
+			System.out.println("Punto Inicial: X "+p1X+" Y "+p1Y);
+			System.out.println("Punto Final: X "+p2X+" Y "+p2Y);
+			System.out.println("Error: "+error);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		}
 		
 		private int funcionFuerzaVelocidad_D(Color colorX,Color colorObjeto,Integer error){
@@ -77,6 +94,18 @@ public class DetectorDeContornosActivos {
 			}
 			
 			return imagenFi;
+		}
+		
+		private Imagen clonarImagen(Imagen original){
+			
+			Imagen resultado = new Imagen(original.getWidth(),original.getHeight());
+			
+			for (int i=0;i<original.getWidth();i++){
+				for (int j=0;j<original.getHeight();j++){
+					resultado.setRGB(i,j,original.getRGB(i,j));
+				}
+			}
+			return resultado;
 		}
 
 }
