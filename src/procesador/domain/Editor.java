@@ -144,6 +144,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private JLabel valorContraste = new JLabel();
     private JLabel valorPotencia = new JLabel();
     private boolean seleccionando = false;
+    private boolean seleccionandoContornos = false;
     
 	public Editor() {
 		initComponents();
@@ -551,7 +552,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarContornosActivos() {
 		itemContornosActivos.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-								
+				seleccionandoContornos=true;				
 				if(puntoInicial!=null && puntoFinal!=null){
 					
 					Imagen imagen;
@@ -573,6 +574,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					detectarContornosActivosImagenEstatica(imagen,puntoInicial,puntoFinal,error);
 					resetPoints();
 					seleccionando = false;
+					seleccionandoContornos = false;
 				} else {
 					JOptionPane.showMessageDialog(null,"Primero debe seleccionar el area en el menu Seleccion / Seleccionar");
 					resetPoints();
@@ -1597,7 +1599,11 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				}else{
 					puntoFinal=ev.getPoint();
 					if (clickValidos()){
-						dibujarRectangulo(puntoInicial, puntoFinal);
+						if (!seleccionandoContornos){
+							dibujarRectangulo(puntoInicial, puntoFinal);
+						}else{
+							JOptionPane.showMessageDialog(null, "Region Contorno Inicial Seleccionada, vuelva a Bordes / Contornos Activos");
+						}
 						contenedorDeImagen.setCursor(new Cursor(DEFAULT_CURSOR));
 					}else{
 						resetPoints();
