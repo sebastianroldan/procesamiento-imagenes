@@ -10,6 +10,7 @@ public class DetectorDeCanny {
 		private ProcesadorDeImagenes procesador = new ProcesadorDeImagenes();
 		private Integer[][][] angulos = new Integer[3][][];
 		private int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
+		int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
 		int ancho;
 		int alto; 
 	
@@ -58,7 +59,7 @@ public class DetectorDeCanny {
 
 		private void umbralizacionConHisteresis() {
 			int t1, t2;
-			t1=100; t2=150;
+			t1=100; t2=125;
 			for (int i=0; i <3; i++){
 				magnitudesDeBorde[i] = umbralizacion(magnitudesDeBorde[i],t1,t2); 
 			}
@@ -138,18 +139,18 @@ public class DetectorDeCanny {
 
 		private void obtenerAngulos() {
 			for (int i=0; i <3; i++){
-				angulos[i] = calcularMatrizDeAngulos(magnitudesDeBorde[i], 
-						procesador.obtenerG(imagenes[i], ancho, alto, matrizMascaraX)); 
+				angulos[i] = calcularMatrizDeAngulos(procesador.obtenerG(imagenes[i], ancho, alto, matrizMascaraX),
+						procesador.obtenerG(imagenes[i], ancho, alto, matrizMascaraY)); 
 			}
 		}
 
-		private Integer[][] calcularMatrizDeAngulos(double[][] magnitudes, Integer[][] gx) {
+		private Integer[][] calcularMatrizDeAngulos( Integer[][] gx,Integer[][] gy) {
 			Integer[][] angulosDeBorde = new Integer[ancho][alto];
 			double angulo;
 			for (int i=0;i<ancho;i++){
-				for (int j=0;j<alto;j++){		
-					angulo = Math.toDegrees(Math.atan(magnitudes[i][j]));
+				for (int j=0;j<alto;j++){
 					if (!esGXCero(i,j,gx)){
+						angulo = Math.toDegrees(Math.atan(gy[i][j]/gx[i][j]))+90;
 						angulosDeBorde[i][j] = clasificarAngulo(angulo); 
 					}else{
 						angulosDeBorde[i][j] = 0;
@@ -161,19 +162,19 @@ public class DetectorDeCanny {
 		}
 
 		private Integer clasificarAngulo(double angulo) {
-			if (angulo >0 && angulo <=23){
+			if (angulo >0 && angulo <=22.5){
 				angulo = 0;
 			}
-			if (angulo >23 && angulo <=68){
+			if (angulo >22.5 && angulo <=67.5){
 				angulo = 45;
 			}
-			if (angulo >68 && angulo <=113){
+			if (angulo >67.5 && angulo <=112.5){
 				angulo = 90;
 			}
-			if (angulo >113 && angulo <=158){
+			if (angulo >112.5 && angulo <=157.5){
 				angulo = 135;
 			}
-			if (angulo >158 && angulo <=180){
+			if (angulo >157.5 && angulo <=180){
 				angulo = 0;
 			}
 			return (int)angulo;
