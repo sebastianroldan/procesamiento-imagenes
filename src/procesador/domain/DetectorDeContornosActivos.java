@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class DetectorDeContornosActivos {
 
@@ -29,15 +30,13 @@ public class DetectorDeContornosActivos {
 			this.Lint = new ArrayList<Point>();
 			this.Lext = new ArrayList<Point>();
 									
-			int iteraciones=calcularMaximasIteraciones();
+			Integer iteraciones=calcularMaximasIteraciones();
 			
 			if (aplicarContornoInicial(resultado,puntoInicial,puntoFinal,error)){
 				
+				ejecutarPrimerCiclo(iteraciones,error);
 				
-				
-				
-				
-				
+				//ejecutarSegundoCiclo();		
 				
 				pintarBordesContornosActivos();
 			
@@ -50,6 +49,626 @@ public class DetectorDeContornosActivos {
 			return resultado;
 		}
 		
+		private void ejecutarPrimerCiclo(Integer iteraciones,Integer error) {
+			
+			Point puntoX=null;
+			Point puntoY=null;
+			Color colorX=null;
+			int red,blue,green;
+						
+			for (int i=0;i<1000;i++){
+				//Paso1
+				ListIterator<Point> iteradorLext = this.Lext.listIterator();
+				while (iteradorLext.hasNext()){
+					puntoX=iteradorLext.next();
+					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
+					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
+					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+					colorX=new Color(red,green,blue);
+					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)>0){
+						puntoY=new Point();
+						puntoY.setLocation((int)puntoX.getX(),(int)puntoX.getY());
+						this.Lint.add(puntoY);
+						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=1;
+						iteradorLext.remove();
+						validarPuntosN4conFi3(puntoY);
+					}
+				}
+				
+				//Paso2
+				ListIterator<Point> iteradorLint = this.Lint.listIterator();
+				while (iteradorLint.hasNext()){
+					puntoX=iteradorLint.next();
+					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
+					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
+					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+					colorX=new Color(red,green,blue);
+					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)>0){
+						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=-3;
+						iteradorLint.remove();
+					}
+				}
+				
+				//Paso3
+				ListIterator<Point> iterador2Lint = this.Lint.listIterator();
+				while (iterador2Lint.hasNext()){
+					puntoX=iterador2Lint.next();
+					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
+					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
+					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+					colorX=new Color(red,green,blue);
+					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)<0){
+						puntoY=new Point();
+						puntoY.setLocation((int)puntoX.getX(),(int)puntoX.getY());
+						this.Lext.add(puntoY);
+						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=-1;
+						iterador2Lint.remove();
+						validarPuntosN4conFiMenos3(puntoY);
+					}
+				}
+							
+				//Paso4
+				ListIterator<Point> iterador2Lext = this.Lext.listIterator();
+				while (iterador2Lext.hasNext()){
+					puntoX=iterador2Lext.next();
+					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
+					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
+					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+					colorX=new Color(red,green,blue);
+					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)<0){
+						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=3;
+						iterador2Lext.remove();
+					}
+				}
+				
+			}
+		}
+
+		private void validarPuntosN4conFiMenos3(Point puntoY) {
+			int valorX=(int)puntoY.getX();
+			int valorY=(int)puntoY.getY();
+			Point puntoN4=null;
+			
+			if ((valorX-1>=0)&&(valorX+1<ancho)&&(valorY-1>=0)&&(valorY+1<alto)){
+				if (imagenFi[valorX-1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY-1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX-1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY]=-1;
+				}
+				if (imagenFi[valorX+1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY]=-1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=-1;
+				}
+				if (imagenFi[valorX][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY+1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=-1;
+				}
+			}
+			if ((valorX==0)&&(valorY>0)&&(valorY<alto-1)){
+				if (imagenFi[valorX][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY-1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY]=-1;
+				}
+				if (imagenFi[valorX][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY+1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=-1;
+				}
+			}
+			
+			if ((valorX==ancho-1)&&(valorY>0)&&(valorY<alto-1)){
+				
+				if (imagenFi[valorX-1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY-1]=-1;
+				}
+				if (imagenFi[valorX-1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY]=-1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=-1;
+				}
+				if (imagenFi[valorX][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY+1]=-1;
+				}
+			}
+			if ((valorY==0)&&(valorX>0)&&(valorX<ancho-1)){
+
+				if (imagenFi[valorX-1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY]=-1;
+				}
+				if (imagenFi[valorX+1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY]=-1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=-1;
+				}
+				if (imagenFi[valorX][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY+1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=-1;
+				}
+			}
+			
+			if ((valorY==alto-1)&&(valorX>0)&&(valorX<ancho-1)){
+				if (imagenFi[valorX-1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY-1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX-1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY]=-1;
+				}
+				if (imagenFi[valorX+1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY]=-1;
+				}
+			}
+			
+			if ((valorX==0)&&(valorY==0)){
+				if (imagenFi[valorX+1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY]=-1;
+				}
+				if (imagenFi[valorX][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY+1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=-1;
+				}
+			}
+			if ((valorX==0)&&(valorY==alto-1)){
+							
+				if (imagenFi[valorX][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY-1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX+1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX+1][valorY]=-1;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==0)){
+				
+				if (imagenFi[valorX-1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY]=-1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=-1;
+				}
+				if (imagenFi[valorX][valorY+1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY+1]=-1;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==alto-1)){
+				if (imagenFi[valorX-1][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=-1;
+				}
+				if (imagenFi[valorX][valorY-1]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX][valorY-1]=-1;
+				}
+				if (imagenFi[valorX-1][valorY]==-3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lint.add(puntoN4);
+					imagenFi[valorX-1][valorY]=-1;
+				}
+			}
+		}
+
+
+		private void validarPuntosN4conFi3(Point puntoY) {
+			int valorX=(int)puntoY.getX();
+			int valorY=(int)puntoY.getY();
+			Point puntoN4=null;
+			
+			if ((valorX-1>=0)&&(valorX+1<ancho)&&(valorY-1>=0)&&(valorY+1<alto)){
+				if (imagenFi[valorX-1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=1;
+				}
+				if (imagenFi[valorX][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY-1]=1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=1;
+				}
+				if (imagenFi[valorX-1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY]=1;
+				}
+				if (imagenFi[valorX+1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY]=1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=1;
+				}
+				if (imagenFi[valorX][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY+1]=1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=1;
+				}
+			}
+			if ((valorX==0)&&(valorY>0)&&(valorY<alto-1)){
+				if (imagenFi[valorX][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY-1]=1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=1;
+				}
+				if (imagenFi[valorX+1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY]=1;
+				}
+				if (imagenFi[valorX][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY+1]=1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=1;
+				}
+			}
+			
+			if ((valorX==ancho-1)&&(valorY>0)&&(valorY<alto-1)){
+				
+				if (imagenFi[valorX-1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=1;
+				}
+				if (imagenFi[valorX][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY-1]=1;
+				}
+				if (imagenFi[valorX-1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY]=1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=1;
+				}
+				if (imagenFi[valorX][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY+1]=1;
+				}
+			}
+			if ((valorY==0)&&(valorX>0)&&(valorX<ancho-1)){
+
+				if (imagenFi[valorX-1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY]=1;
+				}
+				if (imagenFi[valorX+1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY]=1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=1;
+				}
+				if (imagenFi[valorX][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY+1]=1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=1;
+				}
+			}
+			
+			if ((valorY==alto-1)&&(valorX>0)&&(valorX<ancho-1)){
+				if (imagenFi[valorX-1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=1;
+				}
+				if (imagenFi[valorX][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY-1]=1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=1;
+				}
+				if (imagenFi[valorX-1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY]=1;
+				}
+				if (imagenFi[valorX+1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY]=1;
+				}
+			}
+			
+			if ((valorX==0)&&(valorY==0)){
+				if (imagenFi[valorX+1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY]=1;
+				}
+				if (imagenFi[valorX][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY+1]=1;
+				}
+				if (imagenFi[valorX+1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY+1]=1;
+				}
+			}
+			if ((valorX==0)&&(valorY==alto-1)){
+							
+				if (imagenFi[valorX][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY-1]=1;
+				}
+				if (imagenFi[valorX+1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY-1]=1;
+				}
+				if (imagenFi[valorX+1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX+1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX+1][valorY]=1;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==0)){
+				
+				if (imagenFi[valorX-1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY]=1;
+				}
+				if (imagenFi[valorX-1][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY+1]=1;
+				}
+				if (imagenFi[valorX][valorY+1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY+1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY+1]=1;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==alto-1)){
+				if (imagenFi[valorX-1][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY-1]=1;
+				}
+				if (imagenFi[valorX][valorY-1]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX,valorY-1);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX][valorY-1]=1;
+				}
+				if (imagenFi[valorX-1][valorY]==3){
+					puntoN4=new Point();
+					puntoN4.setLocation(valorX-1,valorY);
+					this.Lext.add(puntoN4);
+					imagenFi[valorX-1][valorY]=1;
+				}
+			}
+		}
+
 		private int calcularMaximasIteraciones() {
 			int iteraciones=this.ancho;
 			if (this.alto>this.ancho) {
@@ -65,17 +684,17 @@ public class DetectorDeContornosActivos {
 			
 			for (int i=0;i<ancho;i++){
 				for (int j=0;j<alto;j++){
-					//System.out.print(imagenFi[i][j]+" ");
+					System.out.print(imagenFi[i][j]+" ");
 					switch(imagenFi[i][j]){
 					case -1: resultado.setRGB(i,j,amarillo.getRGB());
 						break;
 					case 1: resultado.setRGB(i,j,azul.getRGB());
 						break;
-					//case 3: resultado.setRGB(i,j,this.colorObjeto.getRGB());
-					//	break;
+					case 3: resultado.setRGB(i,j,amarillo.getRGB());
+						break;
 					}
 				}
-				//System.out.println("");
+				System.out.println("");
 			}
 		}
 
