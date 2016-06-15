@@ -786,12 +786,16 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroDePrewittTL(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
+			Integer[][] matrizX=new Integer[buff.getWidth()][buff.getHeight()];
+			Integer[][] matrizY=new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultadoTransformada =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraY= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-1,0,1},{-1,0,1}};
+			matrizX=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraX);
+			matrizY=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraY);
 			// Obtengo la matriz de magnitud de borde
-			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			matrizResultado =obtenerMatrizPyS(matrizX, matrizY,buff, buff.getWidth(), buff.getHeight());
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformada=obtenerMatrizTransformada(matrizResultado, buff.getWidth(), buff.getHeight());
 			salida = obtenerImagenDesdeMatrizDeGrises(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
@@ -802,11 +806,15 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroDePrewittUmbral(Imagen buff, int umbral) {
 		Imagen salida=null;
 		if (buff!=null){
+			Integer[][] matrizX=new Integer[buff.getWidth()][buff.getHeight()];
+			Integer[][] matrizY=new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraY= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-1,0,1},{-1,0,1}};
+			matrizX=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraX);
+			matrizY=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraY);
 			// Obtengo la matriz de magnitud de borde
-			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);	
+			matrizResultado =obtenerMatrizPyS(matrizX, matrizY,buff, buff.getWidth(), buff.getHeight());
 			// Aplico la TL a la matriz de borde
 			salida = umbralizarPyS(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
 		}
@@ -816,12 +824,16 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroDeSobelTL(Imagen buff) {
 		Imagen salida=null;
 		if (buff!=null){
+			Integer[][] matrizX=new Integer[buff.getWidth()][buff.getHeight()];
+			Integer[][] matrizY=new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultadoTransformada =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
+			matrizX=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraX);
+			matrizY=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraY);
 			// Obtengo la matriz de magnitud de borde
-			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
+			matrizResultado =obtenerMatrizPyS(matrizX, matrizY,buff, buff.getWidth(), buff.getHeight());
 			// Aplico la TL a la matriz de borde
 			matrizResultadoTransformada=obtenerMatrizTransformada(matrizResultado, buff.getWidth(), buff.getHeight());
 			salida = obtenerImagenDesdeMatrizDeGrises(matrizResultadoTransformada,buff.getWidth(),buff.getHeight());
@@ -832,113 +844,58 @@ public class ProcesadorDeImagenes {
 	public Imagen pasarFiltroDeSobelUmbral(Imagen buff, int umbral) {
 		Imagen salida=null;
 		if (buff!=null){
+			Integer[][] matrizX=new Integer[buff.getWidth()][buff.getHeight()];
+			Integer[][] matrizY=new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultado =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
+			matrizX=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraX);
+			matrizY=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraY);
 			// Obtengo la matriz de magnitud de borde
-			matrizResultado =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraX, matrizMascaraY);
+			matrizResultado =obtenerMatrizPyS(matrizX, matrizY,buff, buff.getWidth(), buff.getHeight());
 			// Aplico la TL a la matriz de borde
 			salida = umbralizarPyS(matrizResultado,buff.getWidth(),buff.getHeight(), umbral);
 		}
 		return salida;
 	}
 	
-	public Integer[][] obtenerGx(Imagen buff, int ancho, int alto, int[][] matrizMascaraX) {
-		Integer[][] matriX =new Integer[ancho][alto];
-		int grisX =0;
+	public Integer[][] obtenerG(Imagen buff, int ancho, int alto, int[][] matrizMascara) {
+		Integer[][] matriz =new Integer[ancho][alto];
+		int gris =0;
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				matriX[i][j]=0;
+				matriz[i][j]=0;
 			}
 		}
 		for (int i=0; i <= ancho-3; i++){
 			for(int j =0; j <= alto-3; j++){
 				for (int k=0; k < 3; k++){
 					for(int m =0; m < 3; m++){		
-						grisX = grisX + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraX[k][m];  
+						gris = gris + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascara[k][m];  
 					}
-				}
-				
-				matriX[i+1][j+1]=grisX;
-				grisX=0;
+				}	
+				matriz[i+1][j+1]=gris;
+				gris=0;
 			}
 		}
-		return matriX;
+		return matriz;
 	}
 	
-	public Integer[][] obtenerMatrizPyS(Imagen buff, int ancho, int alto, int[][] matrizMascaraX,
-			int[][] matrizMascaraY) {
-		int[][] matriX =new int[ancho][alto];
-		int[][] matriY =new int[ancho][alto];
+	public Integer[][] obtenerMatrizPyS(Integer[][] matrizX,Integer[][] matrizY,Imagen buff, int ancho, int alto) {
 		Integer[][] matrizResultado =new Integer[ancho][alto];
-		int grisX =0;
-		int grisY =0;
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				matriX[i][j]=0;
-				matriY[i][j]=0;
+				matrizResultado[i][j]=(int) Math.sqrt(Math.pow(matrizX[i][j],2) + Math.pow(matrizY[i][j],2));
 			}
-		}
-		for (int i=0; i <= ancho-3; i++){
-			for(int j =0; j <= alto-3; j++){
-				for (int k=0; k < 3; k++){
-					for(int m =0; m < 3; m++){		
-						grisX = grisX + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraX[k][m]; 
-						grisY = grisY + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraY[k][m]; 
-					}
-				}
-				
-				matriX[i+1][j+1]=grisX;
-				matriY[i+1][j+1]=grisY;
-				grisX=0;
-				grisY=0;
-			}
-		}
-		for (int i=0; i < ancho; i++){
-			for(int j =0; j < alto; j++){
-				matrizResultado[i][j]=(int) Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
-			}
-		}
-		for (int i=0; i < ancho; i++){
-			for(int j =0; j < alto; j++){
-				System.out.print(matrizResultado[i][j] + "  " );
-			}
-			System.out.println( "  " );
 		}
 		return matrizResultado;
 	}
 	
-	public double[][] obtenerMatrizPyS2(Imagen buff, int ancho, int alto, int[][] matrizMascaraX,
-			int[][] matrizMascaraY) {
-		int[][] matriX =new int[ancho][alto];
-		int[][] matriY =new int[ancho][alto];
+	public double[][] obtenerMatrizPySDouble(Integer[][] matrizX,Integer[][] matrizY,Imagen buff, int ancho, int alto) {
 		double[][] matrizResultado =new double[ancho][alto];
-		int grisX =0;
-		int grisY =0;
 		for (int i=0; i < ancho; i++){
 			for(int j =0; j < alto; j++){
-				matriX[i][j]=0;
-				matriY[i][j]=0;
-			}
-		}
-		for (int i=0; i <= ancho-3; i++){
-			for(int j =0; j <= alto-3; j++){
-				for (int k=0; k < 3; k++){
-					for(int m =0; m < 3; m++){		
-						grisX = grisX + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraX[k][m]; 
-						grisY = grisY + calcularPromedio(buff.getRGB(i+k, j+m))*matrizMascaraY[k][m]; 
-					}
-				}
-				
-				matriX[i+1][j+1]=grisX;
-				matriY[i+1][j+1]=grisY;
-				grisX=0;
-				grisY=0;
-			}
-		}
-		for (int i=0; i < ancho; i++){
-			for(int j =0; j < alto; j++){
-				matrizResultado[i][j]= Math.sqrt(Math.pow(matriX[i][j],2) + Math.pow(matriY[i][j],2));
+				matrizResultado[i][j]=(int) Math.sqrt(Math.pow(matrizX[i][j],2) + Math.pow(matrizY[i][j],2));
 			}
 		}
 		return matrizResultado;
@@ -972,16 +929,21 @@ public class ProcesadorDeImagenes {
 
 	public void compararPyS(Imagen buff, int umbral) {
 		if (buff!=null){
+			Integer[][] matrizX=new Integer[buff.getWidth()][buff.getHeight()];
+			Integer[][] matrizY=new Integer[buff.getWidth()][buff.getHeight()];
 			Integer[][] matrizResultadoPrewitt =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraYPrewiit= {{-1,-1,-1},{0,0,0},{1,1,1}};
 			int[][] matrizMascaraXPrewiit={{-1,0,1},{-1,0,1},{-1,0,1}};
 			Integer[][] matrizResultadoSobel =new Integer[buff.getWidth()][buff.getHeight()];
 			int[][] matrizMascaraYSobel= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraXSobel={{-1,0,1},{-2,0,2},{-1,0,1}};
-			
 			// Obtengo la matrices de magnitud de borde
-			matrizResultadoPrewitt =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXPrewiit, matrizMascaraYPrewiit);	
-			matrizResultadoSobel =obtenerMatrizPyS(buff, buff.getWidth(), buff.getHeight(), matrizMascaraXSobel, matrizMascaraYSobel);
+			matrizX=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraXPrewiit);
+			matrizY=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraYPrewiit);
+			matrizResultadoPrewitt =obtenerMatrizPyS(matrizX, matrizY,buff, buff.getWidth(), buff.getHeight());
+			matrizX=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraXSobel);
+			matrizY=obtenerG( buff, buff.getWidth(), buff.getHeight(), matrizMascaraYSobel);
+			matrizResultadoSobel =obtenerMatrizPyS(matrizX, matrizY,buff, buff.getWidth(), buff.getHeight());
 			// Aplico la TL a la matriz de borde
 			Imagen salidaPrewiit =umbralizarPyS(matrizResultadoPrewitt,buff.getWidth(),buff.getHeight(), umbral);
 			Imagen salidaSobel =umbralizarPyS(matrizResultadoSobel,buff.getWidth(),buff.getHeight(), umbral);

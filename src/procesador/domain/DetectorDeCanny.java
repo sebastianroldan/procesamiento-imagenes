@@ -43,8 +43,8 @@ public class DetectorDeCanny {
 			
 			for (int i=0;i<ancho;i++){
 				for (int j=0;j<alto;j++){
-					if ((Double.compare(magnitudesDeBorde[0][i][j],0) > 0) || 
-							(Double.compare(magnitudesDeBorde[1][i][j],0) > 0)||
+					if ((Double.compare(magnitudesDeBorde[0][i][j],0) > 0) && 
+							(Double.compare(magnitudesDeBorde[1][i][j],0) > 0)&&
 							(Double.compare(magnitudesDeBorde[2][i][j],0) > 0)){
 						resultado.setRGB(i, j, blanco.getRGB());
 					}else{
@@ -139,7 +139,7 @@ public class DetectorDeCanny {
 		private void obtenerAngulos() {
 			for (int i=0; i <3; i++){
 				angulos[i] = calcularMatrizDeAngulos(magnitudesDeBorde[i], 
-						procesador.obtenerGx(imagenes[i], ancho, alto, matrizMascaraX)); 
+						procesador.obtenerG(imagenes[i], ancho, alto, matrizMascaraX)); 
 			}
 		}
 
@@ -186,9 +186,12 @@ public class DetectorDeCanny {
 		private void calcularMagnitudesDeBorde() {
 			int[][] matrizMascaraY= {{-1,-2,-1},{0,0,0},{1,2,1}};
 			int[][] matrizMascaraX={{-1,0,1},{-2,0,2},{-1,0,1}};
+			Integer[][] matrizX=new Integer[ancho][alto];
+			Integer[][] matrizY=new Integer[ancho][alto];
 			for (int i=0; i <3; i++){
-				magnitudesDeBorde[i] = procesador.obtenerMatrizPyS2(imagenes[i], ancho, alto, 
-							matrizMascaraX, matrizMascaraY);
+				matrizX=procesador.obtenerG( imagenes[i], ancho,alto, matrizMascaraX);
+				matrizY=procesador.obtenerG( imagenes[i], ancho,alto, matrizMascaraY);
+				magnitudesDeBorde[i] = procesador.obtenerMatrizPySDouble(matrizX, matrizY,imagenes[i], ancho, alto);
 			}
 		}
 		
