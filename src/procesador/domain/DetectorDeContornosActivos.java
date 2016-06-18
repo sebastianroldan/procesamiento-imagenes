@@ -2,9 +2,8 @@ package procesador.domain;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class DetectorDeContornosActivos {
 
@@ -27,9 +26,12 @@ public class DetectorDeContornosActivos {
 			this.alto = original.getAlto();
 			this.resultado = clonarImagen(this.original);
 			this.imagenFi = inicializarMatrizFi();
-			this.Lint = new ArrayList<Point>();
-			this.Lext = new ArrayList<Point>();
-									
+			this.Lint = new LinkedList<Point>();
+			this.Lext = new LinkedList<Point>();
+			//this.Lint = Collections.synchronizedList(new LinkedList<Point>());
+			//this.Lext = Collections.synchronizedList(new LinkedList<Point>());
+
+			
 			Integer iteraciones=calcularMaximasIteraciones();
 			
 			if (aplicarContornoInicial(resultado,puntoInicial,puntoFinal,error)){
@@ -54,74 +56,82 @@ public class DetectorDeContornosActivos {
 			Point puntoX=null;
 			Point puntoY=null;
 			Color colorX=null;
-			int red,blue,green;
+			int red,blue,green,posX,posY;
 						
-			for (int i=0;i<1000;i++){
+			System.out.println("PRE");
+			System.out.println("Tamanio Lext: "+this.Lext.size());
+			System.out.println("Tamanio Lint: "+this.Lint.size());
+			for (int i=0;i<iteraciones;i++){
 				//Paso1
-				ListIterator<Point> iteradorLext = this.Lext.listIterator();
-				while (iteradorLext.hasNext()){
-					puntoX=iteradorLext.next();
-					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
-					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
-					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+				for (int cont1=0;cont1<this.Lext.size();cont1++){
+					puntoX=this.Lext.get(cont1);
+					posX=(int)puntoX.getX();
+					posY=(int)puntoX.getY();
+					red=this.resultado.getRed(posX,posY);
+					green=this.resultado.getGreen(posX,posY);
+					blue=this.resultado.getBlue(posX,posY);
 					colorX=new Color(red,green,blue);
 					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)>0){
 						puntoY=new Point();
-						puntoY.setLocation((int)puntoX.getX(),(int)puntoX.getY());
+						puntoY.setLocation(posX,posY);
 						this.Lint.add(puntoY);
-						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=1;
-						iteradorLext.remove();
+						this.imagenFi[posX][posY]=-1;
 						validarPuntosN4conFi3(puntoY);
+						this.Lext.remove(cont1);
 					}
 				}
-				
 				//Paso2
-				ListIterator<Point> iteradorLint = this.Lint.listIterator();
-				while (iteradorLint.hasNext()){
-					puntoX=iteradorLint.next();
-					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
-					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
-					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+				for (int cont2=0;cont2<this.Lint.size();cont2++){
+					puntoX=this.Lint.get(cont2);
+					posX=(int)puntoX.getX();
+					posY=(int)puntoX.getY();
+					red=this.resultado.getRed(posX,posY);
+					green=this.resultado.getGreen(posX,posY);
+					blue=this.resultado.getBlue(posX,posY);
 					colorX=new Color(red,green,blue);
 					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)>0){
-						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=-3;
-						iteradorLint.remove();
+						this.imagenFi[posX][posY]=-3;
+						this.Lint.remove(cont2);
 					}
 				}
-				
 				//Paso3
-				ListIterator<Point> iterador2Lint = this.Lint.listIterator();
-				while (iterador2Lint.hasNext()){
-					puntoX=iterador2Lint.next();
-					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
-					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
-					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+				for (int cont3=0;cont3<this.Lint.size();cont3++){
+					puntoX=this.Lint.get(cont3);
+					posX=(int)puntoX.getX();
+					posY=(int)puntoX.getY();
+					red=this.resultado.getRed(posX,posY);
+					green=this.resultado.getGreen(posX,posY);
+					blue=this.resultado.getBlue(posX,posY);
 					colorX=new Color(red,green,blue);
 					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)<0){
 						puntoY=new Point();
-						puntoY.setLocation((int)puntoX.getX(),(int)puntoX.getY());
+						puntoY.setLocation(posX,posY);
 						this.Lext.add(puntoY);
-						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=-1;
-						iterador2Lint.remove();
+						this.imagenFi[posX][posY]=1;
 						validarPuntosN4conFiMenos3(puntoY);
+						this.Lint.remove(cont3);
 					}
 				}
-							
+				/*
 				//Paso4
-				ListIterator<Point> iterador2Lext = this.Lext.listIterator();
-				while (iterador2Lext.hasNext()){
-					puntoX=iterador2Lext.next();
-					red=this.resultado.getRed((int)puntoX.getX(),(int)puntoX.getY());
-					green=this.resultado.getGreen((int)puntoX.getX(),(int)puntoX.getY());
-					blue=this.resultado.getBlue((int)puntoX.getX(),(int)puntoX.getY());
+				for (int cont4=0;cont4<this.Lext.size();cont4++){
+					puntoX=this.Lext.get(cont4);
+					posX=(int)puntoX.getX();
+					posY=(int)puntoX.getY();
+					red=this.resultado.getRed(posX,posY);
+					green=this.resultado.getGreen(posX,posY);
+					blue=this.resultado.getBlue(posX,posY);
 					colorX=new Color(red,green,blue);
 					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)<0){
-						this.imagenFi[(int)puntoX.getX()][(int)puntoX.getY()]=3;
-						iterador2Lext.remove();
+						this.imagenFi[posX][posY]=3;
+						this.Lext.remove(cont4);
 					}
 				}
-				
+				*/
 			}
+			System.out.println("POST");
+			System.out.println("Tamanio Lext: "+this.Lext.size());
+			System.out.println("Tamanio Lint: "+this.Lint.size());
 		}
 
 		private void validarPuntosN4conFiMenos3(Point puntoY) {
@@ -130,114 +140,75 @@ public class DetectorDeContornosActivos {
 			Point puntoN4=null;
 			
 			if ((valorX-1>=0)&&(valorX+1<ancho)&&(valorY-1>=0)&&(valorY+1<alto)){
-				if (imagenFi[valorX-1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=-1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY-1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=-1;
-				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX-1][valorY]=-1;
 				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX+1][valorY]=-1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=-1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY+1]=-1;
-				}
-				if (imagenFi[valorX+1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=-1;
 				}
 			}
 			if ((valorX==0)&&(valorY>0)&&(valorY<alto-1)){
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY-1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=-1;
-				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX+1][valorY]=-1;
 				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY+1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=-1;
-				}
 			}
-			
+		
 			if ((valorX==ancho-1)&&(valorY>0)&&(valorY<alto-1)){
-				
-				if (imagenFi[valorX-1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=-1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY-1]=-1;
 				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX-1][valorY]=-1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=-1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
@@ -246,64 +217,45 @@ public class DetectorDeContornosActivos {
 				}
 			}
 			if ((valorY==0)&&(valorX>0)&&(valorX<ancho-1)){
-
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX-1][valorY]=-1;
 				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX+1][valorY]=-1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=-1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY+1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=-1;
-				}
 			}
 			
 			if ((valorY==alto-1)&&(valorX>0)&&(valorX<ancho-1)){
-				if (imagenFi[valorX-1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=-1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY-1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=-1;
-				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX-1][valorY]=-1;
 				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
@@ -313,39 +265,30 @@ public class DetectorDeContornosActivos {
 			}
 			
 			if ((valorX==0)&&(valorY==0)){
+				// vecino oeste
 				if (imagenFi[valorX+1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX+1][valorY]=-1;
 				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY+1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=-1;
-				}
 			}
 			if ((valorX==0)&&(valorY==alto-1)){
-							
+				// vecino norte			
 				if (imagenFi[valorX][valorY-1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY-1]=-1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=-1;
-				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
@@ -354,19 +297,14 @@ public class DetectorDeContornosActivos {
 				}
 			}
 			if ((valorX==ancho-1)&&(valorY==0)){
-				
+				// vecino este				
 				if (imagenFi[valorX-1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX-1][valorY]=-1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=-1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
@@ -375,18 +313,14 @@ public class DetectorDeContornosActivos {
 				}
 			}
 			if ((valorX==ancho-1)&&(valorY==alto-1)){
-				if (imagenFi[valorX-1][valorY-1]==-3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lint.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=-1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lint.add(puntoN4);
 					imagenFi[valorX][valorY-1]=-1;
 				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==-3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
@@ -396,121 +330,81 @@ public class DetectorDeContornosActivos {
 			}
 		}
 
-
 		private void validarPuntosN4conFi3(Point puntoY) {
 			int valorX=(int)puntoY.getX();
 			int valorY=(int)puntoY.getY();
 			Point puntoN4=null;
 			
 			if ((valorX-1>=0)&&(valorX+1<ancho)&&(valorY-1>=0)&&(valorY+1<alto)){
-				if (imagenFi[valorX-1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY-1]=1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=1;
-				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX-1][valorY]=1;
 				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX+1][valorY]=1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY+1]=1;
 				}
-				if (imagenFi[valorX+1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=1;
-				}
 			}
 			if ((valorX==0)&&(valorY>0)&&(valorY<alto-1)){
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY-1]=1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=1;
-				}
-				if (imagenFi[valorX+1][valorY]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY]=1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY+1]=1;
 				}
-				if (imagenFi[valorX+1][valorY+1]==3){
+				// vecino este
+				if (imagenFi[valorX+1][valorY]==3){
 					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
+					puntoN4.setLocation(valorX+1,valorY);
 					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=1;
+					imagenFi[valorX+1][valorY]=1;
 				}
 			}
 			
 			if ((valorX==ancho-1)&&(valorY>0)&&(valorY<alto-1)){
-				
-				if (imagenFi[valorX-1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY-1]=1;
 				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX-1][valorY]=1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
@@ -519,64 +413,45 @@ public class DetectorDeContornosActivos {
 				}
 			}
 			if ((valorY==0)&&(valorX>0)&&(valorX<ancho-1)){
-
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX-1][valorY]=1;
 				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX+1][valorY]=1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY+1]=1;
-				}
-				if (imagenFi[valorX+1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=1;
 				}
 			}
 			
 			if ((valorY==alto-1)&&(valorX>0)&&(valorX<ancho-1)){
-				if (imagenFi[valorX-1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY-1]=1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=1;
-				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX-1][valorY]=1;
 				}
+				// vecino este
 				if (imagenFi[valorX+1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
@@ -584,41 +459,31 @@ public class DetectorDeContornosActivos {
 					imagenFi[valorX+1][valorY]=1;
 				}
 			}
-			
 			if ((valorX==0)&&(valorY==0)){
+				// vecino oeste
 				if (imagenFi[valorX+1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX+1][valorY]=1;
 				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY+1]=1;
 				}
-				if (imagenFi[valorX+1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY+1]=1;
-				}
 			}
 			if ((valorX==0)&&(valorY==alto-1)){
-							
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY-1]=1;
 				}
-				if (imagenFi[valorX+1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX+1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX+1][valorY-1]=1;
-				}
+				// vecino oeste
 				if (imagenFi[valorX+1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX+1,valorY);
@@ -627,19 +492,14 @@ public class DetectorDeContornosActivos {
 				}
 			}
 			if ((valorX==ancho-1)&&(valorY==0)){
-				
+				// vecino este
 				if (imagenFi[valorX-1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX-1][valorY]=1;
 				}
-				if (imagenFi[valorX-1][valorY+1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY+1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY+1]=1;
-				}
+				// vecino sur
 				if (imagenFi[valorX][valorY+1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY+1);
@@ -648,18 +508,14 @@ public class DetectorDeContornosActivos {
 				}
 			}
 			if ((valorX==ancho-1)&&(valorY==alto-1)){
-				if (imagenFi[valorX-1][valorY-1]==3){
-					puntoN4=new Point();
-					puntoN4.setLocation(valorX-1,valorY-1);
-					this.Lext.add(puntoN4);
-					imagenFi[valorX-1][valorY-1]=1;
-				}
+				// vecino norte
 				if (imagenFi[valorX][valorY-1]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX,valorY-1);
 					this.Lext.add(puntoN4);
 					imagenFi[valorX][valorY-1]=1;
 				}
+				// vecino oeste
 				if (imagenFi[valorX-1][valorY]==3){
 					puntoN4=new Point();
 					puntoN4.setLocation(valorX-1,valorY);
@@ -679,22 +535,22 @@ public class DetectorDeContornosActivos {
 
 		private void pintarBordesContornosActivos() {
 			
-			Color azul=new Color(0,51,255);
-			Color amarillo=new Color(255,255,51);
+			//Color azul=new Color(0,0,255);
+			//Color amarillo=new Color(255,255,51);
+			Color rojo=new Color(255,0,0);
+			Color verde=new Color(0,255,0);
 			
 			for (int i=0;i<ancho;i++){
 				for (int j=0;j<alto;j++){
-					System.out.print(imagenFi[i][j]+" ");
+					//System.out.print(imagenFi[i][j]+" ");
 					switch(imagenFi[i][j]){
-					case -1: resultado.setRGB(i,j,amarillo.getRGB());
-						break;
-					case 1: resultado.setRGB(i,j,azul.getRGB());
-						break;
-					case 3: resultado.setRGB(i,j,amarillo.getRGB());
-						break;
+					//case 3: resultado.setRGB(i,j,verde.getRGB());break;
+					case 1: resultado.setRGB(i,j,verde.getRGB());break;
+					case -1: resultado.setRGB(i,j,rojo.getRGB());break;
+					//case -3: resultado.setRGB(i,j,rojo.getRGB());break;
 					}
 				}
-				System.out.println("");
+				//System.out.println("");
 			}
 		}
 
@@ -750,7 +606,7 @@ public class DetectorDeContornosActivos {
 			
 			for (int i=p1X+1;i<=p2X-1;i++){
 				for (int j=p1Y+1;j<=p2Y-1;j++){
-					this.imagenFi[i][j]=3;
+					this.imagenFi[i][j]=-3;
 				}
 			}
 		}
@@ -763,9 +619,9 @@ public class DetectorDeContornosActivos {
 				punto1=new Point();
 				punto2=new Point();
 				punto1.setLocation(i,p1Y);
-				this.imagenFi[i][p1Y]=1;
+				this.imagenFi[i][p1Y]=-1;
 				punto2.setLocation(i,p2Y);
-				this.imagenFi[i][p2Y]=1;
+				this.imagenFi[i][p2Y]=-1;
 				this.Lint.add(punto1);
 				this.Lint.add(punto2);
 			}
@@ -774,9 +630,9 @@ public class DetectorDeContornosActivos {
 				punto1=new Point();
 				punto2=new Point();
 				punto1.setLocation(p1X,j);
-				this.imagenFi[p1X][j]=1;
+				this.imagenFi[p1X][j]=-1;
 				punto2.setLocation(p2X,j);
-				this.imagenFi[p2X][j]=1;
+				this.imagenFi[p2X][j]=-1;
 				this.Lint.add(punto1);
 				this.Lint.add(punto2);
 			}
@@ -791,9 +647,9 @@ public class DetectorDeContornosActivos {
 				punto1=new Point();
 				punto2=new Point();
 				punto1.setLocation(i,p1Y-1);
-				this.imagenFi[i][p1Y-1]=-1;
+				this.imagenFi[i][p1Y-1]=1;
 				punto2.setLocation(i,p2Y+1);
-				this.imagenFi[i][p2Y+1]=-1;
+				this.imagenFi[i][p2Y+1]=1;
 				this.Lext.add(punto1);
 				this.Lext.add(punto2);
 			}
@@ -802,9 +658,9 @@ public class DetectorDeContornosActivos {
 				punto1=new Point();
 				punto2=new Point();
 				punto1.setLocation(p1X-1,j);
-				this.imagenFi[p1X-1][j]=-1;
+				this.imagenFi[p1X-1][j]=1;
 				punto2.setLocation(p2X+1,j);
-				this.imagenFi[p2X+1][j]=-1;
+				this.imagenFi[p2X+1][j]=1;
 				this.Lext.add(punto1);
 				this.Lext.add(punto2);
 			}
@@ -837,7 +693,7 @@ public class DetectorDeContornosActivos {
 			
 			double norma=Math.sqrt(Math.pow(difRed,2)+Math.pow(difGreen,2)+Math.pow(difBlue,2));
 			
-			if (norma>error){
+			if (norma>=error){
 				respuesta=-1;
 			}
 			
@@ -850,7 +706,7 @@ public class DetectorDeContornosActivos {
 			
 			for (int i=0;i<ancho;i++){
 				for (int j=0;j<alto;j++){
-					imagenFi[i][j]=-3;
+					imagenFi[i][j]=3;
 				}
 			}
 			
