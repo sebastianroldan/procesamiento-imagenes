@@ -89,7 +89,7 @@ public class DetectorDeContornosActivos {
 					green=this.resultado.getGreen(posX,posY);
 					blue=this.resultado.getBlue(posX,posY);
 					colorX=new Color(red,green,blue);
-					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)>0){
+					if (!cumpleConLint(puntoX)){	
 						this.imagenFi[posX][posY]=-3;
 						this.Lint.remove(cont2);
 					}
@@ -112,7 +112,7 @@ public class DetectorDeContornosActivos {
 						this.Lint.remove(cont3);
 					}
 				}
-				/*
+				
 				//Paso4
 				for (int cont4=0;cont4<this.Lext.size();cont4++){
 					puntoX=this.Lext.get(cont4);
@@ -122,16 +122,166 @@ public class DetectorDeContornosActivos {
 					green=this.resultado.getGreen(posX,posY);
 					blue=this.resultado.getBlue(posX,posY);
 					colorX=new Color(red,green,blue);
-					if (funcionFuerzaVelocidad_D(colorX,this.colorObjeto,error)<0){
+					if (!cumpleConLext(puntoX)){
 						this.imagenFi[posX][posY]=3;
 						this.Lext.remove(cont4);
 					}
 				}
-				*/
+				
 			}
 			System.out.println("POST");
 			System.out.println("Tamanio Lext: "+this.Lext.size());
 			System.out.println("Tamanio Lint: "+this.Lint.size());
+		}
+		
+		private boolean cumpleConLint(Point puntoY) {
+			boolean respuesta=false;
+			int valorX=(int)puntoY.getX();
+			int valorY=(int)puntoY.getY();
+			
+			if ((imagenFi[valorX][valorY]<0)&&existeN4conFiMayorA0(puntoY)){
+				respuesta=true;
+			}
+			
+			return respuesta;
+		}
+		
+		private boolean existeN4conFiMayorA0(Point puntoY) {
+			boolean respuesta=false;
+			int valorX=(int)puntoY.getX();
+			int valorY=(int)puntoY.getY();
+			if ((valorX-1>=0)&&(valorX+1<ancho)&&(valorY-1>=0)&&(valorY+1<alto)){
+				if ((imagenFi[valorX][valorY-1]>0)
+						||(imagenFi[valorX-1][valorY]>0)
+						||(imagenFi[valorX+1][valorY]>0)
+						||(imagenFi[valorX][valorY+1]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==0)&&(valorY>0)&&(valorY<alto-1)){
+				if ((imagenFi[valorX][valorY-1]>0)
+						||(imagenFi[valorX+1][valorY]>0)
+						||(imagenFi[valorX][valorY+1]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY>0)&&(valorY<alto-1)){
+				if ((imagenFi[valorX][valorY-1]>0)
+						||(imagenFi[valorX-1][valorY]>0)
+						||(imagenFi[valorX][valorY+1]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorY==0)&&(valorX>0)&&(valorX<ancho-1)){
+				if ((imagenFi[valorX-1][valorY]>0)
+						||(imagenFi[valorX+1][valorY]>0)
+						||(imagenFi[valorX][valorY+1]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorY==alto-1)&&(valorX>0)&&(valorX<ancho-1)){
+				if ((imagenFi[valorX][valorY-1]>0)
+						||(imagenFi[valorX-1][valorY]>0)
+						||(imagenFi[valorX+1][valorY]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==0)&&(valorY==0)){
+				if ((imagenFi[valorX+1][valorY]>0)||(imagenFi[valorX][valorY+1]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==0)&&(valorY==alto-1)){
+				if ((imagenFi[valorX][valorY-1]>0)||(imagenFi[valorX+1][valorY]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==0)){
+				if ((imagenFi[valorX-1][valorY]>0)||(imagenFi[valorX][valorY+1]>0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==alto-1)){
+				if ((imagenFi[valorX][valorY-1]>0)||(imagenFi[valorX-1][valorY]>0)){
+					respuesta=true;
+				}
+			}
+			return respuesta;
+		}
+		
+		private boolean cumpleConLext(Point puntoY) {
+			boolean respuesta=false;
+			int valorX=(int)puntoY.getX();
+			int valorY=(int)puntoY.getY();
+			
+			if ((imagenFi[valorX][valorY]>0)&&existeN4conFiMenorA0(puntoY)){
+				respuesta=true;
+			}
+			
+			return respuesta;
+		}
+		
+		private boolean existeN4conFiMenorA0(Point puntoY) {
+			boolean respuesta=false;
+			int valorX=(int)puntoY.getX();
+			int valorY=(int)puntoY.getY();
+			if ((valorX-1>=0)&&(valorX+1<ancho)&&(valorY-1>=0)&&(valorY+1<alto)){
+				if ((imagenFi[valorX][valorY-1]<0)
+						||(imagenFi[valorX-1][valorY]<0)
+						||(imagenFi[valorX+1][valorY]<0)
+						||(imagenFi[valorX][valorY+1]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==0)&&(valorY>0)&&(valorY<alto-1)){
+				if ((imagenFi[valorX][valorY-1]<0)
+						||(imagenFi[valorX+1][valorY]<0)
+						||(imagenFi[valorX][valorY+1]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY>0)&&(valorY<alto-1)){
+				if ((imagenFi[valorX][valorY-1]<0)
+						||(imagenFi[valorX-1][valorY]<0)
+						||(imagenFi[valorX][valorY+1]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorY==0)&&(valorX>0)&&(valorX<ancho-1)){
+				if ((imagenFi[valorX-1][valorY]<0)
+						||(imagenFi[valorX+1][valorY]<0)
+						||(imagenFi[valorX][valorY+1]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorY==alto-1)&&(valorX>0)&&(valorX<ancho-1)){
+				if ((imagenFi[valorX][valorY-1]<0)
+						||(imagenFi[valorX-1][valorY]<0)
+						||(imagenFi[valorX+1][valorY]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==0)&&(valorY==0)){
+				if ((imagenFi[valorX+1][valorY]<0)||(imagenFi[valorX][valorY+1]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==0)&&(valorY==alto-1)){
+				if ((imagenFi[valorX][valorY-1]<0)||(imagenFi[valorX+1][valorY]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==0)){
+				if ((imagenFi[valorX-1][valorY]<0)||(imagenFi[valorX][valorY+1]<0)){
+					respuesta=true;
+				}
+			}
+			if ((valorX==ancho-1)&&(valorY==alto-1)){
+				if ((imagenFi[valorX][valorY-1]<0)||(imagenFi[valorX-1][valorY]<0)){
+					respuesta=true;
+				}
+			}
+			return respuesta;
 		}
 
 		private void validarPuntosN4conFiMenos3(Point puntoY) {

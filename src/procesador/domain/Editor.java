@@ -72,7 +72,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
 	private JMenu menuDetectorDeBordes = new JMenu("Bordes");
 	private JMenuItem itemCanny = new JMenuItem("Canny");
-	private JMenuItem itemContornosActivos = new JMenuItem("Contornos activos");	
+	private JMenuItem itemContornosActivos = new JMenuItem("Contornos activos");
+	private JMenuItem itemContornosActivosSecuencial = new JMenuItem("Contornos activos en secuencia");
 	private JMenu menuSusan = new JMenu("Susan");
 	private JMenuItem itemBordesSusan = new JMenuItem("Bordes");
 	private JMenuItem itemEsquinasSusan = new JMenuItem("Esquinas");
@@ -333,6 +334,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuDetectorDeBordes.add(menuBordes);
 		menuDetectorDeBordes.add(itemCanny);
 		menuDetectorDeBordes.add(itemContornosActivos);
+		menuDetectorDeBordes.add(itemContornosActivosSecuencial);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDetectorDeBordes);
 		menuFiltros.setMnemonic(KeyEvent.VK_L);
@@ -469,6 +471,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarBorrar();
 		agregarCanny();
 		agregarContornosActivos();
+		agregarContornosActivosSecuencial();
 		agregarBordesSusan();
 		agregarEsquinasSusan();
 		agregarDetectarRectas();
@@ -551,6 +554,40 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	
 	private void agregarContornosActivos() {
 		itemContornosActivos.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				seleccionandoContornos=true;				
+				if(puntoInicial!=null && puntoFinal!=null){
+					
+					Imagen imagen;
+					JTextField epsilon = new JTextField();
+					Object[] message = {
+						"Epsilon:", epsilon
+					};
+					int error = 0;
+					int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese valor", JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION)
+					{
+						 error = Integer.valueOf(epsilon.getText());
+					}
+					if (buffer2 == null){
+						imagen = buffer1;
+					}else{
+						imagen = buffer2;
+					}
+					detectarContornosActivosImagenEstatica(imagen,puntoInicial,puntoFinal,error);
+					resetPoints();
+					seleccionando = false;
+					seleccionandoContornos = false;
+				} else {
+					JOptionPane.showMessageDialog(null,"Primero debe seleccionar el area en el menu Seleccion / Seleccionar");
+					resetPoints();
+				}
+			}
+		});
+	}
+	
+	private void agregarContornosActivosSecuencial() {
+		itemContornosActivosSecuencial.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				seleccionandoContornos=true;				
 				if(puntoInicial!=null && puntoFinal!=null){
