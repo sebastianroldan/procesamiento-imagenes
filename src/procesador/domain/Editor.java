@@ -72,7 +72,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemGaussiano = new JMenuItem("Gaussiano");
 	private JMenu menuDetectorDeBordes = new JMenu("Bordes");
 	private JMenuItem itemCanny = new JMenuItem("Canny");
-	private JMenuItem itemContornosActivos = new JMenuItem("Contornos activos");
+	private JMenuItem itemContornosActivosImagenEstatica = new JMenuItem("Contornos activos");
 	private JMenuItem itemContornosActivosSecuencial = new JMenuItem("Contornos activos en secuencia");
 	private JMenu menuSusan = new JMenu("Susan");
 	private JMenuItem itemBordesSusan = new JMenuItem("Bordes");
@@ -146,7 +146,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private JLabel valorPotencia = new JLabel();
     private boolean seleccionando = false;
     private boolean seleccionandoContornos = false;
-    
+       
 	public Editor() {
 		initComponents();
 	}
@@ -333,7 +333,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuBordes.add(itemBordesSobel);
 		menuDetectorDeBordes.add(menuBordes);
 		menuDetectorDeBordes.add(itemCanny);
-		menuDetectorDeBordes.add(itemContornosActivos);
+		menuDetectorDeBordes.add(itemContornosActivosImagenEstatica);
 		menuDetectorDeBordes.add(itemContornosActivosSecuencial);
 		menuBar.add(menuFiltros);
 		menuBar.add(menuDetectorDeBordes);
@@ -553,7 +553,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 	
 	private void agregarContornosActivos() {
-		itemContornosActivos.addActionListener(new java.awt.event.ActionListener() {
+		itemContornosActivosImagenEstatica.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				seleccionandoContornos=true;				
 				if(puntoInicial!=null && puntoFinal!=null){
@@ -589,10 +589,13 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private void agregarContornosActivosSecuencial() {
 		itemContornosActivosSecuencial.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				seleccionandoContornos=true;				
+				seleccionandoContornos=true;
+				
+				cargarActionPermorfed(true);
+				
 				if(puntoInicial!=null && puntoFinal!=null){
 					
-					Imagen imagen;
+					Imagen imagenInicial;
 					JTextField epsilon = new JTextField();
 					Object[] message = {
 						"Epsilon:", epsilon
@@ -604,11 +607,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 						 error = Integer.valueOf(epsilon.getText());
 					}
 					if (buffer2 == null){
-						imagen = buffer1;
+						imagenInicial = buffer1;
 					}else{
-						imagen = buffer2;
+						imagenInicial = buffer2;
 					}
-					detectarContornosActivosImagenEstatica(imagen,puntoInicial,puntoFinal,error);
+					
+					detectarContornosActivosImagenEstatica(imagenInicial,puntoInicial,puntoFinal,error);
+					
+					deteccionDeContornosActivosSecuenciaImagenes(error);
+					
 					resetPoints();
 					seleccionando = false;
 					seleccionandoContornos = false;
@@ -628,10 +635,25 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	
 	private void detectarContornosActivosImagenEstatica(Imagen original,Point puntoInicial,Point puntoFinal,Integer error) {
 		DetectorDeContornosActivos detector = new DetectorDeContornosActivos();
-		Imagen imagenConContornosActivos = detector.deteccionDeContornosActivos(buffer1,puntoInicial,puntoFinal,error); 
+		Imagen imagenConContornosActivos = detector.deteccionDeContornosActivosImagenEstatica(buffer1,puntoInicial,puntoFinal,error); 
 		aplicarOperacion(imagenConContornosActivos);
 	}
 	
+	private void deteccionDeContornosActivosSecuenciaImagenes(Integer error) {
+		DetectorDeContornosActivos detector = new DetectorDeContornosActivos();
+		
+		Imagen[] imagenes = ObjProcesamiento.getSecuenciaImagenes();
+		int cantidadImg=imagenes.length;
+		Imagen imagenConContornosActivos=null;
+
+		for (int i=1;i<cantidadImg;i++){
+			imagenConContornosActivos = detector.deteccionDeContornosActivosSecuencial(imagenes[i],error); 
+			aplicarOperacion(imagenConContornosActivos);
+			ObjProcesamiento.setImagen(imagenConContornosActivos);
+			
+			// SEGUIR DESDE ACA
+		}
+	}
 	
 	
 	private void agregarBorrar() {
@@ -1538,7 +1560,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemCargar.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try {	
-					cargarActionPermorfed();
+					cargarActionPermorfed(false);
 				}catch(Exception e){
 					System.out.println("ERROR DE CARGA ARCHIVO: "+ObjProcesamiento.getNombreArchivoImagen());
 				}	
@@ -1546,7 +1568,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 
-	private void cargarActionPermorfed() {
+	private void cargarActionPermorfed(boolean esSecuencial) {
+		
 		if (buffer1 != null){
 			JComboBox<String> lado = new JComboBox<String>();
 			lado.addItem("Derecho");
@@ -1559,19 +1582,19 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			{	
 				String eleccion = (String)lado.getSelectedItem();
 				if (eleccion == "Izquierdo" ){
-					cargarImagen(ObjProcesamiento.abrirImagen());
+					cargarImagen(ObjProcesamiento.abrirImagen(esSecuencial));
 					this.borrarHistograma();
 					contenedorDeImagen2.setIcon(null);
 					buffer2 = null;
 				}else{
-					this.aplicarOperacion(ObjProcesamiento2.abrirImagen());					
+					this.aplicarOperacion(ObjProcesamiento2.abrirImagen(esSecuencial));					
 				}			
 			}
 		}else{
 			if (buffer1 == null){
-				cargarImagen(ObjProcesamiento.abrirImagen());
+				cargarImagen(ObjProcesamiento.abrirImagen(esSecuencial));
 			}else{
-				aplicarOperacion(ObjProcesamiento2.abrirImagen());
+				aplicarOperacion(ObjProcesamiento2.abrirImagen(esSecuencial));
 			}
 		}
 		mensaje.setText(ObjProcesamiento.getNombreArchivoImagen()+" - Ancho: " +

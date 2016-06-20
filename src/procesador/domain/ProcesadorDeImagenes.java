@@ -17,27 +17,62 @@ import procesador.generador.GeneradorDeNumeros;
 public class ProcesadorDeImagenes {
 	
 	private File file;
+	private File[] files;
 	private String nombreArchivoImagen="";
 	private Imagen image;
-		
-	public Imagen abrirImagen(){
+	private Imagen[] secuenciaImagenes=null; 
+			
+	public Imagen abrirImagen(boolean esSecuencial){
 		String tipoImagen;		
 		Imagen BImg=null;
-		JFileChooser selector=new JFileChooser();
-		selector.setDialogTitle("Seleccione una imagen");
-		FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & RAW", "ppm", "pgm", "bmp", "jpg", "raw");
-		selector.setFileFilter(filtroImagen);
-		int flag=selector.showOpenDialog(null);
-		if(flag==JFileChooser.APPROVE_OPTION){
-			try {
-				file=selector.getSelectedFile();
-				tipoImagen=obtenerTipo(file);
-				this.nombreArchivoImagen=file.getName();
-				BImg = obtenerImagen(tipoImagen, file);
-			} catch (Exception e) {
-				System.out.println("ERROR DE APERTURA DE ARCHIVO: " + nombreArchivoImagen);
+		
+		if (esSecuencial){
+			JFileChooser selector=new JFileChooser();
+			FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & JPEG & RAW", "ppm", "pgm", "bmp", "jpg", "jpeg" , "raw");
+			selector.setFileFilter(filtroImagen);
+			selector.setDialogTitle("Seleccione secuencia de imagenes del mismo tipo y tamaño");
+			selector.setMultiSelectionEnabled(true);
+			int flag=selector.showOpenDialog(null);
+			if(flag==JFileChooser.APPROVE_OPTION){
+				try {
+					this.files = selector.getSelectedFiles();
+					// cargo las imagenes seleccionadas
+					this.secuenciaImagenes=new Imagen[this.files.length];
+					for (int i=0;i<this.files.length;i++){
+						tipoImagen=obtenerTipo(files[i]);
+						System.out.println(files[i].getName());
+						this.secuenciaImagenes[i]=obtenerImagen(tipoImagen, files[i]);
+					}
+					// obtengo info de la primer imagen
+					this.file = this.files[0];
+					this.nombreArchivoImagen=this.file.getName();
+					BImg = this.secuenciaImagenes[0];
+					//tipoImagen=obtenerTipo(file);
+					//BImg = obtenerImagen(tipoImagen, file);
+				} catch (Exception e) {
+					System.out.println("ERROR DE APERTURA SECUENCIA DE IMAGENES");
+				}
+			}
+		} else {
+			JFileChooser selector=new JFileChooser();
+			FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & JPEG & RAW", "ppm", "pgm", "bmp", "jpg", "jpeg" , "raw");
+			selector.setFileFilter(filtroImagen);
+			selector.setDialogTitle("Seleccione una imagen");
+			selector.setMultiSelectionEnabled(false);
+			int flag=selector.showOpenDialog(null);
+			if(flag==JFileChooser.APPROVE_OPTION){
+				try {
+					file=selector.getSelectedFile();
+					tipoImagen=obtenerTipo(file);
+					this.nombreArchivoImagen=file.getName();
+					System.out.println(file.getName());
+					BImg = obtenerImagen(tipoImagen, file);
+				} catch (Exception e) {
+					System.out.println("ERROR DE APERTURA DE ARCHIVO: " + nombreArchivoImagen);
+				}
 			}
 		}
+			
 		this.image = BImg;
 		return BImg;
 	}
@@ -45,7 +80,7 @@ public class ProcesadorDeImagenes {
 	public Imagen obtenerImagen(String tipoImagen, File file) throws IOException {
 		Imagen image = null;
 		Procesador proc = null;
-		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))){
+		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))||(tipoImagen.equalsIgnoreCase("JPEG"))){
 			BufferedImage image2 = ImageIO.read(file);
 			ProcesadorDeImagenesJPGyBMP proc2 = new ProcesadorDeImagenesJPGyBMP(image2);
 			image = proc2.getImage();
@@ -90,7 +125,10 @@ public class ProcesadorDeImagenes {
 
 	private String obtenerTipo(File file) {
 		String nombre = file.getName();
-		int indexOfExtension = nombre.length()-3;
+		int posPunto = nombre.lastIndexOf(".", nombre.length());
+		
+		int indexOfExtension = posPunto+1;
+		
 		return  nombre.substring(indexOfExtension).toUpperCase();
 		
 	}
@@ -1661,7 +1699,12 @@ public class ProcesadorDeImagenes {
 		difusor.aplicarDifusion(resultado,imagen, repeticiones, false, sigma);
 		return resultado;
 	}
-	
-	
-	
+
+	public Imagen getImage() {
+		return image;
+	}
+
+	public Imagen[] getSecuenciaImagenes() {
+		return secuenciaImagenes;
+	}
 }

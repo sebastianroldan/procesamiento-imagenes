@@ -20,7 +20,7 @@ public class DetectorDeContornosActivos {
 		private int p2X;
 		private int p2Y;
 			
-		public Imagen deteccionDeContornosActivos(Imagen original,Point puntoInicial,Point puntoFinal,Integer error){
+		public Imagen deteccionDeContornosActivosImagenEstatica(Imagen original,Point puntoInicial,Point puntoFinal,Integer error){
 			this.original=original;
 			this.ancho = original.getAncho();
 			this.alto = original.getAlto();
@@ -28,9 +28,7 @@ public class DetectorDeContornosActivos {
 			this.imagenFi = inicializarMatrizFi();
 			this.Lint = new LinkedList<Point>();
 			this.Lext = new LinkedList<Point>();
-			//this.Lint = Collections.synchronizedList(new LinkedList<Point>());
-			//this.Lext = Collections.synchronizedList(new LinkedList<Point>());
-
+			
 			
 			Integer iteraciones=calcularMaximasIteraciones();
 			
@@ -45,6 +43,30 @@ public class DetectorDeContornosActivos {
 			}else{
 			
 				System.out.println("Error al aplicar contorno inicial");
+			
+			}
+			
+			return resultado;
+		}
+		
+		public Imagen deteccionDeContornosActivosSecuencial(Imagen imagenActual,Integer error){
+			this.original=imagenActual;
+			this.ancho = original.getAncho();
+			this.alto = original.getAlto();
+			this.resultado = clonarImagen(imagenActual);
+						
+			Integer iteraciones=calcularMaximasIteraciones();
+			
+			try {	
+				
+				ejecutarPrimerCiclo(iteraciones,error);
+				
+				pintarBordesContornosActivos();
+			
+			}catch(Exception e){
+			
+				System.out.println("Error al aplicar contorno secuencial");
+				e.printStackTrace();
 			
 			}
 			
