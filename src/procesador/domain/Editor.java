@@ -648,8 +648,22 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	private void detectarBordesConCanny() {
-		DetectorDeCanny detector = new DetectorDeCanny();
-		Imagen borde = detector.deteccionDeBordes(buffer1); 
+		JTextField umbralBajo = new JTextField();
+		JTextField umbralAlto = new JTextField();
+		Object[] message = {
+		    "T1:", umbralBajo,
+		    "T2:", umbralAlto
+		};
+		int t1 = 0;
+		int t2 = 0;
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el valor de los umbrales", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			 t1= Integer.valueOf(umbralBajo.getText());
+			 t2= Integer.valueOf(umbralAlto.getText());
+		}
+		DetectorDeCanny2 detector = new DetectorDeCanny2();
+		Imagen borde = detector.deteccionDeBordes(buffer1,t1,t2); 
 		aplicarOperacion(borde);
 	}
 	
