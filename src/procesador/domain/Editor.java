@@ -475,6 +475,22 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarBordesSusan();
 		agregarEsquinasSusan();
 		agregarDetectarRectas();
+		agregarDetectarCirculos();
+	}
+
+	private void agregarDetectarCirculos() {
+		itemDetectarCirculo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarCirculo();
+			}
+
+		});		
+	}
+
+	private void detectarCirculo() {
+		DetectorDeHugh detector = new DetectorDeHugh();
+		Imagen borde = detector.deteccionDeCirculos(buffer1); 
+		aplicarOperacion(borde);
 	}
 
 	private void agregarDetectarRectas() {
@@ -482,7 +498,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				detectarRectas();
 			}
-
 		});
 	}
 
