@@ -20,7 +20,7 @@ public class ProcesadorDeImagenes {
 	private File[] files;
 	private String nombreArchivoImagen="";
 	private Imagen image;
-	private Imagen[] secuenciaImagenes=null; 
+	private Imagen[] secuenciaImagenes; 
 			
 	public Imagen abrirImagen(boolean esSecuencial){
 		String tipoImagen;		
@@ -1043,7 +1043,7 @@ public class ProcesadorDeImagenes {
 		return salida;
 	}
 
-	private double sumaMascara(int mascara, double[][] matrizMascara) {
+	public double sumaMascara(int mascara, double[][] matrizMascara) {
 		double suma=0;
 		for (int i=0; i < mascara; i++){
 			for(int j =0; j < mascara; j++){
@@ -1053,7 +1053,7 @@ public class ProcesadorDeImagenes {
 		return suma;
 	}
 
-	private double[][] crearMascaraGaussiana(int mascara, double desvio) {
+	public double[][] crearMascaraGaussiana(int mascara, double desvio) {
 		double[][] matrizMascara = new double[mascara][mascara];
 		double valor=0;
 		double exponencial=0;

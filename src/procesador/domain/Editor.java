@@ -134,6 +134,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemDibujoExponencial = new JMenuItem("Dibujar Matriz Ruido Exponencial");	
 	private JMenuItem itemDibujoGauss = new JMenuItem("Dibujar Matriz Ruido Gaussiano");
 	private JMenuItem itemDibujoRayleigh = new JMenuItem("Dibujar Matriz Ruido Rayleigh");
+	private JMenu menuPuntosCaracteristicos = new JMenu("Puntos Caracteristicos");
+	private JMenuItem itemHarris = new JMenuItem("Harris");	
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -400,7 +402,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuCurvas.add(itemDetectarRecta);
 		menuCurvas.add(itemDetectarCirculo);
 		menuBar.add(menuCurvas);
-		
+		menuPuntosCaracteristicos.add(itemHarris);
+		menuBar.add(menuPuntosCaracteristicos);
 		return menuBar;
 	}
 
@@ -491,6 +494,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		DetectorDeHugh detector = new DetectorDeHugh();
 		Imagen borde = detector.deteccionDeCirculos(buffer1); 
 		aplicarOperacion(borde);
+		agregarHarris();
 	}
 
 	private void agregarDetectarRectas() {
@@ -514,9 +518,21 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
-
-	private void detectarBordesConSusan() {
+	private void agregarHarris() {
+		itemHarris.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarHarris();
+			}
+		});
+	}
+	
+	private void detectarHarris() {
 		
+		DetectorDeHarris detector = new DetectorDeHarris();
+		aplicarOperacion(detector.deteccionPuntos(buffer1));
+	}
+	
+	private void detectarBordesConSusan() {	
 		JTextField delta = new JTextField();
 		Object[] message = {
 		    "Delta:", delta,
@@ -605,12 +621,10 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemContornosActivosSecuencial.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				seleccionandoContornos=true;
-				
-				cargarActionPermorfed(true);
-				
+							
 				if(puntoInicial!=null && puntoFinal!=null){
 					
-					Imagen imagenInicial;
+					
 					JTextField epsilon = new JTextField();
 					Object[] message = {
 						"Epsilon:", epsilon
@@ -621,20 +635,42 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					{
 						 error = Integer.valueOf(epsilon.getText());
 					}
-					if (buffer2 == null){
-						imagenInicial = buffer1;
+					
+					Imagen[] imagenes = ObjProcesamiento.getSecuenciaImagenes();
+					
+					if ((imagenes!=null)&&(imagenes.length>=1)){
+						//JOptionPane.showMessageDialog(null,"Cantidad de Imagenes cargadas: "+imagenes.length);
+						int cantidadImg=imagenes.length;
+						
+						// Hago los calculos sobre la imagen inicial
+						Imagen imagen=imagenes[0];
+						contenedorDeImagen.setIcon(new ImageIcon(imagen));
+						DetectorDeContornosActivos detector = new DetectorDeContornosActivos();
+						Imagen resultado = detector.deteccionDeContornosActivosImagenEstatica(imagen,puntoInicial,puntoFinal,error);
+						contenedorDeImagen2.setIcon(new ImageIcon(resultado));
+						
+						// Continuo los calculos sobre las imagenes consecutivas
+						if (cantidadImg>1){
+							for (int i=1;i<cantidadImg;i++){
+								imagen=imagenes[i];
+								resultado = detector.deteccionDeContornosActivosSecuencial(imagen,error);
+								contenedorDeImagen.setIcon(new ImageIcon(imagen));
+								contenedorDeImagen2.setIcon(new ImageIcon(resultado));
+								new Editor(imagen,resultado);
+							}	
+						}
 					}else{
-						imagenInicial = buffer2;
+						JOptionPane.showMessageDialog(null,"Error en la carga de las imagenes secuenciales");
 					}
-					
-					detectarContornosActivosImagenEstatica(imagenInicial,puntoInicial,puntoFinal,error);
-					
-					deteccionDeContornosActivosSecuenciaImagenes(error);
-					
 					resetPoints();
 					seleccionando = false;
 					seleccionandoContornos = false;
 				} else {
+					buffer1 = null;
+					contenedorDeImagen.setIcon(null);
+					buffer2 = null;
+					contenedorDeImagen2.setIcon(null);
+					cargarActionPermorfed(true);
 					JOptionPane.showMessageDialog(null,"Primero debe seleccionar el area en el menu Seleccion / Seleccionar");
 					resetPoints();
 				}
@@ -643,8 +679,22 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	}
 
 	private void detectarBordesConCanny() {
-		DetectorDeCanny detector = new DetectorDeCanny();
-		Imagen borde = detector.deteccionDeBordes(buffer1); 
+		JTextField umbralBajo = new JTextField();
+		JTextField umbralAlto = new JTextField();
+		Object[] message = {
+		    "T1:", umbralBajo,
+		    "T2:", umbralAlto
+		};
+		int t1 = 0;
+		int t2 = 0;
+		int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese el valor de los umbrales", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION)
+		{
+			 t1= Integer.valueOf(umbralBajo.getText());
+			 t2= Integer.valueOf(umbralAlto.getText());
+		}
+		DetectorDeCanny2 detector = new DetectorDeCanny2();
+		Imagen borde = detector.deteccionDeBordes(buffer1,t1,t2); 
 		aplicarOperacion(borde);
 	}
 	
@@ -653,23 +703,6 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		Imagen imagenConContornosActivos = detector.deteccionDeContornosActivosImagenEstatica(buffer1,puntoInicial,puntoFinal,error); 
 		aplicarOperacion(imagenConContornosActivos);
 	}
-	
-	private void deteccionDeContornosActivosSecuenciaImagenes(Integer error) {
-		DetectorDeContornosActivos detector = new DetectorDeContornosActivos();
-		
-		Imagen[] imagenes = ObjProcesamiento.getSecuenciaImagenes();
-		int cantidadImg=imagenes.length;
-		Imagen imagenConContornosActivos=null;
-
-		for (int i=1;i<cantidadImg;i++){
-			imagenConContornosActivos = detector.deteccionDeContornosActivosSecuencial(imagenes[i],error); 
-			aplicarOperacion(imagenConContornosActivos);
-			ObjProcesamiento.setImagen(imagenConContornosActivos);
-			
-			// SEGUIR DESDE ACA
-		}
-	}
-	
 	
 	private void agregarBorrar() {
 		itemBorrar.addActionListener(new java.awt.event.ActionListener() {
