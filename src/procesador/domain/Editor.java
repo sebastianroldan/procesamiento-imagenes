@@ -134,6 +134,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemDibujoExponencial = new JMenuItem("Dibujar Matriz Ruido Exponencial");	
 	private JMenuItem itemDibujoGauss = new JMenuItem("Dibujar Matriz Ruido Gaussiano");
 	private JMenuItem itemDibujoRayleigh = new JMenuItem("Dibujar Matriz Ruido Rayleigh");
+	private JMenu menuPuntosCaracteristicos = new JMenu("Puntos Caracteristicos");
+	private JMenuItem itemHarris = new JMenuItem("Harris");	
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -400,7 +402,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuCurvas.add(itemDetectarRecta);
 		menuCurvas.add(itemDetectarCirculo);
 		menuBar.add(menuCurvas);
-		
+		menuPuntosCaracteristicos.add(itemHarris);
+		menuBar.add(menuPuntosCaracteristicos);
 		return menuBar;
 	}
 
@@ -475,6 +478,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarBordesSusan();
 		agregarEsquinasSusan();
 		agregarDetectarRectas();
+		agregarHarris();
 	}
 
 	private void agregarDetectarRectas() {
@@ -499,9 +503,21 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 			}
 		});
 	}
-
-	private void detectarBordesConSusan() {
+	private void agregarHarris() {
+		itemHarris.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				detectarHarris();
+			}
+		});
+	}
+	
+	private void detectarHarris() {
 		
+		DetectorDeHarris detector = new DetectorDeHarris();
+		aplicarOperacion(detector.deteccionPuntos(buffer1));
+	}
+	
+	private void detectarBordesConSusan() {	
 		JTextField delta = new JTextField();
 		Object[] message = {
 		    "Delta:", delta,
