@@ -20,7 +20,7 @@ public class ProcesadorDeImagenes {
 	private File[] files;
 	private String nombreArchivoImagen="";
 	private Imagen image;
-	private Imagen[] secuenciaImagenes=null; 
+	private Imagen[] secuenciaImagenes; 
 			
 	public Imagen abrirImagen(boolean esSecuencial){
 		String tipoImagen;		
