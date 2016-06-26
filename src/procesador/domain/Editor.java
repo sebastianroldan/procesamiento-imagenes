@@ -99,6 +99,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private Imagen buffer1;
 	private Imagen buffer2;
 	private Imagen original;
+	private Imagen[] imagenes;
 	private JMenu menuDegrade = new JMenu("Degrades");
 	private JMenuItem itemGris = new JMenuItem("Degrade grises");
 	private JMenuItem itemColor = new JMenuItem("Degrade colores");
@@ -636,29 +637,12 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 						 error = Integer.valueOf(epsilon.getText());
 					}
 					
-					Imagen[] imagenes = ObjProcesamiento.getSecuenciaImagenes();
+					imagenes = ObjProcesamiento.getSecuenciaImagenes();
 					
 					if ((imagenes!=null)&&(imagenes.length>=1)){
-						//JOptionPane.showMessageDialog(null,"Cantidad de Imagenes cargadas: "+imagenes.length);
-						int cantidadImg=imagenes.length;
 						
-						// Hago los calculos sobre la imagen inicial
-						Imagen imagen=imagenes[0];
-						contenedorDeImagen.setIcon(new ImageIcon(imagen));
-						DetectorDeContornosActivos detector = new DetectorDeContornosActivos();
-						Imagen resultado = detector.deteccionDeContornosActivosImagenEstatica(imagen,puntoInicial,puntoFinal,error);
-						contenedorDeImagen2.setIcon(new ImageIcon(resultado));
-						
-						// Continuo los calculos sobre las imagenes consecutivas
-						if (cantidadImg>1){
-							for (int i=1;i<cantidadImg;i++){
-								imagen=imagenes[i];
-								resultado = detector.deteccionDeContornosActivosSecuencial(imagen,error);
-								contenedorDeImagen.setIcon(new ImageIcon(imagen));
-								contenedorDeImagen2.setIcon(new ImageIcon(resultado));
-								new Editor(imagen,resultado);
-							}	
-						}
+						new ProcesadorDeAnimaciones(imagenes,error);
+							
 					}else{
 						JOptionPane.showMessageDialog(null,"Error en la carga de las imagenes secuenciales");
 					}
