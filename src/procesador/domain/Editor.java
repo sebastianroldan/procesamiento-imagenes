@@ -627,21 +627,25 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 					
 					
 					JTextField epsilon = new JTextField();
+					JTextField segundosFrame = new JTextField();
 					Object[] message = {
-						"Epsilon:", epsilon
+						"Epsilon Error Color:", epsilon,
+						"Segundos Por Frame:",segundosFrame
 					};
 					int error = 0;
+					int segTolerancia =5;
 					int option = JOptionPane.showConfirmDialog(getParent(), message, "Ingrese valor", JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION)
 					{
 						 error = Integer.valueOf(epsilon.getText());
+						 segTolerancia = Integer.valueOf(segundosFrame.getText());
 					}
 					
 					imagenes = ObjProcesamiento.getSecuenciaImagenes();
 					
 					if ((imagenes!=null)&&(imagenes.length>=1)){
 						
-						new ProcesadorDeAnimaciones(imagenes,error);
+						new ProcesadorDeAnimaciones(imagenes,puntoInicial,puntoFinal,error,segTolerancia);
 							
 					}else{
 						JOptionPane.showMessageDialog(null,"Error en la carga de las imagenes secuenciales");
