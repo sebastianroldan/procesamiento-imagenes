@@ -1704,6 +1704,10 @@ public class ProcesadorDeImagenes {
 		return image;
 	}
 
+	public File getFile() {
+		return file;
+	}
+	
 	public Imagen[] getSecuenciaImagenes() {
 		return secuenciaImagenes;
 	}

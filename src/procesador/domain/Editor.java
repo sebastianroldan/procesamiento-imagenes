@@ -51,6 +51,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemCargar = new JMenuItem("Abrir Imagen");
 	private JMenuItem itemGuardar = new JMenuItem("Guardar Imagen");
 	private JMenu menuDifusion = new JMenu("Difusion");
+	private JMenu menuSift = new JMenu("Sift");
+	private JMenuItem itemSift = new JMenuItem("Aplicar");
 	private JMenuItem itemIsotropica = new JMenuItem("Isotropica");
 	private JMenuItem itemBorrar = new JMenuItem("Borrar");
 	private JMenuItem itemAnisotropica = new JMenuItem("Anisotropica");
@@ -149,11 +151,15 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
     private JLabel valorPotencia = new JLabel();
     private boolean seleccionando = false;
     private boolean seleccionandoContornos = false;
+    private File img1;
+    private File img2;
        
+	@SuppressWarnings("javadoc")
 	public Editor() {
 		initComponents();
 	}
 
+	@SuppressWarnings("javadoc")
 	public Editor(Imagen resultado) {
 		initComponents();
 		if(resultado!=null){
@@ -162,6 +168,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		this.setBounds(150, 50, 600, 600);
 	}
 	
+	@SuppressWarnings("javadoc")
 	public Editor(Imagen imagenIzquierda, Imagen imagenDerecha ) {
 		initComponents();
 		if(imagenIzquierda!=null && imagenDerecha!=null){
@@ -405,6 +412,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuBar.add(menuCurvas);
 		menuPuntosCaracteristicos.add(itemHarris);
 		menuBar.add(menuPuntosCaracteristicos);
+		menuSift.add(itemSift);
+		menuBar.add(menuSift);
 		return menuBar;
 	}
 
@@ -480,8 +489,27 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarEsquinasSusan();
 		agregarDetectarRectas();
 		agregarDetectarCirculos();
+		agregarHarris();
+		agregarSift();
 	}
 
+	private void agregarSift() {
+		itemSift.addActionListener(new java.awt.event.ActionListener() {
+			
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try {
+					img1 = ObjProcesamiento.getFile();
+					img2 = ObjProcesamiento2.getFile();
+					Sift.aplicar(img1, img2);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		});
+	}
+	
 	private void agregarDetectarCirculos() {
 		itemDetectarCirculo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
