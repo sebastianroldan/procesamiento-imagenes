@@ -24,12 +24,12 @@ public class Sift {
 	public static void aplicar(File img1, File img2) throws Exception {
 		MBFImage query = ImageUtilities.readMBF(img1);
 		MBFImage target = ImageUtilities.readMBF(img2);
-
+img1.getName();
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 
 		LocalFeatureList<Keypoint> queryKeypoints = engine.findFeatures(query.flatten());
 		LocalFeatureList<Keypoint> targetKeypoints = engine.findFeatures(target.flatten());
-
+		
 		LocalFeatureMatcher<Keypoint> matcher = new BasicMatcher<Keypoint>(75);
 		matcher.setModelFeatures(queryKeypoints);
 		matcher.findMatches(targetKeypoints);

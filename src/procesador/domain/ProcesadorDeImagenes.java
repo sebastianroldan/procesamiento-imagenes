@@ -28,7 +28,7 @@ public class ProcesadorDeImagenes {
 		
 		if (esSecuencial){
 			JFileChooser selector=new JFileChooser();
-			FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & JPEG & RAW", "ppm", "pgm", "bmp", "jpg", "jpeg" , "raw");
+			FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & JPEG & RAW & PNG", "ppm", "pgm", "bmp", "jpg", "jpeg" , "raw", "png");
 			selector.setFileFilter(filtroImagen);
 			selector.setDialogTitle("Seleccione secuencia de imagenes del mismo tipo y tamaño");
 			selector.setMultiSelectionEnabled(true);
@@ -55,7 +55,7 @@ public class ProcesadorDeImagenes {
 			}
 		} else {
 			JFileChooser selector=new JFileChooser();
-			FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & JPEG & RAW", "ppm", "pgm", "bmp", "jpg", "jpeg" , "raw");
+			FileNameExtensionFilter filtroImagen = new FileNameExtensionFilter("PPM & PGM & BMP & JPG & JPEG & RAW & PNG", "ppm", "pgm", "bmp", "jpg", "jpeg" , "raw","png");
 			selector.setFileFilter(filtroImagen);
 			selector.setDialogTitle("Seleccione una imagen");
 			selector.setMultiSelectionEnabled(false);
@@ -80,7 +80,7 @@ public class ProcesadorDeImagenes {
 	public Imagen obtenerImagen(String tipoImagen, File file) throws IOException {
 		Imagen image = null;
 		Procesador proc = null;
-		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))||(tipoImagen.equalsIgnoreCase("JPEG"))){
+		if ((tipoImagen.equalsIgnoreCase("BMP"))||(tipoImagen.equalsIgnoreCase("JPG"))||(tipoImagen.equalsIgnoreCase("JPEG")||(tipoImagen.equalsIgnoreCase("PNG")))){
 			BufferedImage image2 = ImageIO.read(file);
 			ProcesadorDeImagenesJPGyBMP proc2 = new ProcesadorDeImagenesJPGyBMP(image2);
 			image = proc2.getImage();

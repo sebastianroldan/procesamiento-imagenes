@@ -46,17 +46,25 @@ public class DetectorDeHarris {
 	}
 
 	private Integer[][] umbralizar(double[][] cim,int ancho, int alto) {
-		int umbral=500000000;
+		double max=Math.abs(cim[0][0]);
+		for (int i=0;i<ancho;i++){
+			for (int j=0;j<alto;j++){
+				if(Math.abs(cim[i][j])>max){
+					max=Math.abs(cim[i][j]);
+				}
+			}
+		}
 		Integer[][] matrizAux=new Integer[ancho][alto];
 		for (int i=0;i<ancho;i++){
 			for (int j=0;j<alto;j++){
-				if(Math.abs(cim[i][j])>umbral){
+				if(Math.abs(cim[i][j])>max*0.08){
 					matrizAux[i][j]=1;
 				}else{
 					matrizAux[i][j]=0;
 				}
 			}
 		}
+		
 		return matrizAux;
 	}
 
