@@ -24,10 +24,10 @@ public class Sift {
 	public static void aplicar(File img1, File img2) throws Exception {
 		MBFImage query = ImageUtilities.readMBF(img1);
 		MBFImage target = ImageUtilities.readMBF(img2);
-img1.getName();
+
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 
-		LocalFeatureList<Keypoint> queryKeypoints = engine.findFeatures(query.flatten());
+		LocalFeatureList<Keypoint> queryKeypoints  = engine.findFeatures(query.flatten());
 		LocalFeatureList<Keypoint> targetKeypoints = engine.findFeatures(target.flatten());
 		
 		LocalFeatureMatcher<Keypoint> matcher = new BasicMatcher<Keypoint>(75);
@@ -44,10 +44,10 @@ img1.getName();
 
 		MBFImage consistentMatches = MatchingUtilities.drawMatches(query,
 				target, matcher.getMatches(), RGBColour.BLUE);
-
-		JOptionPane.showMessageDialog(null,
-				" Coincidencias entre descriptores: " + String.valueOf(matcher.getMatches().size()));
-
+		JOptionPane.showMessageDialog(null, 
+				"Descriptores de la imagen " + img1.getName() + ": " +  String.valueOf(queryKeypoints.size()) + "\n" +
+				"Descriptores de la imagen " + img2.getName() + ": " +  String.valueOf(targetKeypoints.size()) + "\n" +	
+				"Coincidencias entre descriptores: " + String.valueOf(matcher.getMatches().size()));
 		DisplayUtilities.display(consistentMatches);
 	}
 
