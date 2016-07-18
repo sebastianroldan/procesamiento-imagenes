@@ -70,7 +70,7 @@ public class Sift {
 			JTextField limiteEstimador = new JTextField();      //0.5
 			Object[] message = {
 					"Iteraciones:", cantidadIteraciones,
-					"porcentaje:", porcentajeParada,
+//					"porcentaje:", porcentajeParada,
 					"limite de comparaciones:", limiteComparacion,
 					"limite estimador:", limiteEstimador,				
 			};
@@ -80,7 +80,7 @@ public class Sift {
 			{
 				iteraciones = Integer.valueOf(cantidadIteraciones.getText());
 				limite = Double.valueOf(limiteEstimador.getText());
-				porcentaje = Double.valueOf(porcentajeParada.getText());
+//				porcentaje = Double.valueOf(porcentajeParada.getText());
 				limiteMatches = Integer.valueOf(limiteComparacion.getText());}
 	}
 

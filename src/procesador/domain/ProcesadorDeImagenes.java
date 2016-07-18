@@ -20,7 +20,8 @@ public class ProcesadorDeImagenes {
 	private File[] files;
 	private String nombreArchivoImagen="";
 	private Imagen image;
-	private Imagen[] secuenciaImagenes; 
+	private Imagen[] secuenciaImagenes;
+	private int umbralOptimo = 0;
 			
 	public Imagen abrirImagen(boolean esSecuencial){
 		String tipoImagen;		
@@ -1554,7 +1555,8 @@ public class ProcesadorDeImagenes {
 					umbralOptimo=umbral;
 				}	
 			}
-			JOptionPane.showMessageDialog(null, "Umbral Optimo: " + umbralOptimo);
+			//JOptionPane.showMessageDialog(null, "Umbral Optimo: " + umbralOptimo);
+			this.umbralOptimo = umbralOptimo; 
 			for (int i=0; i < buff.getWidth(); i++){
 				for(int j =0; j < buff.getHeight(); j++){
 					if(calcularPromedio(buff.getRGB(i, j)) >= umbralOptimo){
@@ -1566,6 +1568,11 @@ public class ProcesadorDeImagenes {
 			}
 		}
 		return salida;
+	}
+	
+	@SuppressWarnings("javadoc")
+	public int valorUmbralOtsu(){
+		return umbralOptimo;
 	}
 	
 	private double calculoVarianza(int umbral, double[] ocurrencia){

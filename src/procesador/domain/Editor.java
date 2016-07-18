@@ -138,7 +138,8 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenuItem itemDibujoGauss = new JMenuItem("Dibujar Matriz Ruido Gaussiano");
 	private JMenuItem itemDibujoRayleigh = new JMenuItem("Dibujar Matriz Ruido Rayleigh");
 	private JMenu menuPuntosCaracteristicos = new JMenu("Puntos Caracteristicos");
-	private JMenuItem itemHarris = new JMenuItem("Harris");	
+	private JMenuItem itemHarris = new JMenuItem("Harris");
+	private JMenuItem itemUmbralColores = new JMenuItem("Umbralizacion en Colores");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -376,6 +377,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		itemUmbralizar.setMnemonic(KeyEvent.VK_U);
 		menuUmbral.add(itemUmbralGlobal);
 		menuUmbral.add(itemUmbralOtsu);
+		menuUmbral.add(itemUmbralColores);
 		menuBar.add(menuUmbral);
 		menuUmbral.setMnemonic(KeyEvent.VK_U);
 		menuBar.add(menuOperaciones);
@@ -491,6 +493,19 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarDetectarCirculos();
 		agregarHarris();
 		agregarSift();
+		agregarUmbralColor();
+	}
+
+	private void agregarUmbralColor() {
+		// TODO Auto-generated method stub
+		itemUmbralColores.addActionListener(new java.awt.event.ActionListener() {	
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				UmbralColor procesador = new UmbralColor();
+				Imagen resultado = procesador.umbralizar(buffer1);
+				aplicarOperacion(resultado);
+			}
+
+		});
 	}
 
 	private void agregarSift() {
@@ -855,7 +870,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				Object[] message = {
 					"Porcentaje afectado:", porcen,	
 					"Media (mu):" , campo1,
-				    "Desvío(sigma):" , campo2
+				    "Desvï¿½o(sigma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
@@ -944,7 +959,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField campo2 = new JTextField();
 				Object[] message = {
 					"Media (mu):" , campo1,
-				    "Desvío (sigma):" , campo2
+				    "Desvï¿½o (sigma):" , campo2
 				};
 				double media=0;
 				double desvio=0;
@@ -1418,7 +1433,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField desvio = new JTextField();
 				JTextField porcentaje = new JTextField();
 				Object[] message = {
-				    "Desvío (sigma)", desvio,
+				    "Desvï¿½o (sigma)", desvio,
 				    "Porcentaje", porcentaje
 				};
 				double tamanioDesvio = 0;
@@ -1441,7 +1456,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 				JTextField desvio = new JTextField();
 				JTextField porcentaje = new JTextField();
 				Object[] message = {
-				    "Desvío (sigma)", desvio,
+				    "Desvï¿½o (sigma)", desvio,
 				    "Porcentaje", porcentaje
 				};
 				double tamanioDesvio = 0;
@@ -1869,7 +1884,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private double obtenerDesvio(){
 	JTextField desvio = new JTextField();
 	Object[] message = {
-	    "Desvío (sigma)", desvio
+	    "Desvï¿½o (sigma)", desvio
 	};
 	
 	double tamanioDesvio =0;
