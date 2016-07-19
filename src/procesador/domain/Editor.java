@@ -34,6 +34,10 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import procesador.generador.GeneradorDeImagenes;
 
+/**
+ * @author 
+ *
+ */
 @SuppressWarnings("serial")
 public class Editor extends javax.swing.JFrame implements MouseListener{
 
@@ -140,6 +144,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 	private JMenu menuPuntosCaracteristicos = new JMenu("Puntos Caracteristicos");
 	private JMenuItem itemHarris = new JMenuItem("Harris");
 	private JMenuItem itemUmbralColores = new JMenuItem("Umbralizacion en Colores");
+	private JMenuItem itemUmbralVideo = new JMenuItem("Umbralizacion de Video");
 	private JLabel mensaje = new JLabel("");
 	private java.awt.Point puntoInicial=null;
 	private java.awt.Point puntoFinal=null;
@@ -378,6 +383,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		menuUmbral.add(itemUmbralGlobal);
 		menuUmbral.add(itemUmbralOtsu);
 		menuUmbral.add(itemUmbralColores);
+		menuUmbral.add(itemUmbralVideo);
 		menuBar.add(menuUmbral);
 		menuUmbral.setMnemonic(KeyEvent.VK_U);
 		menuBar.add(menuOperaciones);
@@ -494,6 +500,7 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		agregarHarris();
 		agregarSift();
 		agregarUmbralColor();
+		agregarUmbralVideo();
 	}
 
 	private void agregarUmbralColor() {
@@ -508,6 +515,23 @@ public class Editor extends javax.swing.JFrame implements MouseListener{
 		});
 	}
 
+	private void agregarUmbralVideo() {
+		// TODO Auto-generated method stub
+		itemUmbralVideo.addActionListener(new java.awt.event.ActionListener() {	
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				ObjProcesamiento.abrirImagen(Boolean.TRUE);
+				imagenes = ObjProcesamiento.getSecuenciaImagenes();			
+				if ((imagenes!=null)&&(imagenes.length>=1)){
+					
+					new ProcesadorDeVideo(imagenes);
+						
+				}else{
+					JOptionPane.showMessageDialog(null,"Error en la carga de las imagenes secuenciales");
+				}
+			}
+
+		});
+	}
 	private void agregarSift() {
 		itemSift.addActionListener(new java.awt.event.ActionListener() {
 			

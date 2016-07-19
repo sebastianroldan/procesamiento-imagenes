@@ -13,6 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+/**
+ * @author 
+ *
+ */
 public class ProcesadorDeAnimaciones extends JFrame {
 	
 	/**
@@ -76,7 +80,7 @@ public class ProcesadorDeAnimaciones extends JFrame {
 		
 		metricasLabel.setBounds(ancho+25, 5, 150, 50);
 		metricasLabel.setForeground(new Color(12,99,38));
-		metricasLabel.setText("Métricas Video");
+		metricasLabel.setText("Mï¿½tricas Video");
 		
 		framesTotalesLabel.setBounds(ancho+25, 25, 150, 50);
 		framesTotalesLabel.setForeground(new Color(12,99,38));
